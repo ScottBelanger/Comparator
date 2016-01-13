@@ -1,9 +1,22 @@
 {
-  "name": "Comparator",
+  "name": "comparator",
   "version": "0.0.1",
-  "private": true,
-  "dependencies": {},
+  "description": "Comparison Engine for Energy Rate Comparator(ERC)",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottBelanger/Comparator.git"
+  },
+  "author": "Zach Hoggard, Laura Parry, Scott Belanger, Trevor Crawford",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ScottBelanger/Comparator/issues"
+  },
+  "homepage": "https://github.com/ScottBelanger/Comparator#readme",
+  "dependencies": {
+    "express": "^4.13.3"
   }
 }
