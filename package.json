@@ -3,8 +3,19 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottBelanger/Comparator.git"
+  },
+  "author": "Zach Hoggard, Laura Parry, Scott Belanger, Trevor Crawford",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ScottBelanger/Comparator/issues"
+  },
+  "homepage": "https://github.com/ScottBelanger/Comparator#readme",
   "dependencies": {
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
@@ -12,6 +23,7 @@
     "express": "~4.13.1",
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
+    "mysql": "~2.10.2",
     "serve-favicon": "~2.3.0"
   }
 }
