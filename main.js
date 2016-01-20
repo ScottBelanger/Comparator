@@ -11,7 +11,7 @@ var routes = require('./routes/index');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+//app.set('views', path.join(__dirname, 'views'));
 
 // Currently we do not want to use jade, all webpages will be
 // served as static html.
