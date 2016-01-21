@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mysql = require('mysql');
+var eyes = require('eyes');
 
 var routes = require('./routes/index');
+var connection = require('./rds/connection');
 
 var app = express();
 
@@ -16,9 +17,6 @@ var app = express();
 // Currently we do not want to use jade, all webpages will be
 // served as static html.
 // app.set('view engine', 'jade');
-
-// html pages should be stored /public.
-app.use(express.static(__dirname + '/public'));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -30,11 +28,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-// mysql connection config
-app.set('hostname', 'compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com');
-app.set('port', '3306');
-app.set('username', 'capstone');
-app.set('password', 'capstone');
+// Route used for db testing
+app.use('/dev', function(req, res, next) {
+
+  // Open up connection to RDS db
+  connection.connect();
+
+  // Test query ability
+  connection.query('SELECT * from EnergyUsage', function(err, rows, fields) {
+    if(err) {
+      console.log(err);
+      throw err;
+    } else {
+      res.send(rows);
+    }
+  });
+
+  // Close connection
+  connection.end();
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
