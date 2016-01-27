@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var eyes = require('eyes');
 
 var routes = require('./routes/index');
-var rdsqueries = require('./rds/queries');
+var query = require('./rds/queries');
 
 var app = express();
 
@@ -29,11 +29,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 // Route used for db testing
-app.use('/energyUsage', rdsqueries.energyUsage);
-app.use('/user', rdsqueries.user);
-app.use('/comparison', rdsqueries.comparison);
-app.use('/LDC', rdsqueries.LDC);
-app.use('/pricingModel', rdsqueries.pricingModel);
+app.use('/energyUsage', query.energyUsage);
+app.use('/user', query.user);
+app.use('/comparison', query.comparison);
+app.use('/LDC', query.LDC);
+app.use('/pricingModel', query.pricingModel);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
