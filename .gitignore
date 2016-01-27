@@ -49,3 +49,6 @@ Temporary Items
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Npm Files
+*.log
