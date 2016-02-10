@@ -31,7 +31,7 @@ Comparison.prototype.getDescription = function() {
 var RateComparison = function() {
   this.comparison  = new Comparison();
   this.energyUsage = new EnergyUsage();
-  this.rateBundle  = new RateBundle();
+  this.rateBundle  = [];
 };
 
 /* ===== RateComparison Methods ===== */
@@ -43,11 +43,11 @@ RateComparison.prototype.getEnergyUsage = function() {
   return this.energyUsage;
 };
 
-RateComparison.prototype.setRateBundle = function( rateBundle ) {
-  this.rateBundle = rateBundle;
+RateComparison.prototype.addRateBundle = function( rateBundle ) {
+  this.rateBundle.push( rateBundle );
 };
 
-RateComparison.prototype.getRateBundle = function() {
+RateComparison.prototype.getAllRateBundle = function() {
   return this.rateBundle;
 };
 
@@ -55,7 +55,7 @@ RateComparison.prototype.getRateBundle = function() {
 var UsageComparison = function() {
   this.comparison   = new Comparison();
   this.pricingModel = new PricingModel();
-  this.usageBundle  = new UsageBundle();
+  this.usageBundle  = [];
 };
 
 /* ===== UsageComparison Methods ===== */
@@ -67,15 +67,15 @@ UsageComparison.prototype.getPricingModel= function() {
   return this.pricingModel;
 };
 
-UsageComparison.prototype.setUsageBundle = function( usageBundle ) {
-  this.usageBundle = usageBundle;
+UsageComparison.prototype.addUsageBundle = function( usageBundle ) {
+  this.usageBundle.push( usageBundle );
 };
 
-UsageComparison.prototype.getUsageBundle = function() {
+UsageComparison.prototype.getAllUsageBundle = function() {
   return this.usageBundle;
 };
 
 module.exports = {
   RateComparison  : RateComparison,
-  UsageComaprison : UsageComparison
+  UsageComparison : UsageComparison
 };

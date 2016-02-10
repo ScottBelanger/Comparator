@@ -10,11 +10,11 @@ var RateBundle = function() {
 };
 
 /* ===== UsageBungle Methods ===== */
-RateBundle.prototype.getEnergyUsage = function() {
+RateBundle.prototype.getPricingModel = function() {
   return this.pricingModel;
 };
 
-RateBundle.prototype.setEnergyUsage = function( pricingModel ) {
+RateBundle.prototype.setPricingModel = function( pricingModel ) {
   this.pricingModel = pricingModel;
 };
 
@@ -22,12 +22,12 @@ RateBundle.prototype.getAllCost = function() {
   return this.cost;
 };
 
-RateBundle.prototype.getCost = function( date, amount ) {
+RateBundle.prototype.getCost = function( time, amount ) {
   var costPt = null;
 
   // Iterate through costs
   for( var i = 0; i < this.cost.length; i++ ) {
-    if( this.cost[i].getPoint().date == date ) {
+    if( this.cost[i].getPoint().time == time ) {
       costPt = this.cost[i].getPoint();
       break;
     }
@@ -41,19 +41,19 @@ RateBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
 };
 
-RateBundle.prototype.setCost = function( date, amount ) {
+RateBundle.prototype.setCost = function( time, amount ) {
   var costPt = null;
 
   // Iterate through cost
   for( var i = 0; i < this.cost.length; i++ ) {
-    if( this.cost[i].getPoint().date == date ) {
+    if( this.cost[i].getPoint().time == time ) {
       costPt = this.cost[i];
       break;
     }
   }
 
   if( costPt ) {
-    costPt.setPoint( date, amount );
+    costPt.setPoint( time, amount );
   } else {
     console.log( "Cost does not exist" );
     return costPt;
