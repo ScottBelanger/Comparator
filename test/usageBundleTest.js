@@ -15,25 +15,25 @@ var cost1 = new Cost();
 var cost2 = new Cost();
 
 con1.setPoint( Date(), 50000 );
-eu.setConsumption( con1 );
+eu.addConsumption( con1 );
 con2.setPoint( Date(), 25 );
-eu.setConsumption( con2 );
+eu.addConsumption( con2 );
 
 dem1.setPoint( Date(), 60000 );
-eu.setDemand( dem1 );
+eu.addDemand( dem1 );
 dem2.setPoint( Date(), 5687 );
-eu.setDemand( dem2 );
+eu.addDemand( dem2 );
 
 cost1.setPoint( Date(), 12.34 );
 cost2.setPoint( Date(), .34 );
 
 ub.setEnergyUsage( eu );
-ub.setCost( cost1 );
-ub.setCost( cost2 );
+ub.addCost( cost1 );
+ub.addCost( cost2 );
 ub.setDescription( "This is a test!" );
 ub.setId( 823764 );
 
 eyes.inspect( ub.getEnergyUsage() );
-eyes.inspect( ub.getCost() );
+eyes.inspect( ub.getAllCost() );
 eyes.inspect( ub.getId() );
 eyes.inspect( ub.getDescription() );

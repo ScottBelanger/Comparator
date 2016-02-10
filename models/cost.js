@@ -1,5 +1,5 @@
 var Cost = function() {
-  /* ===== Cost Fields ===== */
+/* ===== Cost Fields ===== */
   this.time   = Date();
   this.amount = 0;
 };
@@ -12,7 +12,8 @@ Cost.prototype.setPoint = function( time, amount ) {
 
 Cost.prototype.getPoint = function() {
   return { time   : this.time, 
-           amount : this.amount };
+           amount : this.amount 
+         };
 };
 
 module.exports = Cost;

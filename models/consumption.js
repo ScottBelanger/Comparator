@@ -1,5 +1,5 @@
 var Consumption = function() {
-  /* ===== Consumption Fields ===== */
+/* ===== Consumption Fields ===== */
   this.time   = Date();
   this.amount = 0;
 };
@@ -12,7 +12,8 @@ Consumption.prototype.setPoint = function( time, amount ) {
 
 Consumption.prototype.getPoint = function() {
   return { time   : this.time, 
-           amount : this.amount };
+           amount : this.amount 
+         };
 }
 
 module.exports = Consumption;

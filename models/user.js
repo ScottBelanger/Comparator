@@ -15,6 +15,10 @@ User.prototype.getId = function() {
     return this.userId;
 };
 
+User.prototype.setId = function( id ) {
+  this.userId = id;
+};
+
 User.prototype.getUserName = function() {
     return this.userName;
 };
@@ -47,12 +51,45 @@ User.prototype.setAdmin = function( isAdmin ) {
     this.isAdmin = isAdmin;
 };
 
-User.prototype.setComparison = function( comparison ) {
+User.prototype.addComparison = function( comparison ) {
   this.comparison.push( comparison );
 };
 
-User.prototype.getComparison = function() {
+User.prototype.getAllComparison = function() {
   return this.comparison;
+};
+
+User.prototype.getComparison = function( id ) {
+  var comp = null;
+
+  for( var i = 0; i < this.comparison.length; i++ ) {
+    if( this.comparison[i].getId() == id ) {
+      comp = this.comparison[i];
+      break;
+    }
+  }
+
+  // Returns null if comparison does not exist
+  return comp;
+};
+
+User.prototype.deleteComparison = function( id ) {
+  var compIdx = null;
+
+  for( var i = 0; i < this.comparison.length; i++ ) {
+    if( this.comparison[i].getId() == id ) {
+      compIdx = i;
+      break;
+    }
+  }
+
+  // Remove comparison
+  if( compIdx ) {
+    this.comparison.splice( compIdx, 1 );
+  } else {
+    console.log( "Comparison does not exist." );
+    return compIdx;
+  }
 };
 
 module.exports = User;

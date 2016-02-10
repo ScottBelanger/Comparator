@@ -1,5 +1,5 @@
 var Demand = function() {
-  /* ===== Demand Fields ===== */
+/* ===== Demand Fields ===== */
   this.time   = Date();
   this.amount = 0;
 };
@@ -12,7 +12,8 @@ Demand.prototype.setPoint = function( time, amount ) {
 
 Demand.prototype.getPoint = function() {
   return { time   : this.time, 
-           amount : this.amount };
+           amount : this.amount 
+         };
 }
 
 module.exports = Demand;

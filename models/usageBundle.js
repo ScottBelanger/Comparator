@@ -18,12 +18,46 @@ UsageBundle.prototype.setEnergyUsage = function( energyUsage ) {
   this.energyUsage = energyUsage;
 };
 
-UsageBundle.prototype.getCost = function() {
+UsageBundle.prototype.getAllCost = function() {
   return this.cost;
 };
 
-UsageBundle.prototype.setCost = function( cost ) {
+UsageBundle.prototype.getCost = function( date, amount ) {
+  var costPt = null;
+
+  // Iterate through costs
+  for( var i = 0; i < this.cost.length; i++ ) {
+    if( this.cost[i].getPoint().date == date ) {
+      costPt = this.cost[i].getPoint();
+      break;
+    }
+  }
+
+  // Returns null if cost does not exist
+  return costPt;
+};
+
+UsageBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
+};
+
+UsageBundle.prototype.setCost = function( date, amount ) {
+  var costPt = null;
+
+  // Iterate through cost
+  for( var i = 0; i < this.cost.length; i++ ) {
+    if( this.cost[i].getPoint().date == date ) {
+      costPt = this.cost[i];
+      break;
+    }
+  }
+
+  if( costPt ) {
+    costPt.setPoint( date, amount );
+  } else {
+    console.log( "Cost does not exist" );
+    return costPt;
+  }
 };
 
 UsageBundle.prototype.getId = function() {

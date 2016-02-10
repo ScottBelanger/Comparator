@@ -5,10 +5,19 @@ var UsageBundle  = require( './UsageBundle' );
 
 /* ===== Comparison Fields ===== */
 var Comparison = function() {
+  this.id          = 0;
   this.description = "";
 };
 
 /* ===== Comparison Methods ===== */
+Comparison.prototype.setId = function( id ) {
+  this.id = id;
+};
+
+Comparison.prototype.getId = function() {
+  return this.id
+};
+
 Comparison.prototype.setDescription = function( description ) {
   this.description = description;
 };
