@@ -34,6 +34,7 @@ app.use('/user', query.user);
 app.use('/comparison', query.comparison);
 app.use('/LDC', query.LDC);
 app.use('/pricingModel', query.pricingModel);
+app.disable('etag');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

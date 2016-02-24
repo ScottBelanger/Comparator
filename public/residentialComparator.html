@@ -7,15 +7,254 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
+    
+    <script>
+      function showCharts() {
+        document.getElementById("EnergyRateConsumption").style.visibility = "visible";
+        document.getElementById("TimeCostGraph").style.visibility = "visible";
+      }
+    </script>
   </head>
-<body>
+<body style="background-color: #CDCDCD">
 
-<div class="jumbotron container-fluid">
-  <div class="container">
-    <h1>Energy Rate Comparator</h1>
-    <p>Welcome, to the residential comparator</p>
-  </div>    
+<!-- Creating the header bar -->
+<nav class="navbar navbar-default" style="background-color: #FFFFFF">
+  <div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#" style="font-size:30px">Residential Comparator</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Home</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid panel" style="max-width:80%; box-shadow: 0 0 20px black; background-color: #545454; padding-top:40px">
+
+<div class="container" >
+  <div class="row" style="padding-top:55px">
+    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
+      <h1>Welcome to the residential page. Easily calculate and manipulate energy prices!</h1>
+    </div>
+  </div>
 </div>
 
+<div class="container">
+  <div class="row" >
+    <!--This is the rate type selection menu -->
+    <div class="col-sm-4 panel addPadding" style="box-shadow: 0 0 10px grey;">
+      <form id="ldcForm" class="form-horizontal" style="margin-top: 10px; font-size: 20px; background-color: #FFFFFF;">
+        <div class="form-group">
+        <label class="col-xs-6 control-label">Country</label>
+          <div class="col-xs-6 selectContainer">
+            <select class="form-control" name="size" style="font-size: 20px;">
+              <option value="cad">Canada</option>
+              <option value="usa">United States</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+        <label class="col-xs-6 control-label">Region</label>
+          <div class="col-xs-6 selectContainer">
+            <select class="form-control" name="color" style="font-size: 20px;">
+              <option value="">Toronto</option>
+              <option value="">Hamilton</option>
+              <option value="">Vancouver</option>
+            </select>
+          </div>
+        </div>
+  
+        <div class="form-group">
+        <label class="col-xs-6 control-label">Local Distribution Company</label>
+          <div class="col-xs-6 selectContainer">
+            <select class="form-control" name="color" style="font-size: 20px;">
+              <option value="">Hydro One</option>
+              <option value="">The Best Energy</option>
+              <option value="">Kill me now</option>
+            </select>
+          </div>
+        </div>
+  
+        <div class="form-group">
+        <label class="col-xs-6 control-label">Rate Types</label>
+          <div class="col-xs-6 selectContainer">
+            <select class="form-control" name="color" style="font-size: 20px;">
+              <option value="">Tiered</option>
+              <option value="">Time of Use</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" onclick="showCharts()">Submit</button>
+      </form>
+    </div>
+    
+    <!-- These are the buttons -->
+    <div class="col-sm-3 panel addPadding" style="box-shadow: 0 0 10px grey;">
+      <form id="ldcForm" class="form-horizontal" style="margin-top: 10px; font-size: 20px; background-color: #FFFFFF;">
+        <div class="form-group">
+          <button type="button">Connect Green Button Data</button>
+        </div>
+
+        <div class="form-group">
+          <button type="button">Download CSV Template</button>
+        </div>
+  
+        <div class="form-group">
+          <button type="button">Enter Data Manually</button>
+        </div>
+  
+        <div class="form-group">
+          <button type="button"" data-toggle="modal" data-target="#myModal">Upload CSV File</button>
+
+          <div id="myModal" class="modal fade" role="dialog" style="font-size: 20px;">>
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload!</h4>
+                </div>
+                <input type="file" style="width:100%">
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--This is hiCharts Energy Consumption Graph-->
+<div class="container">
+  <div class="row" >
+    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
+      <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
+      </div>
+      
+      <!--Javascript for highchart, draggable chart -->
+      <script type="text/javascript">
+        var chart = new Highcharts.Chart({
+          chart: {
+            renderTo: 'EnergyRateConsumption',
+            animation: false
+          },
+          title: {
+            text: 'Energy Rate Consumption'
+          },
+          xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            
+          },
+          plotOptions: {
+            
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            }
+          },
+          tooltip: {
+            yDecimals: 2
+          },
+          series: [{
+            data: [0, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+            draggableY: true,
+            rotation: 90
+          }]
+        });
+      </script>
+    </div>
+  </div>
+</div>
+
+<!--This is hiCharts Time Cost Graph-->
+<div class="container">
+  <div class="row" >
+    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
+      <div id="TimeCostGraph" style="height: 400px; font-size:15px;">
+      </div>
+      
+      <!--Javascript for highchart, draggable chart -->
+      <script type="text/javascript">
+        var chart = new Highcharts.Chart({
+          chart: {
+            renderTo: 'TimeCostGraph',
+            animation: false
+          },
+          title: {
+            text: 'Time Cost Graph'
+          },
+          xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            
+          },
+          plotOptions: {
+            
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            }
+          },
+          tooltip: {
+            yDecimals: 2
+          },
+          series: [{
+            data: [216.4, 100.1, 73, 194.1, 61.1, 144.0, 176.0, 135.6, 148.5, 78.3, 95.6, 123.4],
+            draggableY: true,
+            rotation: 90
+          }]
+        });
+      </script>
+    </div>
+  </div>
+</div>
+
+</div>
+
+ <!-- Site footer -->
+<div class="bottom" style="background-color: #FFFFFF">
+  <div class="container">
+    <div class="col-md-4">
+      <h3><span class="glyphicon glyphicon-info-sign"></span>About Us</h3>
+    </div>
+    <div class="col-md-4">
+      <h3><span class="glyphicon glyphicon-lock"></span>Privacy Information</h3>
+    </div>
+    <div class="col-md-4">
+      <h3><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</h3>
+    </div>
+  </div>
+</div>
 </body>
 </html>
