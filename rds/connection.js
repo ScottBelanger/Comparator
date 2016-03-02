@@ -1,3 +1,4 @@
+// ===== Module imports =====
 var mysql = require('mysql');
 
 // Create connection with compardb configuration.
