@@ -2,6 +2,7 @@ var RateBundle   = require( './RateBundle' );
 var EnergyUsage  = require( './EnergyUsage' );
 var PricingModel = require( './PricingModel' );
 var UsageBundle  = require( './UsageBundle' );
+var util         = require('util');
 
 /* ===== Comparison Fields ===== */
 var Comparison = function() {
@@ -29,10 +30,11 @@ Comparison.prototype.getDescription = function() {
 
 /* ===== RateComparison Fields ===== */
 var RateComparison = function() {
-  this.comparison  = new Comparison();
   this.energyUsage = new EnergyUsage();
   this.rateBundle  = [];
 };
+
+util.inherits( RateComparison, Comparison );
 
 /* ===== RateComparison Methods ===== */
 RateComparison.prototype.setEnergyUsage = function( energyUsage ) {
@@ -53,10 +55,11 @@ RateComparison.prototype.getAllRateBundle = function() {
 
 /* ===== UsageComparison Fields ===== */
 var UsageComparison = function() {
-  this.comparison   = new Comparison();
   this.pricingModel = new PricingModel();
   this.usageBundle  = [];
 };
+
+util.inherits( UsageComparison, Comparison );
 
 /* ===== UsageComparison Methods ===== */
 UsageComparison.prototype.setPricingModel = function( pricingModel ) {
