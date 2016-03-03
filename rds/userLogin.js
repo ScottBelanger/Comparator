@@ -11,6 +11,9 @@ var Cost        = require( '../models/Cost' );
 var Comparison  = require( '../models/Comparison' );
 var User        = require( '../models/User' );
 
+// ===== Global Variables =====
+var user = new User();
+
 /* userLogin is a middleware function for the POST to /login
  * userLogin validates the login credentials and populates the
  * models in memory based on the user information in the database
@@ -34,7 +37,7 @@ var userLogin = function( req, res, next ) {
 var validateLogin = function( username, password, callback ) {
 
   // SQL query
-  var sqlString  = 'SELECT Password FROM User WHERE Username=\"' + username + '\"';
+  var sqlString  = 'SELECT * FROM User WHERE Username=\"' + username + '\"';
 
   // Get the password for the supplied user
   connection.query( sqlString, function( err, rows, fields ) {
@@ -53,9 +56,16 @@ var validateLogin = function( username, password, callback ) {
         // If the supplied password is the same as what is currently
         // in the database
         if( rows[0].Password == password ) {
+			
+		  // Set up the user information
+		  user.setId( rows[0].ID );
+		  user.setUserName( rows[0].Username );
+          user.setPassword( rows[0].Password );
+          user.setEmail( rows[0].Email );
+          user.setAdmin( rows[0].IsAdmin );
 
           // Populate the models
-          callback( null, username );
+          callback( null, user.getId() );
 
         } else {
 
@@ -81,34 +91,14 @@ var validateLogin = function( username, password, callback ) {
  * populateModels queries the database for all information related to
  * the supplied user and populate the models with that information.
  */
-var populateModels = function( err, username ) {
+var populateModels = function( err, userID ) {
+
   //SQL query
-  var sqlString = "SELECT User.ID AS userID, Username, Password, Email, IsAdmin, " +
-                  "User.LDCID, LDC.Name AS LDCName, Country AS LDCCountry, " +
-                  "City as LDCCity, ComparisonID, PricingModelID, RateType, " +
-                  "EnergyUsageID, Time as EnergyUsageTime, Consumption_x, " +
-                  "Consumption_y, Demand_x, Demand_y " +
-                  "FROM User LEFT OUTER JOIN LDC " +
-                  "ON User.LDCID=LDC.ID LEFT OUTER JOIN Comparison " +
-                  "ON User.ComparisonID=Comparison.UserID LEFT OUTER JOIN EnergyUsage " +
-                  "ON Comparison.EnergyUsageID=EnergyUsage.ID LEFT OUTER JOIN PricingModel " +
-                  "ON Comparison.PricingModelID=PricingModel.ID";
+  var selectComparisons = 'SELECT ID, PricingModelID, EnergyUsageID ' +
+                          'FROM Comparison WHERE UserID=' + userID;
 
-  // Create model objects to store database results
-  var user = new User();
-  var rb   = new RateBundle();
-  var ub   = new UsageBundle();
-  var eu   = new EnergyUsage();
-  var dem  = new Demand();
-  var con  = new Consumption();
-  var pm   = new PricingModel();
-  var cost = new Cost();
-  var date = Date();
-  var rc   = new Comparison.RateComparison();
-  var uc   = new Comparison.UsageComparison();
-
-  // Get all data about user from database
-  connection.query( sqlString, function( err, rows, fields ) {
+  // Get all comparisons for user
+  connection.query( selectComparisons, function( err, rows, fields ) {
 
     // Log database errors
     if( err ) {
@@ -117,19 +107,67 @@ var populateModels = function( err, username ) {
       throw err;
 
     } else {
+	
+      // Iterate through each user comparison	
+      rows.forEach( function( item ) {
+		
+		// If usage comparison
+        if( true ) {
+			
+		  // Create new comparison and populate fields
+	      var comparison = new Comparison.UsageComparison();
+		  user.addComparison( comparison );
+          comparison.setId( item.ID );
+          comparison.setDescription( "Not set up yet!" );
+          
+		  // SQL query
+          var selectPricingModels = 'SELECT RateType, Name, Country, City ' +
+                                    'FROM PricingModel LEFT OUTER JOIN LDC ' +
+                                    'ON LDCID=LDC.ID ' +
+                                    'WHERE PricingModel.ID=' + item.PricingModelID;
 
-      // Populate model with information from database query
-      user.setId( rows[0].userID );
-      user.setUserName( rows[0].Username );
-      user.setPassword( rows[0].Password );
-      user.setEmail( rows[0].Email );
-      user.setAdmin( rows[0].IsAdmin );
-      eyes.inspect( user );
-
+		  // Get pricing model for comparison
+          connection.query( selectPricingModels, function( err, rows, fields ) {
+			
+		    if( err ) {
+			  
+			  // Log database errors
+			  console.log( err );
+			  throw err;
+			  
+		    } else {
+			  
+			  // Populate pricing model fields
+		      var pm = new PricingModel();	
+              pm.setLDC( rows[0].Name );
+              pm.setRateType( rows[0].RateType );
+              pm.setCountry( rows[0].Country );
+              pm.setCity( rows[0].City );
+			  comparison.setPricingModel( pm );
+			  debugUser();
+  
+		    }
+		  
+		  });
+		  
+		} else { // If rate comparison
+		
+			// Create new comparison and populate fields
+			var comparison = new Comparison.RateComparison();
+			user.addComparison( comparison );
+			
+		}
+		
+	  });
     }
     
   });
 
 };
+
+var debugUser = function() {
+	eyes.inspect( user );
+}
+
 
 module.exports = userLogin;
