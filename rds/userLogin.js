@@ -57,9 +57,9 @@ var validateLogin = function( username, password, callback ) {
         // in the database
         if( rows[0].Password == password ) {
 			
-		  // Set up the user information
-		  user.setId( rows[0].ID );
-		  user.setUserName( rows[0].Username );
+          // Set up the user information
+	  user.setId( rows[0].ID );
+    	  user.setUserName( rows[0].Username );
           user.setPassword( rows[0].Password );
           user.setEmail( rows[0].Email );
           user.setAdmin( rows[0].IsAdmin );
@@ -114,51 +114,100 @@ var populateModels = function( err, userID ) {
 		// If usage comparison
         if( true ) {
 			
-		  // Create new comparison and populate fields
-	      var comparison = new Comparison.UsageComparison();
-		  user.addComparison( comparison );
+	  // Create new comparison and populate fields
+	  var comparison = new Comparison.UsageComparison();
+          user.addComparison( comparison );
           comparison.setId( item.ID );
           comparison.setDescription( "Not set up yet!" );
           
-		  // SQL query
+    	  // SQL query
           var selectPricingModels = 'SELECT RateType, Name, Country, City ' +
                                     'FROM PricingModel LEFT OUTER JOIN LDC ' +
                                     'ON LDCID=LDC.ID ' +
                                     'WHERE PricingModel.ID=' + item.PricingModelID;
 
-		  // Get pricing model for comparison
+    	  // Get pricing model for comparison
           connection.query( selectPricingModels, function( err, rows, fields ) {
 			
-		    if( err ) {
+    	    if( err ) {
 			  
-			  // Log database errors
-			  console.log( err );
-			  throw err;
+    	      // Log database errors
+	      console.log( err );
+	      throw err;
 			  
-		    } else {
+	      } else {
 			  
-			  // Populate pricing model fields
-		      var pm = new PricingModel();	
-              pm.setLDC( rows[0].Name );
-              pm.setRateType( rows[0].RateType );
-              pm.setCountry( rows[0].Country );
-              pm.setCity( rows[0].City );
-			  comparison.setPricingModel( pm );
-			  debugUser();
+                // Populate pricing model fields
+		var pm = new PricingModel();	
+                pm.setLDC( rows[0].Name );
+                pm.setRateType( rows[0].RateType );
+                pm.setCountry( rows[0].Country );
+                pm.setCity( rows[0].City );
+		comparison.setPricingModel( pm );
   
-		    }
+	      }
 		  
-		  });
+    	   });
 		  
-		} else { // If rate comparison
+         } else { // If rate comparison
 		
-			// Create new comparison and populate fields
-			var comparison = new Comparison.RateComparison();
-			user.addComparison( comparison );
+           // Create new comparison and populate fields
+           var comparison = new Comparison.RateComparison();
+	   user.addComparison( comparison );
+           comparison.setId( item.ID );
+           comparison.setDescription( "Not set up yet!" );
 			
-		}
+           // SQL query
+           var selectEnergyUsage = 'SELECT Time, Consumption, Demand, Cost ' +
+                                   'FROM EnergyUsage WHERE ID=' + item.ID;
+
+           // Get Energy Usage model for comparison
+           connection.query( selectEnergyUsage, function( err, rows, fields ) {
+             
+             if( err ) {
+
+               // Log database errors
+               console.log( err );
+               throw err;
+
+             } else {
+               
+               var ub = new UsageBundle();
+               var eu = new EnergyUsage();
+
+               rows.forEach( function( item ) {
+
+                 // Populate energy usage fields
+                 var con  = null;
+                 var dem  = null;
+
+                 // If this is a consupmtion
+                 if( item.Consumption != null ) {
+
+                   con = new Consumption();
+                   con.setPoint( item.Time, item.Consumption );
+                   eu.setConsumption( con );
+
+                 }
+
+                 // If this is a demand
+                 if( item.Demand != null ) {
+
+                   dem = new Demand();
+                   dem.setPoint( item.Time, item.Demand );
+                   eu.setDemand( dem );
+
+                 }
+
+               });
+
+             }
+             
+           });
+
+	 }
 		
-	  });
+       });
     }
     
   });
