@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="comparisonPage" lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,8 @@
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+	<script src="controllers/comparisonController.js"></script>
     
     <script>
       function showCharts() {
@@ -63,7 +65,7 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container" ng-controller="comparisonController">
   <div class="row" >
     <!--This is the rate type selection menu -->
     <div class="col-sm-4 panel addPadding" style="box-shadow: 0 0 10px grey;">
@@ -71,20 +73,19 @@
         <div class="form-group">
         <label class="col-xs-6 control-label">Country</label>
           <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="size" style="font-size: 20px;">
-              <option value="cad">Canada</option>
-              <option value="usa">United States</option>
+            <select class="form-control" name="size" style="font-size: 20px;" 
+					ng-model="countrySelect" ng-change="countrySelectChange()">
+              <option ng-repeat="country in countryList" value="{{country}}" >{{country}}</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-        <label class="col-xs-6 control-label">Region</label>
+        <label class="col-xs-6 control-label">City</label>
           <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="color" style="font-size: 20px;">
-              <option value="">Toronto</option>
-              <option value="">Hamilton</option>
-              <option value="">Vancouver</option>
+           <select class="form-control" name="size" style="font-size: 20px;" 
+					ng-model="citySelect" ng-change="citySelectChange()">
+              <option ng-repeat="city in cityList" value="{{city}}" >{{city}}</option>
             </select>
           </div>
         </div>
@@ -92,10 +93,9 @@
         <div class="form-group">
         <label class="col-xs-6 control-label">Local Distribution Company</label>
           <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="color" style="font-size: 20px;">
-              <option value="">Hydro One</option>
-              <option value="">The Best Energy</option>
-              <option value="">Kill me now</option>
+            <select class="form-control" name="size" style="font-size: 20px;" 
+					ng-model="ldcSelect" ng-change="ldcSelectChange()">
+              <option ng-repeat="ldc in ldcList" value="{{ldc}}" >{{ldc}}</option>
             </select>
           </div>
         </div>
@@ -103,9 +103,9 @@
         <div class="form-group">
         <label class="col-xs-6 control-label">Rate Types</label>
           <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="color" style="font-size: 20px;">
-              <option value="">Tiered</option>
-              <option value="">Time of Use</option>
+            <select class="form-control" name="size" style="font-size: 20px;" 
+					ng-model="rateSelect" ng-change="rateSelectChange()">
+              <option ng-repeat="rate in rateList" value="{{rate}}" >{{rate}}</option>
             </select>
           </div>
         </div>
