@@ -65,7 +65,7 @@ var validateLogin = function( username, password, callback ) {
           user.setAdmin( rows[0].IsAdmin );
 
           // Populate the models
-          callback( null, user.getId() );
+          callback( null, rows[0].ID );
 
         } else {
 
@@ -94,7 +94,7 @@ var validateLogin = function( username, password, callback ) {
 var populateModels = function( err, userID ) {
 
   //SQL query
-  var selectComparisons = 'SELECT ID, PricingModelID, EnergyUsageID ' +
+  var selectComparisons = 'SELECT * ' +
                           'FROM Comparison WHERE UserID=' + userID;
 
   // Get all comparisons for user
@@ -111,19 +111,21 @@ var populateModels = function( err, userID ) {
       // Iterate through each user comparison	
       rows.forEach( function( item ) {
 		
-		// If usage comparison
-        if( true ) {
+        // If usage comparison
+        if( item.ComparisonType ) {
 			
 	  // Create new comparison and populate fields
 	  var comparison = new Comparison.UsageComparison();
           user.addComparison( comparison );
           comparison.setId( item.ID );
-          comparison.setDescription( "Not set up yet!" );
+          comparison.setDescription( item.Name );
           
     	  // SQL query
-          var selectPricingModels = 'SELECT RateType, Name, Country, City ' +
+          var selectPricingModels = 'SELECT RateType.Name as RateName, LDC.Name as LDCName, Country.Name as CountryName, City.Name as CityName ' +
                                     'FROM PricingModel LEFT OUTER JOIN LDC ' +
-                                    'ON LDCID=LDC.ID ' +
+                                    'ON LDCID=LDC.ID LEFT OUTER JOIN COUNTRY ' +
+                                    'ON LDC.CountryID=Country.ID LEFT OUTER JOIN ' +
+                                    'ON LDC.CityID=City.City.ID ' +
                                     'WHERE PricingModel.ID=' + item.PricingModelID;
 
     	  // Get pricing model for comparison
@@ -139,27 +141,124 @@ var populateModels = function( err, userID ) {
 			  
                 // Populate pricing model fields
 		var pm = new PricingModel();	
-                pm.setLDC( rows[0].Name );
-                pm.setRateType( rows[0].RateType );
-                pm.setCountry( rows[0].Country );
-                pm.setCity( rows[0].City );
+                pm.setLDC( rows[0].LDCName );
+                pm.setRateType( rows[0].RateName );
+                pm.setCountry( rows[0].CountryName );
+                pm.setCity( rows[0].CityName );
 		comparison.setPricingModel( pm );
   
 	      }
 		  
     	   });
-		  
+
+           // SQL query
+           var selectUsageBundle = 'SELECT ID, CostID, EnergyUsageID' +
+                                   'FROM UsageBundle ' +
+                                   'WHERE UsageBundle.ID=' + item.UsageBundleID;
+
+           // Get usage bundle model for comparison
+           connection.query( selectUsageBundle, function( err, rows, fields ) {
+
+             if( err ) {
+
+               console.log( err );
+               throw err;
+
+             } else {
+
+               row.forEach( function( item ) {
+
+                 var ub = new UsageBundle();
+                 ub.setId( item.ID );
+
+                 var selectEnergyUsage = 'SELECT Time, Consumption, Demand ' +
+                                         'FROM EnergyUsage ' +
+                                         'WHERE ID=' + item.EnergyUsageID;
+
+                 connection.query( selectEnergyUsage , function( err, rows, fields ) {
+
+                   if( err ) {
+
+                     console.log( err );
+                     throw err;
+
+                   } else {
+
+                     var eu = new EnergyUsage();
+                     ub.setEnergyUsage( eu );
+
+                     row.forEach( function( item ) {
+
+                       // Populate energy usage fields
+                       var con  = null;
+                       var dem  = null;
+
+                       // If this is a consupmtion
+                       if( item.Consumption != null ) {
+
+                         con = new Consumption();
+                         con.setPoint( item.Time, item.Consumption );
+                         ub.setConsumption( con );
+
+                       }
+
+                       // If this is a demand
+                       if( item.Demand != null ) {
+
+                         dem = new Demand();
+                         dem.setPoint( item.Time, item.Demand );
+                         ub.setDemand( dem );
+
+                       }
+
+                     });
+
+                   }
+
+                 });
+
+                 var selectCost = 'SELECT Time, Cost' +
+                                  'FROM Cost' +
+                                  'WHERE ID=' + item.CostID;
+
+                 connection.query( selectCost, function( err, rows, fields ) {
+
+                 if( err ) {
+
+                   console.log( err );
+                   throw err;
+
+                 } else {
+
+                   rows.forEach( function( item ) {
+
+                     var cost = new Cost();
+                     cost.setPoint( item.Time, item.Cost );
+                     ub.addCost( cost );
+
+                   });
+
+                 }
+
+               });
+
+             });
+
+             }
+
+           });
+    	  
          } else { // If rate comparison
 		
            // Create new comparison and populate fields
            var comparison = new Comparison.RateComparison();
 	   user.addComparison( comparison );
            comparison.setId( item.ID );
-           comparison.setDescription( "Not set up yet!" );
+           comparison.setDescription( item.Name );
 			
            // SQL query
-           var selectEnergyUsage = 'SELECT Time, Consumption, Demand, Cost ' +
-                                   'FROM EnergyUsage WHERE ID=' + item.ID;
+           var selectEnergyUsage = 'SELECT Time, Consumption, Demand ' +
+                                   'FROM EnergyUsage WHERE ID=' + item.EnergyUsageID;
 
            // Get Energy Usage model for comparison
            connection.query( selectEnergyUsage, function( err, rows, fields ) {
@@ -172,8 +271,8 @@ var populateModels = function( err, userID ) {
 
              } else {
                
-               var ub = new UsageBundle();
                var eu = new EnergyUsage();
+               comparison.setEnergyUsage( eu );
 
                rows.forEach( function( item ) {
 
@@ -203,6 +302,85 @@ var populateModels = function( err, userID ) {
 
              }
              
+           });
+
+           var selectRateBundle = 'SELECT * ' +
+                                  'FROM RateBundle ' +
+                                  'WHERE RateBundle.ID=' + item.RateBundleID;
+
+           connection.query( selectRateBundle, function( err, rows, fields ) {
+
+             if( err ) {
+
+               // Log database errors
+               console.log( err );
+               throw err;
+
+             } else {
+
+               rows.forEach( function( item ) {
+
+                 var rb = new RateBundle();
+                 rb.setId( item.ID );
+                 
+                 var selectPricingModels = 'SELECT RateType.Name as RateName, LDC.Name as LDCName, Country.Name as CountryName, City.Name as CityName ' +
+                                           'FROM PricingModel LEFT OUTER JOIN LDC ' +
+                                           'ON LDCID=LDC.ID LEFT OUTER JOIN COUNTRY ' +
+                                           'ON LDC.CountryID=Country.ID LEFT OUTER JOIN ' +
+                                           'ON LDC.CityID=City.City.ID ' +
+                                           'WHERE PricingModel.ID=' + item.PricingModelID;
+
+                 connection.query( selectPricingModels, function( err, rows, fields ) {
+
+                   if( err ) {
+                              
+                     // Log database errors
+                     console.log( err );
+                     throw err;
+                              
+                   } else {
+                              
+                     // Populate pricing model fields
+                     var pm = new PricingModel();	
+                     pm.setLDC( rows[0].LDCName );
+                     pm.setRateType( rows[0].RateName );
+                     pm.setCountry( rows[0].CountryName );
+                     pm.setCity( rows[0].CityName );
+                     comparison.setPricingModel( pm );
+      
+                   }
+
+                 });
+                 
+                 var selectCost = 'SELECT Time, Cost' +
+                                  'FROM Cost' +
+                                  'WHERE ID=' + item.CostID;
+
+                 connection.query( selectCost, function( err, rows, fields ) {
+
+                   if( err ) {
+
+                     console.log( err );
+                     throw err;
+
+                   } else {
+
+                     rows.forEach( function( item ) {
+
+                       var cost = new Cost();
+                       cost.setPoint( item.Time, item.Cost );
+                       ub.addCost( cost );
+
+                     });
+
+                   }
+
+                 });
+
+               });
+
+             }
+
            });
 
 	 }
