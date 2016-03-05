@@ -17,6 +17,11 @@ html {
   min-height: 100%;
 }
 
+.mainPageFont {
+  font-family: "Railway";
+  font-size: 30px;
+}
+
 .carousel-fade .carousel-inner .item {
   opacity: 0;
   transition-property: opacity;
@@ -66,7 +71,7 @@ html {
 }
 
 .item:nth-child(1) {
-  background: url(../images/gogreen.jpg) no-repeat center center fixed;
+  background: url(../images/saveEnergy.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -74,7 +79,7 @@ html {
 }
 
 .item:nth-child(2) {
-  background: url(../images/Green.jpg) no-repeat center center fixed;
+  background: url(../images/greenEnergy.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -82,7 +87,7 @@ html {
 }
 
 .item:nth-child(3) {
-  background: url(../images/saveEnergy.jpg) no-repeat center center fixed;
+  background: url(../images/winterHouse.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -114,14 +119,32 @@ This code to vertically center anything you put this tag into
 
 
 /*
-This is for the navbar to get rid of the space under it
+This is for the navbar stuff
 */
-.navbar {
+.navbar  {
   position: absolute;
   margin-bottom: 0;
   width:100%;
+  color: #FFF;
+  background: rgba(0,0,0,0.5);
+}
+.navbar-header {
+    float: left;
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+}
+.navbar-brand {float:none;}
+
+.navbar .navbar-nav {
+  display: inline-block;
+  float: none;
+  vertical-align: top;
 }
 
+.navbar .navbar-collapse {
+  text-align: center;
+}
 /*
 This is for the CSV input window
 */
@@ -270,3 +293,6 @@ Sidebar stuff
 .addPadding{ 
     margin:10px;  
 }
+
+
+
