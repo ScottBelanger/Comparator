@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/responsiveCSSStyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
@@ -13,29 +14,29 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 	<script src="controllers/formController.js"></script>
   </head>
-<body style="background-color: #CDCDCD">
+<body>
 
 <!-- Creating the header bar -->
-<nav class="navbar navbar-default" style="background-color: #FFFFFF">
+<nav class="navbar" style="position:absolute">
   <div class="container-fluid">
   <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#" style="font-size:30px">Residential Comparator</a>
+      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
+      <script type="text/javascript">
+      document.getElementById("homePage").onclick = function () {
+        location.href = "http://localhost:3000";
+      };
+      </script>
     </div>
-
+    
+    
     <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Home</a></li>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav" style="float:none">
+        <li><a href="#" style="color: #ffffff; font-size:25px">Home</a></li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px">Your Profile<span class="caret"></span></a>
+          <ul class="dropdown-menu" style="font-size:25px">
             <li><a href="#">Action</a></li>
             <li><a href="#">Another action</a></li>
             <li><a href="#">Something else here</a></li>
@@ -44,111 +45,137 @@
           </ul>
         </li>
       </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-
-<div class="container-fluid panel" style="max-width:80%; box-shadow: 0 0 20px black; background-color: #545454; padding-top:40px">
-
-<div class="container" >
-  <div class="row" style="padding-top:55px">
-    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
-      <h1>Welcome to the residential page. Easily calculate and manipulate energy prices!</h1>
+    </div>
     </div>
   </div>
+</nav>
+
+<div class="container-fluid " style="max-width:60%; box-shadow: 0 0 30px black; background-color: #00001a;">
+<!--Create the fade style background -->
+<div class="carousel slide carousel-fade" data-ride="carousel">
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+      <div class="item active">
+      </div>
+    </div>
+
 </div>
 
-<div class="container" ng-controller="formController">
-  <div class="row" >
-    <!--This is the rate type selection menu -->
-    <div class="col-sm-4 panel addPadding" style="box-shadow: 0 0 10px grey;">
-      <form id="ldcForm" class="form-horizontal" style="margin-top: 10px; font-size: 20px; background-color: #FFFFFF;">
-        <div class="form-group">
-        <label class="col-xs-6 control-label">Country</label>
-          <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="size" style="font-size: 20px;" 
-					ng-model="countrySelect" ng-change="countrySelectChange()">
-              <option ng-repeat="option in countryList" value="{{option.country}}" >{{option.country}}</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-        <label class="col-xs-6 control-label">City</label>
-          <div class="col-xs-6 selectContainer">
-           <select class="form-control" name="size" style="font-size: 20px;" 
-					ng-model="citySelect" ng-change="citySelectChange()">
-              <option ng-repeat="option in cityList" value="{{option.city}}" >{{option.city}}</option>
-            </select>
-          </div>
-        </div>
-  
-        <div class="form-group">
-        <label class="col-xs-6 control-label">Local Distribution Company</label>
-          <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="size" style="font-size: 20px;" 
-					ng-model="ldcSelect" ng-change="ldcSelectChange()">
-              <option ng-repeat="option in ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
-            </select>
-          </div>
-        </div>
-  
-        <div class="form-group">
-        <label class="col-xs-6 control-label">Rate Types</label>
-          <div class="col-xs-6 selectContainer">
-            <select class="form-control" name="size" style="font-size: 20px;" 
-					ng-model="rateSelect" ng-change="rateSelectChange()">
-              <option ng-repeat="option in rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
-            </select>
-          </div>
-        </div>
-        <button type="button" ng-click="calculateCost()">Calculate Cost</button>
-      </form>
+<div class="container-fluid">
+  <div class="row-fluid" style="padding-top:15%">
+  <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+    <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+      <div class="panel-title" style="text-align:center">
+        <h1 style="color: #ffffff">Start by inputting some data!</h1>
+      </div>
     </div>
-    
-    <!-- These are the buttons -->
-    <div class="col-sm-3 panel addPadding" style="box-shadow: 0 0 10px grey;">
-      <form id="ldcForm" class="form-horizontal" style="margin-top: 10px; font-size: 20px; background-color: #FFFFFF;">
-        <div class="form-group">
-          <button type="button">Connect Green Button Data</button>
-        </div>
+</div>
 
-        <div class="form-group">
-          <button type="button">Download CSV Template</button>
-        </div>
-  
-        <div class="form-group">
-          <button type="button">Enter Data Manually</button>
-        </div>
-  
-        <div class="form-group">
-          <button type="button"" data-toggle="modal" data-target="#myModal">Upload CSV File</button>
-
-          <div id="myModal" class="modal fade" role="dialog" style="font-size: 20px;">>
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload!</h4>
-                </div>
-                <input type="file" style="width:100%">
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-              </div>
+<div class="panel" align="center">
+  <div class="row">
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-file"></span>Download CSV</a>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#manualTable"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
+      <div id="manualTable" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              Please enter all of the required data!
+            </div>
+            <div class="modal-body">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </form>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-arrow-up"></span>Upload CSV</a>
+      <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload!</h4>
+            </div>
+            <input type="file" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!--This is hiCharts Energy Consumption Graph-->
 <div class="container">
+  <div class="row" style="padding-top:3%">
+  <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+    <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+      <div class="panel-title" style="text-align:center">
+        <h1 style="color: #ffffff">Select a rate type!</h1>
+      </div>
+    </div>
+</div>
+
+<div class="container" ng-controller="formController">
+  <div class="row" style="padding-bottom:5%">
+    <div class="col-md-3" style="text-align:center">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">Country</label>
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="countrySelect" ng-change="countrySelectChange()">
+            <option ng-repeat="option in countryList" value="{{option.country}}" >{{option.country}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">Region</label>
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="citySelect" ng-change="citySelectChange()">
+            <option ng-repeat="option in cityList" value="{{option.city}}" >{{option.city}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">LDC</label>
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="ldcSelect" ng-change="ldcSelectChange()">
+            <option ng-repeat="option in ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">Rate Types</label>
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="rateSelect" ng-change="rateSelectChange()">
+            <option ng-repeat="option in rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="text-align:center" ng-controller="formController">
+  <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="calculateCost()"><span class="glyphicon glyphicon-check"></span>Submit</a>
+</div>
+
+<!--This is hiCharts Energy Consumption Graph-->
+<div class="container" style="padding-top: 4%">
   <div class="row" >
-    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
+    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
       </div>
       
@@ -192,7 +219,7 @@
 <!--This is hiCharts Time Cost Graph-->
 <div class="container">
   <div class="row" >
-    <div class="col-sm-12 panel addPadding" style="box-shadow: 0 0 10px grey;">
+    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="TimeCostGraph" style="height: 400px; font-size:15px;">
       </div>
       
@@ -236,7 +263,7 @@
 </div>
 
  <!-- Site footer -->
-<div class="bottom" style="background-color: #FFFFFF">
+<div class="bottom" style=" color: #ffffff;">
   <div class="container">
     <div class="col-md-4">
       <h3><span class="glyphicon glyphicon-info-sign"></span>About Us</h3>
@@ -245,9 +272,10 @@
       <h3><span class="glyphicon glyphicon-lock"></span>Privacy Information</h3>
     </div>
     <div class="col-md-4">
-      <h3><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</h3>
+      <h3><span class="glyphicon glyphicon-list-alt" ></span>Terms and Conditions</h3>
     </div>
   </div>
 </div>
+
 </body>
 </html>
