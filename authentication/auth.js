@@ -18,10 +18,16 @@ var userLogin = function( req, res, next ) {
   hash.update( req.body.password );
 
   // Validate login info and populate model
-  validateLogin( req.body.username, hash.digest('hex'), populateModels );
+  validateLogin( req.body.username, hash.digest('hex'), function( usr ) {
+    populateModels( usr, function( err, usr ) {
+      res.mydata = usr;
+      
+      // Move to next middleware
+      next();
+    });
 
-  // Move to next middleware
-  next();
+  });
+
 };
 
 /* validateLogin will validate provided login credentials against
@@ -62,9 +68,7 @@ var validateLogin = function( username, password, callback ) {
           user.setAdmin( rows[0].IsAdmin );
 
           // Populate the models
-          callback( user,  function( err, usr, cnt ) {
-            eyes.inspect( usr );
-          });
+          return callback( user );
 
         } else {
 

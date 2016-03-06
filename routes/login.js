@@ -8,6 +8,7 @@ var router    = express.Router();
  * Currently not sure what to do when user is logged in
  */
 router.post('/',  userLogin, function(req, res, next) {
+  res.send( JSON.stringify(res.mydata) );
 });
 
 module.exports = router;
