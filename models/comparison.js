@@ -49,6 +49,10 @@ RateComparison.prototype.addRateBundle = function( rateBundle ) {
   this.rateBundle.push( rateBundle );
 };
 
+RateComparison.prototype.setRateBundleArr = function( rateBundleArr ) {
+  this.rateBundle = rateBundleArr;
+};
+
 RateComparison.prototype.getAllRateBundle = function() {
   return this.rateBundle;
 };
@@ -72,6 +76,10 @@ UsageComparison.prototype.getPricingModel= function() {
 
 UsageComparison.prototype.addUsageBundle = function( usageBundle ) {
   this.usageBundle.push( usageBundle );
+};
+
+UsageComparison.prototype.setUsageBundleArr = function( usageBundleArr ) {
+  this.usageBundle = usageBundleArr;
 };
 
 UsageComparison.prototype.getAllUsageBundle = function() {

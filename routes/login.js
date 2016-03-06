@@ -1,6 +1,6 @@
 // ===== Module imports =====
 var express   = require('express');
-var userLogin = require('../rds/userLogin');
+var userLogin = require('../authentication/auth');
 var router    = express.Router();
 
 /* POST login page.
