@@ -73,8 +73,23 @@
           <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span> 
           <input id="login-password" type="password" class="form-control" name="password" placeholder="password" style="font-size:20px">
         </div> 
-        <a id="btn-login" href="#" class="btn btn-success" align="right" style="font-size: 25px; margin-bottom:5px;">Login </a>
-        
+        <button id="btn-login" class="btn btn-success" align="right" style="font-size: 25px; margin-bottom:5px;">Login </button>
+        <script type="text/javascript">
+          $(document).ready(function() {
+            $("#btn-login").click( function() {
+              var username = $("#login-username").val(); 
+              var password = $("#login-password").val();
+
+              $.ajax({
+                  type: 'POST',
+                  url: '/login',
+                  data: { username: username, password: password }
+                  }).done(function(data){
+                    console.log(data);
+                  });
+            });
+          });
+        </script>
         <div style="position:relative; font-size: 30px; display:inline-block;"><a href="#">Forgot password?</a>
         <a href="#" id="manualEnter" style="font-size:30px; display:inline-block; " data-toggle="modal" data-target="#manualTable">Sign Up</a>
           <div id="manualTable" class="modal fade" role="dialog" style="font-size: 20px;">>
@@ -92,32 +107,53 @@
                     <div class="form-group">
                       <label for="username" class="col-md-3 control-label">Username</label>
                       <div class="col-md-9">
-                        <input type="text" class="form-control" name="firstname" placeholder="Username">
+                        <input id="signup-username" type="text" class="form-control" name="firstname" placeholder="Username">
                       </div>
                     </div>
                     <div class="form-group">
                       <label for="email" class="col-md-3 control-label">Email</label>
                       <div class="col-md-9">
-                        <input type="text" class="form-control" name="email" placeholder="Email Address">
+                        <input id="signup-email" type="text" class="form-control" name="email" placeholder="Email Address">
                       </div>
                     </div>
                     <div class="form-group">
                       <label for="password" class="col-md-3 control-label">Password</label>
                       <div class="col-md-9">
-                        <input type="password" class="form-control" name="passwd" placeholder="Password">
+                        <input id="signup-password" type="password" class="form-control" name="passwd" placeholder="Password">
                       </div>
                     </div>
                     <div class="form-group">
                       <label for="password" class="col-md-3 control-label">Re-Enter Password</label>
                       <div class="col-md-9">
-                        <input type="password" class="form-control" name="repasswd" placeholder="Password">
+                        <input id="signup-repasswd" type="password" class="form-control" name="repasswd" placeholder="Password">
                       </div>
                     </div>
                   </form>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Sign Up</button>
+                  <button id="signup-button" type="button" class="btn btn-default" data-dismiss="modal">Sign Up</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                        $("#signup-button").click(function(){
+                          var signupusername = $("#signup-username").val();
+                          var signupemail = $("#signup-email").val();
+                          var signuppassword = $("#signup-password").val();
+                          var signuprepasswd = $("#signup-repasswd").val();
+
+                          $.ajax({
+                              type: 'POST',
+                              url: '/signup',
+                              data: { username: signupusername, 
+                                      password: signuppassword,
+                                      email: signupemail,
+                                      repasswd: signuprepasswd}
+                          }).done(function(data){
+                            console.log(data);
+                          });
+                        });
+                    });
+                  </script>
                 </div>
               </div>
             </div>

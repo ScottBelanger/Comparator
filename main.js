@@ -8,8 +8,7 @@ var bodyParser   = require('body-parser');
 var eyes         = require('eyes');
 
 // ===== Routes =====
-var index = require('./routes/index');
-var login = require('./routes/login');
+var routes = require('./routes/routes');
 
 
 // view engine setup
@@ -32,8 +31,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // html stored in /publ
 app.disable('etag');
 
 // ===== Connect routes to express =====
-app.use('/', index);      // index routes
-app.use('/login', login); // login routes
+app.use('/', routes);      // routes
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
