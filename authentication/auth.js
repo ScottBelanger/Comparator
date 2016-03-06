@@ -19,11 +19,14 @@ var userLogin = function( req, res, next ) {
 
   // Validate login info and populate model
   validateLogin( req.body.username, hash.digest('hex'), function( usr ) {
+
     populateModels( usr, function( err, usr ) {
+
       res.mydata = usr;
       
       // Move to next middleware
       next();
+
     });
 
   });

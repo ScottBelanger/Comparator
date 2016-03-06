@@ -28,9 +28,7 @@ var populateModels = function( user, callback ) {
 
   // Get all of the user's comparisons
   getComparisons( function( err, usr, cnt ) {
-    setTimeout(function() {
       callback( err, usr );
-    }, 1000 );
   });
 
 };
@@ -63,33 +61,44 @@ var getComparisons = function ( callback ) {
 
           getUsageComparison( item, function( err, uc ) {
             gUser.addComparison( uc );
+            comparisonCount++;
+            // If no more comparisons
+            if( comparisonCount == array.length ) {
+
+              if( typeof callback === "function" ) {
+
+                callback( err, gUser, comparisonCount );
+
+              }
+
+            }
           });
     	  
         } else { // If rate comparison
 		
           getRateComparison( item, function( err, rc ) {
             gUser.addComparison( rc );
+            comparisonCount++;
+            // If no more comparisons
+            if( comparisonCount == array.length ) {
+
+              if( typeof callback === "function" ) {
+
+                callback( err, gUser, comparisonCount );
+
+              }
+
+            }
           });
 
         }
 
-        comparisonCount++;
-        
-        // If no more comparisons
-        if( comparisonCount == array.length ) {
-
-          if( typeof callback === "function" ) {
-
-            return callback( err, gUser, comparisonCount );
-
-          }
-
-        }
-		
       });
+
     }
 
   });
+
 };
 
 var getUsageComparison = function( comparison, callback ) {
@@ -108,7 +117,7 @@ var getUsageComparison = function( comparison, callback ) {
 
       if( typeof callback === "function" ) {
 
-        return callback( null, uc );
+         callback( null, uc );
 
       }
 
@@ -135,7 +144,7 @@ var getRateComparison = function( comparison, callback ) {
 
       if( typeof callback == "function" ) {
 
-        return callback( null, rc );
+         callback( null, rc );
 
       }
 
@@ -176,7 +185,7 @@ var getPricingModel = function( pricingModelId, callback ) {
 
       if( typeof callback === "function" ) {
 
-        return callback( err, pm );
+         callback( err, pm );
 
       }
 
@@ -205,7 +214,8 @@ var getRateBundles = function( rateBundleID, callback ) {
     } else {
 
       var rbArr = [];
-      var rbCount = 0;
+      var pmCount = 0;
+      var costCount = 0;
 
       rows.forEach( function( item, index, array ) {
 
@@ -215,24 +225,39 @@ var getRateBundles = function( rateBundleID, callback ) {
         rb.setId( item.ID );
        
         getPricingModel( item.PricingModelID, function( err, pm ) {
+
+          pmCount++;
           rb.setPricingModel( pm );
-        });
 
-        getCost( item.CostID, function( err, costArr, count ) {
-          rb.setCostArr( costArr );
-        });
+          if( costCount == array.length && pmCount == array.length ) {
 
-        rbCount++;
+            if( typeof callback == "function" ) {
 
-        if( rbCount == array.length ) {
+              callback( err, rbArr );
 
-          if( typeof callback === "function" ) {
-
-            return callback( err, rbArr, rbCount );
+            }
 
           }
 
-        }
+        });
+
+        getCost( item.CostID, function( err, costArr, count ) {
+
+          costCount++;
+
+          rb.setCostArr( costArr );
+
+          if( costCount == array.length && pmCount == array.length ) {
+
+            if( typeof callback == "function" ) {
+
+              callback( err, rbArr );
+
+            }
+
+          }
+
+        });
 
       });
 
@@ -260,7 +285,8 @@ var getUsageBundles = function( usageBundleID, callback ) {
     } else {
 
       var ubArr = [];
-      var ubCount = 0;
+      var euCount = 0;
+      var costCount = 0;
 
       rows.forEach( function( item, index, array ) {
 
@@ -270,23 +296,37 @@ var getUsageBundles = function( usageBundleID, callback ) {
         ub.setId( item.ID );
 
         getEnergyUsage( item.EnergyUsageID, function( err, eu, count ) {
+
           ub.setEnergyUsage( eu );
+          euCount++;
+
+          if( euCount == array.length && costCount == array.length ) {
+
+            if( typeof callback == "function" ) {
+
+              callback( err, ubArr );
+
+            }
+
+          }
+
         });
 
         getCost( item.CostID, function( err, costArr, count ) {
+
           ub.setCostArr( costArr );
-        });
+          costCount++;
+          if( euCount == array.length && costCount == array.length ) {
 
-        ubCount++;
+            if( typeof callback == "function" ) {
 
-        if( ubCount == array.length ) {
+              callback( err, ubArr );
 
-          if( typeof callback === "function" ) {
+            }
 
-            return callback( err, ubArr, ubCount );
           }
-
-        }
+          
+        });
 
       });
 
@@ -347,7 +387,7 @@ var getEnergyUsage = function( energyUsageID, callback ) {
 
         if( energyUsageCount == array.length ) {
 
-          return callback( err, eu, energyUsageCount );
+           callback( err, eu, energyUsageCount );
 
         }
 
@@ -393,7 +433,7 @@ var getCost = function( costID, callback ) {
 
           if( typeof callback === "function" ) {
 
-            return callback( err, costArr, costCount );
+            callback( err, costArr, costCount );
 
           }
 
