@@ -1,5 +1,10 @@
 angular.module('comparisonPage', [])
-	.controller('comparisonController', function($scope, $http) {
+	.controller('formController', function($scope, $http) {
+		//for local
+		var rateEngineURL = 'http://localhost:3001';
+		//for remote
+		//var rateEngineURL = 'website';
+		
 		$scope.countryList = [];
 		$scope.countrySelect = "";
 		$scope.cityList = [];
@@ -9,7 +14,7 @@ angular.module('comparisonPage', [])
 		$scope.rateList = [];
 		$scope.rateSelect = "";
 		
-		$http.get('/countryList').then(function(result){
+		$http.get(rateEngineURL + '/getLDCCountries').then(function(result){
 			console.log(result);
 			$scope.countryList = result.data;
 		}, function(result){
@@ -25,7 +30,7 @@ angular.module('comparisonPage', [])
 			$scope.rateList = [];
 			$scope.rateSelect = "";
 			
-			$http.get('/cityList', { params: {country: $scope.countrySelect} } ).then(function(result){
+			$http.get(rateEngineURL + '/getCitiesInCountry', { params: {country: $scope.countrySelect} } ).then(function(result){
 			console.log(result);
 			$scope.cityList = result.data;
 			}, function(result){
@@ -40,7 +45,7 @@ angular.module('comparisonPage', [])
 			$scope.rateList = [];
 			$scope.rateSelect = "";
 			
-			$http.get('/ldcList', { params: {city: $scope.citySelect} } ).then(function(result){
+			$http.get(rateEngineURL + '/getLDCsInCity', { params: {city: $scope.citySelect} } ).then(function(result){
 			console.log(result);
 			$scope.ldcList = result.data;
 			}, function(result){
@@ -53,8 +58,8 @@ angular.module('comparisonPage', [])
 			$scope.rateList = [];
 			$scope.rateSelect = "";
 			
-			$http.get('/rateList', { params: {city: $scope.citySelect,
-											  ldc: $scope.ldcSelect} } 
+			$http.get(rateEngineURL + '/getRateTypesFromLDC', { params: {city: $scope.citySelect,
+																	 ldc: $scope.ldcSelect} } 
 			).then(function(result){
 				console.log(result);
 				$scope.rateList = result.data;
@@ -66,4 +71,11 @@ angular.module('comparisonPage', [])
 		$scope.rateSelectChange = function() {
 			console.log($scope.rateSelect);
 		}
+		
+		$scope.calculateCost = function() {
+			console.log("In calculateCost function");
+			
+			//here a call needs to be made to the rate engine with pricing model info and usage info (json)
+		}
+	  
 	});

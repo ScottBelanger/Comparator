@@ -11,14 +11,7 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-	<script src="controllers/comparisonController.js"></script>
-    
-    <script>
-      function showCharts() {
-        document.getElementById("EnergyRateConsumption").style.visibility = "visible";
-        document.getElementById("TimeCostGraph").style.visibility = "visible";
-      }
-    </script>
+	<script src="controllers/formController.js"></script>
   </head>
 <body style="background-color: #CDCDCD">
 
@@ -65,7 +58,7 @@
   </div>
 </div>
 
-<div class="container" ng-controller="comparisonController">
+<div class="container" ng-controller="formController">
   <div class="row" >
     <!--This is the rate type selection menu -->
     <div class="col-sm-4 panel addPadding" style="box-shadow: 0 0 10px grey;">
@@ -75,7 +68,7 @@
           <div class="col-xs-6 selectContainer">
             <select class="form-control" name="size" style="font-size: 20px;" 
 					ng-model="countrySelect" ng-change="countrySelectChange()">
-              <option ng-repeat="country in countryList" value="{{country}}" >{{country}}</option>
+              <option ng-repeat="option in countryList" value="{{option.country}}" >{{option.country}}</option>
             </select>
           </div>
         </div>
@@ -85,7 +78,7 @@
           <div class="col-xs-6 selectContainer">
            <select class="form-control" name="size" style="font-size: 20px;" 
 					ng-model="citySelect" ng-change="citySelectChange()">
-              <option ng-repeat="city in cityList" value="{{city}}" >{{city}}</option>
+              <option ng-repeat="option in cityList" value="{{option.city}}" >{{option.city}}</option>
             </select>
           </div>
         </div>
@@ -95,7 +88,7 @@
           <div class="col-xs-6 selectContainer">
             <select class="form-control" name="size" style="font-size: 20px;" 
 					ng-model="ldcSelect" ng-change="ldcSelectChange()">
-              <option ng-repeat="ldc in ldcList" value="{{ldc}}" >{{ldc}}</option>
+              <option ng-repeat="option in ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
             </select>
           </div>
         </div>
@@ -105,11 +98,11 @@
           <div class="col-xs-6 selectContainer">
             <select class="form-control" name="size" style="font-size: 20px;" 
 					ng-model="rateSelect" ng-change="rateSelectChange()">
-              <option ng-repeat="rate in rateList" value="{{rate}}" >{{rate}}</option>
+              <option ng-repeat="option in rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
             </select>
           </div>
         </div>
-        <button type="button" onclick="showCharts()">Submit</button>
+        <button type="button" ng-click="calculateCost()">Calculate Cost</button>
       </form>
     </div>
     
