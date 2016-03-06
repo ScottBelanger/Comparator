@@ -5,25 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/responsiveCSSStyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     
   </head>
 <body>
-
 <style>
     * {
       font-family: arial;
     }
+    
 </style>
 
-<div class="container-fluid" style="background: rgba(0,0,0,0.5); position:absolute;">
-  <div class="row">
+<!--Create the fade style background -->
+<div class="container-fluid">
+  <div class="carousel slide carousel-fade" data-ride="carousel">
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+        <div class="item active">
+        </div>
+        <div class="item">
+        </div>
+        <div class="item">
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" style="background: rgba(0,0,0,0.5); position:relative; max-width:100%">
+  <div class="row-fluid">
     <div class="col-md-3">
       
     </div>
     <div class="col-md-6">
-      <nav class="navbar" style="position:absolute; margin-top:25px">
+      <nav class="navbar" style="position:relative; margin-top:3%">
         <div class="navbar-header">
           <a class="navbar-brand" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
         </div>
@@ -85,15 +102,15 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label for="password" class="col-md-3 control-label">Re-Enter Password</label>
+                      <label for="password" class="col-md-3 control-label">Password</label>
                       <div class="col-md-9">
                         <input type="password" class="form-control" name="passwd" placeholder="Password">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label for="password" class="col-md-3 control-label">Password</label>
+                      <label for="password" class="col-md-3 control-label">Re-Enter Password</label>
                       <div class="col-md-9">
-                        <input type="password" class="form-control" name="passwd" placeholder="Password">
+                        <input type="password" class="form-control" name="repasswd" placeholder="Password">
                       </div>
                     </div>
                   </form>
@@ -111,24 +128,7 @@
   </div>
 </div>
 
-<!--Create the fade style background -->
-<div class="container-fluid">
-  <div class="carousel slide carousel-fade" data-ride="carousel">
-
-    <!-- Wrapper for slides -->
-    <div class="carousel-inner" role="listbox">
-        <div class="item active">
-        </div>
-        <div class="item">
-        </div>
-        <div class="item">
-        </div>
-    </div>
-  </div>
-</div>
-
-<!--First form: Contains residential and commercial page links -->
-<div class="container" style="padding-top:16%;">
+<div class="container-fluid" style="padding-top:5%; max-width:60%;">
   <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
     <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
       <div class="panel-title" >
@@ -146,7 +146,7 @@
   </div>
 </div>
 
-<div class="container" align="center" style="font-size:40px;">
+<div class="container-fluid" align="center" style="font-size:40px; max-width:60%">
   <div class="row" style="padding-top:10%; padding-bottom:10%">
     <div class="col-sm-6"> 
       <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
