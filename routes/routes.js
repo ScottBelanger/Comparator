@@ -1,5 +1,6 @@
 var express = require('express');
 var userLogin = require('../authentication/auth');
+var userSignup = require('../rds/userSignup');
 var router = express.Router();
 
 /* GET home page. */
@@ -15,7 +16,7 @@ router.post('/login',  userLogin, function(req, res, next) {
   res.send( JSON.stringify(res.mydata) );
 });
 
-router.post('/signup', function(req, res, next) {
+router.post('/signup', userSignup, function(req, res, next) {
   res.send(req.body.username + " " +
            req.body.password + " " +
            req.body.email + " " +
