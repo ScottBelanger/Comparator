@@ -13,6 +13,25 @@
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 	<script src="controllers/formController.js"></script>
+    <script>
+      function showCharts() {
+        document.getElementById("EnergyRateConsumption").style.visibility = "visible";
+        document.getElementById("TimeCostGraph").style.visibility = "visible";
+      }
+    </script>
+    <style type="text/css">
+       a:link {color: none;
+                text-decoration: none;
+                outline:none;}      /* unvisited link */
+       a:visited {color: white;
+                  text-decoration: none;
+                  outline:none;}   /* visited link */
+       a:hover {color: none;
+                text-decoration: none;}     /* mouse over link */
+       a:active {color: none;
+                 text-decoration: none;
+                 outline:none;}    /* selected link */
+    </style>
   </head>
 <body>
 
@@ -72,7 +91,7 @@
     </div>
 </div>
 
-<div class="panel" align="center">
+<div class="container-fluid" align="center">
   <div class="row">
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
@@ -81,17 +100,346 @@
       <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-file"></span>Download CSV</a>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#manualTable"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
-      <div id="manualTable" class="modal fade" role="dialog" style="font-size: 20px;">>
-        <div class="modal-dialog">
+      <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#hourlyTable"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
+      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog" >
           <div class="modal-content">
             <div class="modal-header">
-              Please enter all of the required data!
+              Please enter the hourly data!
             </div>
             <div class="modal-body">
+              <button id="calendar" type="button" class="btn btn-default">Calendar</button>
+              <script>
+              $(document).ready(function () {
+                $("#calendar").jqxCalendar({theme: "arctic", width:250, height:250});
+              });
+              </script>
+              <div>
+                Or select an interval you wish to use:
+              </div>
+              <div>
+                  <a href="#weeklyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Weekly</a>
+                  <a href="#monthlyTable" id="monthly" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Monthly</a>
+              </div>
+              <div class="container-fluid">
+              <form>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">0:00 to 1:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">1:00 to 2:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">2:00 to 3:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">3:00 to 4:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">4:00 to 5:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">5:00 to 6:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">6:00 to 7:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">7:00 to 8:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">8:00 to 9:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">9:00 to 10:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">10:00 to 11:00am </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">11:00 to 12:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">12:00 to 1:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">1:00 to 2:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">2:00 to 3:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">3:00 to 4:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">4:00 to 5:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">5:00 to 6:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">6:00 to 7:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">7:00 to 8:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">8:00 to 9:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">9:00 to 10:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">10:00 to 11:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">11:00 to 12:00pm </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+              </form>
+              </div>
+            </div>
+            <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
+          </div>
+        </div>
+      </div>
+      <div id="weeklyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+          <div class="modal-dialog" >
+            <div class="modal-content">
+              <div class="modal-header">
+                Please enter the weekly data!
+              </div>
+              <div class="modal-body">
+                <div>
+                  Or select an interval you wish to use:
+                </div>
+                <div>
+                  <a href="#hourlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Hourly</a>
+                  <a href="#monthlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Monthly</a>
+                </div>
+                <div class="container-fluid">
+                  <form>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Monday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Tuesday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Wednesday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Thursday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Friday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Saturday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Sunday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div id="monthlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+      <div class="modal-dialog" >
+        <div class="modal-content">
+          <div class="modal-header">
+            Please enter the monthly data!
+          </div>
+          <div class="modal-body">
+            <div>
+              Or select an interval you wish to use:
+            </div>
+            <div>
+              <a href="#hourlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Hourly</a>
+              <a href="#weeklyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Weekly</a>
+            </div>
+            <div class="container-fluid">
+              <form>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">January </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">February </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">March </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">April </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">May </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">June </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">July </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">August </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">September </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">October </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">November </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">December </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -117,17 +465,17 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
   <div class="row" style="padding-top:3%">
   <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
     <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
       <div class="panel-title" style="text-align:center">
-        <h1 style="color: #ffffff">Select a rate type!</h1>
+        <h1 style="color: #ffffff">Select a pricing model!</h1>
       </div>
     </div>
 </div>
 
-<div class="container" ng-controller="formController">
+<div class="container-fluid" ng-controller="formController">
   <div class="row" style="padding-bottom:5%">
     <div class="col-md-3" style="text-align:center">
       <label class="control-label" style="font-size:25px; color: #ffffff;">Country</label>
@@ -139,7 +487,7 @@
       </div>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Region</label>
+      <label class="control-label" style="font-size:25px; color: #ffffff;">City</label>
       <div class="selectContainer">
         <select class="form-control" name="size" style="font-size: 20px;" 
 				ng-model="citySelect" ng-change="citySelectChange()">
@@ -168,12 +516,12 @@
   </div>
 </div>
 
-<div class="container" style="text-align:center" ng-controller="formController">
+<div class="container-fluid" style="text-align:center" ng-controller="formController">
   <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="calculateCost()"><span class="glyphicon glyphicon-check"></span>Submit</a>
 </div>
 
 <!--This is hiCharts Energy Consumption Graph-->
-<div class="container" style="padding-top: 4%">
+<div class="container-fluid" style="padding-top: 4%">
   <div class="row" >
     <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
@@ -217,7 +565,7 @@
 </div>
 
 <!--This is hiCharts Time Cost Graph-->
-<div class="container">
+<div class="container-fluid">
   <div class="row" >
     <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="TimeCostGraph" style="height: 400px; font-size:15px;">
