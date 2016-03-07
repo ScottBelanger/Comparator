@@ -290,7 +290,7 @@ var getRateComparison = function( comparisonRow, comparison, callback ) {
         throw err;
 
       } else {
-        uc.addRateBundle( rb );
+        rc.addRateBundle( rb );
 
         if( typeof callback == "function" ) {
 
