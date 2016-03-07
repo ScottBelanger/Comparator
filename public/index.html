@@ -15,7 +15,17 @@
     * {
       font-family: arial;
     }
-    
+   a:link {color: none;
+            text-decoration: none;
+            outline:none;}      /* unvisited link */
+   a:visited {color: white;
+              text-decoration: none;
+              outline:none;}   /* visited link */
+   a:hover {color: none;
+            text-decoration: none;}     /* mouse over link */
+   a:active {color: none;
+             text-decoration: none;
+             outline:none;}    /* selected link */
 </style>
 
 <!--Create the fade style background -->
@@ -24,12 +34,12 @@
 
     <!-- Wrapper for slides -->
     <div class="carousel-inner" role="listbox">
-        <div class="item active">
-        </div>
-        <div class="item">
-        </div>
-        <div class="item">
-        </div>
+      <div class="item active">
+      </div>
+      <div class="item">
+      </div>
+      <div class="item">
+      </div>
     </div>
   </div>
 </div>
@@ -37,7 +47,6 @@
 <div class="container-fluid" style="background: rgba(0,0,0,0.5); position:relative; max-width:100%">
   <div class="row-fluid">
     <div class="col-md-3">
-      
     </div>
     <div class="col-md-6">
       <nav class="navbar" style="position:relative; margin-top:3%">
