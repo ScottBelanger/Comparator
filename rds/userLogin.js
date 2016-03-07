@@ -12,32 +12,64 @@ var Comparison  = require( '../models/Comparison' );
 var User        = require( '../models/User' );
 
 // ===== Globals =====
-var gUser = null;
+var _user = null; // User object to be used throughout this file.
 
 /*
- * populateModels queries the database for all information related to
- * the supplied user and populate the models with that information.
+ * populateModels()
+ *
+ * Description: Queries the database for all information related to
+ *              the supplied user and populates the models with that 
+ *              information.
+ *
  * Params (in):
- *   user   - The model that will be populated
+ *   user     - The User object to be populated
  *   callback - The callback function
+ *
+ * Params (out/callback):
+ *   err  - Error object
+ *   user - user object
  */
 var populateModels = function( user, callback ) {
 
-  // Set file global user
-  gUser = user;
+  // Set global user
+  _user = user;
 
-  // Get all of the user's comparisons
-  getComparisons( function( err, usr, cnt ) {
-      callback( err, usr );
+  // Get all of the user's comparisons.
+  getComparisons( function( err, user, count ) {
+
+    if( err ) {
+
+      console.log( err );
+      throw err;
+
+    } else {
+
+      callback( err, user );
+
+    }
+
   });
 
 };
 
+/*
+ * getComparisons()
+ *
+ * Description: Gets the comparisons for the globally defined user. This
+ *              user is unique to each session i.e. user login.
+ *
+ * Params (in):
+ *   None.
+ *
+ * Params (out/callback):
+ *   err             - Error object
+ *   _user           - user object
+ */
 var getComparisons = function ( callback ) {
 
   //SQL query
   var selectComparisons = 'SELECT * ' +
-                          'FROM Comparison WHERE UserID=' + gUser.getId();
+                          'FROM Comparison WHERE UserID=' + _user.getId();
 
   // Get all comparisons for user
   connection.query( selectComparisons, function( err, rows, fields ) {
@@ -50,45 +82,84 @@ var getComparisons = function ( callback ) {
 
     } else {
 
-      // For counting number of comparisons
-      var comparisonCount = 0;
+      // For counting when to callback
+      var callbackCount = 0;
 	
       // Iterate through each user comparison	
       rows.forEach( function( item, index, array ) {
+
+        // This happens in the case when there are multiple bundles per
+        // comparison as there are multiple comparison rows with the same
+        // ID. In this case add bundle to existing comparison.
+        var comparison = _user.getComparison( item.ID );
 		
         // If usage comparison
         if( item.ComparisonType ) {
 
-          getUsageComparison( item, function( err, uc ) {
-            gUser.addComparison( uc );
-            comparisonCount++;
-            // If no more comparisons
-            if( comparisonCount == array.length ) {
+          getUsageComparison( item, comparison, function( err, uc ) {
 
-              if( typeof callback === "function" ) {
+            if( err ) {
 
-                callback( err, gUser, comparisonCount );
+              console.log( err );
+              throw err;
+
+            } else {
+
+              if( !comparison ) {
+
+                _user.addComparison( uc );
+
+              }
+
+              callbackCount++;
+
+              // If no more comparisons
+              if( callbackCount == array.length ) {
+
+                if( typeof callback === "function" ) {
+
+                  callback( err, _user );
+
+                }
 
               }
 
             }
+
           });
     	  
         } else { // If rate comparison
 		
-          getRateComparison( item, function( err, rc ) {
-            gUser.addComparison( rc );
-            comparisonCount++;
-            // If no more comparisons
-            if( comparisonCount == array.length ) {
+          getRateComparison( item, comparison, function( err, rc ) {
 
-              if( typeof callback === "function" ) {
+            if( err ) {
 
-                callback( err, gUser, comparisonCount );
+              console.log( err );
+              throw err;
+            
+            } else {
+
+              if( !comparison ) {
+
+                _user.addComparison( rc );
+
+              }
+              
+              callbackCount++;
+
+              // If no more comparisons
+              if( callbackCount == array.length ) {
+
+                if( typeof callback === "function" ) {
+
+                  callback( err, _user );
+
+                }
 
               }
 
             }
+
           });
 
         }
@@ -101,59 +172,196 @@ var getComparisons = function ( callback ) {
 
 };
 
-var getUsageComparison = function( comparison, callback ) {
+/*
+ * getUsageComparison()
+ *
+ * Description: Gets the UsageComparisons for the globally defined user. 
+ *
+ * Params (in):
+ *   comparisonRow - Row containing comparison data.
+ *   comparison    - Comparison object to populate with data.
+ *
+ * Params (out/callback):
+ *   err - Error object 
+ *   uc  - UsageComparison object
+ */
+var getUsageComparison = function( comparisonRow, comparison, callback ) {
 
-  // Create new comparison and populate fields
-  var uc = new Comparison.UsageComparison();
-  uc.setId( comparison.ID );
-  uc.setDescription( comparison.Name );
+  var uc = null;
 
-  getPricingModel( comparison.PricingModelID, function( err, pm ) {
-    uc.setPricingModel( pm );
+  if( comparison ) {
 
-    getUsageBundles(comparison.UsageBundleID, function( err, ub ) {
+    uc = comparison;
 
-      uc.addUsageBundle( ub );
+    getUsageBundle( comparisonRow.UsageBundleID, function( err, ub ) {
 
-      if( typeof callback === "function" ) {
+      if( err ) {
+        
+        console.log( err );
+        throw err;
 
-         callback( null, uc );
+      } else {
+
+        uc.addUsageBundle( ub );
+
+        if( typeof callback == "function" ) {
+
+          callback( err, uc );
+
+        }
 
       }
 
     });
-
-  });
-
-};
-
-var getRateComparison = function( comparison, callback ) {
-
-  // Create new comparison and populate fields
-  var rc = new Comparison.RateComparison();
-  rc.setId( comparison.ID );
-  rc.setDescription( comparison.Name );
-
-  getEnergyUsage( comparison.EnergyUsageID, function( err, eu, count ) {
-
-    rc.setEnergyUsage( eu );
     
-    getRateBundles( comparison.RateBundleID, function( err, rbArr, count ) {
+  } else {
 
-      rc.setRateBundleArr( rbArr ); 
+    // Create new comparison and populate fields
+    uc = new Comparison.UsageComparison();
+    uc.setId( comparisonRow.ID );
+    uc.setDescription( comparisonRow.Name );
+    
+    getPricingModel( comparisonRow.PricingModelID, function( err, pm ) {
 
-      if( typeof callback == "function" ) {
+      if( err ) {
 
-         callback( null, rc );
+        console.log( err );
+        throw err;
+
+      } else {
+
+        uc.setPricingModel( pm );
+
+        getUsageBundle( comparisonRow.UsageBundleID, function( err, ub ) {
+
+          if( err ) {
+
+            console.log( err );
+            throw err;
+
+          } else {
+
+            uc.addUsageBundle( ub );
+
+            if( typeof callback == "function" ) {
+
+              callback( err, uc );
+
+            }
+
+          }
+
+        });
 
       }
 
     });
 
-  });
+  }
 
 };
 
+/*
+ * getRateComparison()
+ *
+ * Description: Gets the RateComparisons for the globally defined user. 
+ *
+ * Params (in):
+ *   comparisonRow - Row containing comparison data.
+ *   comparison    - Comparison object to populate with data.
+ *
+ * Params (out/callback):
+ *   err - Error object
+ *   rc  - RateComparison object
+ */
+var getRateComparison = function( comparisonRow, comparison, callback ) {
+
+  var rc = null;
+
+  if( comparison ) {
+
+    rc = comparison;
+
+    getRateBundle( comparisonRow.RateBundleID, function( err, rb ) {
+
+      if( err ) {
+
+        console.log( err );
+        throw err;
+
+      } else {
+        uc.addRateBundle( rb );
+
+        if( typeof callback == "function" ) {
+
+          callback( err, rc );
+
+        }
+
+      }
+
+    });
+
+  } else {
+
+    // Create new comparison and populate fields
+    rc = new Comparison.RateComparison();
+    rc.setId( comparisonRow.ID );
+    rc.setDescription( comparisonRow.Name );
+
+    getEnergyUsage( comparisonRow.EnergyUsageID, function( err, eu, count ) {
+
+      if( err ) {
+
+        console.log( err );
+        throw err;
+
+      } else {
+
+        rc.setEnergyUsage( eu );
+    
+        getRateBundle( comparisonRow.RateBundleID, function( err, rb ) {
+
+          if( err ) {
+
+            console.log( err );
+            throw err;
+
+          } else {
+
+            rc.addRateBundle( rb ); 
+
+            if( typeof callback == "function" ) {
+
+             callback( err, rc );
+
+            }
+
+          }
+
+        });
+
+      }
+
+    });
+
+  }
+
+};
+
+/*
+ * getPricingModel()
+ *
+ * Description: Retrieves the PricingModel object from database specified
+ *              the pricingModelId and populates the PricingModel object.
+ *
+ * Params (in):
+ *   pricingModelId - ID of PricingModel
+ *
+ * Params (out/callback):
+ *   err - Error object 
+ *   pc  - PricingModel object
+ */
 var getPricingModel = function( pricingModelId, callback ) {
 
   // SQL query
@@ -195,7 +403,20 @@ var getPricingModel = function( pricingModelId, callback ) {
 
 };
 
-var getRateBundles = function( rateBundleID, callback ) {
+/*
+ * getRateBundle()
+ *
+ * Description: Retrieves the RateBundle object from database specified
+ *              the rateBundleID and populates the RateBundle object.
+ *
+ * Params (in):
+ *   rateBundleID - ID of RateBundle 
+ *
+ * Params (out/callback):
+ *   err   - Error object 
+ *   rbArr - Array of RateBundle objects
+ */
+var getRateBundle = function( rateBundleID, callback ) {
 
   // SQL query
   var selectRateBundle = 'SELECT * ' +
@@ -213,51 +434,62 @@ var getRateBundles = function( rateBundleID, callback ) {
 
     } else {
 
-      var rbArr = [];
-      var pmCount = 0;
-      var costCount = 0;
-
-      rows.forEach( function( item, index, array ) {
+      var pmDone = 0;
+      var costDone = 0;
 
         // Add rate bundle to rate comparison
-        var rb = new RateBundle();
-        rbArr.push( rb );
-        rb.setId( item.ID );
+      var rb = new RateBundle();
+      rb.setId( rows[0].ID );
        
-        getPricingModel( item.PricingModelID, function( err, pm ) {
+      getPricingModel( rows[0].PricingModelID, function( err, pm ) {
 
-          pmCount++;
+        if( err ) {
+
+          console.log( err );
+          throw err;
+
+        } else {
+
+          pmDone++;
           rb.setPricingModel( pm );
 
-          if( costCount == array.length && pmCount == array.length ) {
+          if( costDone == 1 && pmDone == 1 ) {
 
             if( typeof callback == "function" ) {
 
-              callback( err, rbArr );
+              callback( err, rb );
 
             }
 
           }
+          
+        }
 
-        });
+      });
 
-        getCost( item.CostID, function( err, costArr, count ) {
+      getCost( rows[0].CostID, function( err, costArr, count ) {
 
-          costCount++;
+        if( err ) {
 
+          console.log( err );
+          throw err;
+
+        } else {
+
+          costDone++;
           rb.setCostArr( costArr );
 
-          if( costCount == array.length && pmCount == array.length ) {
+          if( costDone == 1 && pmDone == 1 ) {
 
             if( typeof callback == "function" ) {
 
-              callback( err, rbArr );
+              callback( err, rb );
 
             }
 
           }
 
-        });
+        }
 
       });
 
@@ -267,7 +499,20 @@ var getRateBundles = function( rateBundleID, callback ) {
 
 };
 
-var getUsageBundles = function( usageBundleID, callback ) {
+/*
+ * getUsageBundle()
+ *
+ * Description: Retrieves the UsageBundle object from database specified
+ *              the rateBundleID and populates the RateBundle object.
+ *
+ * Params (in):
+ *   usageBundleID - ID of UsageBundle 
+ *
+ * Params (out/callback):
+ *   err   - Error object 
+ *   ubArr - Array of UsageBundle objects
+ */
+var getUsageBundle = function( usageBundleID, callback ) {
 
   // SQL query
   var selectUsageBundle = 'SELECT * ' +
@@ -284,50 +529,61 @@ var getUsageBundles = function( usageBundleID, callback ) {
 
     } else {
 
-      var ubArr = [];
-      var euCount = 0;
-      var costCount = 0;
+      var euDone = 0;
+      var costDone = 0;
 
-      rows.forEach( function( item, index, array ) {
+      // Add usage bundle to usage comparison
+      var ub = new UsageBundle();
+      ub.setId( rows[0].ID );
 
-        // Add usage bundle to usage comparison
-        var ub = new UsageBundle();
-        ubArr.push( ub );
-        ub.setId( item.ID );
+      getEnergyUsage( rows[0].EnergyUsageID, function( err, eu, count ) {
 
-        getEnergyUsage( item.EnergyUsageID, function( err, eu, count ) {
+        if( err ) {
+
+          console.log( err );
+          throw err;
+
+        } else {
 
           ub.setEnergyUsage( eu );
-          euCount++;
+          euDone++;
 
-          if( euCount == array.length && costCount == array.length ) {
+          if( euDone == 1 && costDone == 1 ) {
 
             if( typeof callback == "function" ) {
 
-              callback( err, ubArr );
+              callback( err, ub );
 
             }
-
           }
+        }
 
-        });
+      });
 
-        getCost( item.CostID, function( err, costArr, count ) {
+      getCost( rows[0].CostID, function( err, costArr, count ) {
+
+        if( err ) {
+          
+          console.log( err );
+          throw err;
+
+        } else {
 
           ub.setCostArr( costArr );
-          costCount++;
-          if( euCount == array.length && costCount == array.length ) {
+          costDone++;
+
+          if( euDone == 1 && costDone == 1 ) {
 
             if( typeof callback == "function" ) {
 
-              callback( err, ubArr );
+              callback( err, ub );
 
             }
 
           }
-          
-        });
 
+        }
+          
       });
 
     }
@@ -336,6 +592,20 @@ var getUsageBundles = function( usageBundleID, callback ) {
 
 };
 
+/*
+ * getEnergyUsage()
+ *
+ * Description: Retrieves the EnergyUsage object from database specified
+ *              the energyUsageID and populates the EnergyUsage object.
+ *
+ * Params (in):
+ *   energyUsageID - ID of EnergyUsage
+ *
+ * Params (out/callback):
+ *   err              - Error object 
+ *   eu               - EnergyUsage object
+ *   energyUsageCount - Number of Consumption/Demand points in this EnergyUsage
+ */
 var getEnergyUsage = function( energyUsageID, callback ) {
 
   // SQL query
@@ -399,6 +669,19 @@ var getEnergyUsage = function( energyUsageID, callback ) {
 
 };
 
+/*
+ * getCost()
+ *
+ * Description: Retrieves an array of cost objects from database specified
+ *              the costID.
+ *
+ * Params (in):
+ *   costID - ID of Cost
+ *
+ * Params (out/callback):
+ *   err       - Error object 
+ *   costArr   - Array of UsageBundle objects
+ */
 var getCost = function( costID, callback ) {
 
   // SQL query
@@ -433,7 +716,7 @@ var getCost = function( costID, callback ) {
 
           if( typeof callback === "function" ) {
 
-            callback( err, costArr, costCount );
+            callback( err, costArr );
 
           }
 

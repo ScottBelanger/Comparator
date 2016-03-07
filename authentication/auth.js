@@ -6,7 +6,12 @@ var eyes           = require( 'eyes' );
 var crypto         = require( 'crypto' );
 
 // ===== Globals =====
-var user = new User()
+var user = new User();
+
+// ===== Defines =====
+const SUCCESS    = 0;
+const WRONG_PASS = -1;
+const USER_DNE   = -2;
 
 /* userLogin is a middleware function for the POST to /login
  * userLogin validates the login credentials and populates the
@@ -18,16 +23,35 @@ var userLogin = function( req, res, next ) {
   hash.update( req.body.password );
 
   // Validate login info and populate model
-  validateLogin( req.body.username, hash.digest('hex'), function( usr ) {
+  validateLogin( req.body.username, hash.digest('hex'), function( err, rc, usr ) {
 
-    populateModels( usr, function( err, usr ) {
+    if( err ) {
 
-      res.mydata = usr;
-      
-      // Move to next middleware
-      next();
+      console.log( err );
+      throw err;
 
-    });
+    } else {
+
+      res.login_status = rc;
+
+      if( rc != SUCCESS ) {
+
+        next();
+
+      } else {
+
+        populateModels( usr, function( err, usr ) {
+
+          res.userModel = usr;
+          
+          // Move to next middleware
+          next();
+
+        });
+
+      }
+
+    }
 
   });
 
@@ -71,19 +95,20 @@ var validateLogin = function( username, password, callback ) {
           user.setAdmin( rows[0].IsAdmin );
 
           // Populate the models
-          return callback( user );
+          callback( err, SUCCESS, user );
 
         } else {
 
           // Incorrect password for user
-          console.log( "Wrong Password" );
+          rc = WRONG_PASS;
+          callback( err, WRONG_PASS, user );
 
         }
 
       } else {
         
         // The user does not exist in the database
-        console.log( "User does not exist" );
+        callback( err, USER_DNE, user );
 
       }
 

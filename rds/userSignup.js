@@ -2,10 +2,22 @@
 var connection  = require( './connection' );
 var crypto      = require( 'crypto' );
 
+// ===== Defines =====
 const SUCCESS               = 0;
 const USERNAME_TAKEN        = -1;
 const PASSWORDS_DONOT_MATCH = -2;
 
+/*
+ * userSignup()
+ *
+ * Description: Checks to confirm signup info valid, then inserts the
+ *              new user info the database.
+ *
+ * Params (in):
+ *   req  - The client request
+ *   res  - The server response
+ *   next - The next middleware
+ */
 var userSignup = function( req, res, next ) {
 
   var hashPass = crypto.createHash('sha256');
