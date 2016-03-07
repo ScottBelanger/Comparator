@@ -17,10 +17,7 @@ router.post('/login',  userLogin, function(req, res, next) {
 });
 
 router.post('/signup', userSignup, function(req, res, next) {
-  res.send(req.body.username + " " +
-           req.body.password + " " +
-           req.body.email + " " +
-           req.body.repasswd);
+  res.send( JSON.stringify(res.signup_status) );
 });
 
 module.exports = router;
