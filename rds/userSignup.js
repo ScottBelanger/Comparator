@@ -1,7 +1,5 @@
 // ===== Module Imports =====
 var connection  = require( './connection' );
-var eyes        = require( 'eyes' );
-var User        = require( '../models/User' );
 var crypto      = require( 'crypto' );
 
 const SUCCESS               = 0;
