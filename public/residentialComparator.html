@@ -12,7 +12,7 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-	<script src="controllers/formController.js"></script>
+	<script src="controllers/pricingModelController.js"></script>
     <script>
       function showCharts() {
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
@@ -475,7 +475,9 @@
     </div>
 </div>
 
-<div class="container-fluid" ng-controller="formController">
+<!-- Needed an extra div here to help with controller scope -->
+<div ng-controller="pricingModelController">
+<div class="container-fluid">
   <div class="row" style="padding-bottom:5%">
     <div class="col-md-3" style="text-align:center">
       <label class="control-label" style="font-size:25px; color: #ffffff;">Country</label>
@@ -516,8 +518,9 @@
   </div>
 </div>
 
-<div class="container-fluid" style="text-align:center" ng-controller="formController">
-  <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="calculateCost()"><span class="glyphicon glyphicon-check"></span>Submit</a>
+<div class="container-fluid" style="text-align:center">
+  <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="submitPricingModel()"><span class="glyphicon glyphicon-check"></span>Submit</a>
+</div>
 </div>
 
 <!--This is hiCharts Energy Consumption Graph-->
