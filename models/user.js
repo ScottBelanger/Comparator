@@ -1,4 +1,4 @@
-var Comparison = require( './Comparison' );
+var Comparison = require( './comparison' );
 
 var User = function() {
   /* ===== User Fields ===== */

@@ -1,5 +1,5 @@
-var Cost        = require( './Cost' );
-var EnergyUsage = require( './EnergyUsage' );
+var Cost        = require( './cost' );
+var EnergyUsage = require( './energyUsage' );
 
 var UsageBundle = function() {
   /* ===== UsageBundle Fields ===== */

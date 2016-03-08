@@ -1,5 +1,5 @@
-var Consumption = require( './Consumption' );
-var Demand      = require( './Demand' );
+var Consumption = require( './consumption' );
+var Demand      = require( './demand' );
 
 var EnergyUsage = function() {
 /* ===== EnergyUsage Fields ===== */

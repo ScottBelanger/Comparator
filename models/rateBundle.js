@@ -1,5 +1,5 @@
-var Cost         = require( './Cost' );
-var PricingModel = require( './PricingModel' );
+var Cost         = require( './cost' );
+var PricingModel = require( './pricingModel' );
 
 var RateBundle = function() {
   /* ===== RateBundle Fields ===== */

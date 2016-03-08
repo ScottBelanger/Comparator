@@ -1,7 +1,7 @@
-var RateBundle   = require( './RateBundle' );
-var EnergyUsage  = require( './EnergyUsage' );
-var PricingModel = require( './PricingModel' );
-var UsageBundle  = require( './UsageBundle' );
+var RateBundle   = require( './rateBundle' );
+var EnergyUsage  = require( './energyUsage' );
+var PricingModel = require( './pricingModel' );
+var UsageBundle  = require( './usageBundle' );
 var util         = require('util');
 
 /* ===== Comparison Fields ===== */
