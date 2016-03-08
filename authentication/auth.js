@@ -1,7 +1,7 @@
 // ===== Module Imports =====
 var connection     = require( '../rds/connection' );
 var populateModels = require( '../rds/userLogin' );
-var User           = require( '../models/User' );
+var User           = require( '../models/user' );
 var eyes           = require( 'eyes' );
 var crypto         = require( 'crypto' );
 

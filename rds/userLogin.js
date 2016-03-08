@@ -1,15 +1,15 @@
 // ===== Module Imports =====
 var connection  = require( './connection' );
 var eyes        = require( 'eyes' );
-var RateBundle  = require( '../models/RateBundle' );
-var UsageBundle = require( '../models/UsageBundle' );
-var EnergyUsage = require( '../models/EnergyUsage' );
-var PricingModel= require( '../models/PricingModel' );
-var Consumption = require( '../models/Consumption' );
-var Demand      = require( '../models/Demand' );
-var Cost        = require( '../models/Cost' );
-var Comparison  = require( '../models/Comparison' );
-var User        = require( '../models/User' );
+var RateBundle  = require( '../models/rateBundle' );
+var UsageBundle = require( '../models/usageBundle' );
+var EnergyUsage = require( '../models/energyUsage' );
+var PricingModel= require( '../models/pricingModel' );
+var Consumption = require( '../models/consumption' );
+var Demand      = require( '../models/demand' );
+var Cost        = require( '../models/cost' );
+var Comparison  = require( '../models/comparison' );
+var User        = require( '../models/user' );
 
 // ===== Globals =====
 var _user = null; // User object to be used throughout this file.
