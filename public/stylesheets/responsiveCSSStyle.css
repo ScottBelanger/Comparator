@@ -3,7 +3,7 @@
     margin-right: auto;
 }
 @media screen and (max-width: 992px) {
-  p,.btn,input,div,span,h4 {
+  p,.btn,input,div,span,h4,a,{
     font-size: 95%;
   }
   h1 {
@@ -18,7 +18,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  p,.btn,input,div,span,h4 {
+  p,.btn,input,div,span,h4,a, {
     font-size: 90%;
   }
   h1 {
@@ -31,6 +31,12 @@
     font-size: 16px;  
   }
 }
+
+a :visited{ 
+    color: pink;
+    outline: none;
+}
+a { outline: none; }
 
 /* Extra Small Devices, .visible-xs-* */
 @media (max-width: 767px) {}
