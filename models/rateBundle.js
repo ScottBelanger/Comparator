@@ -41,6 +41,10 @@ RateBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
 };
 
+RateBundle.prototype.setCostArr = function( costArr ) {
+  this.cost = costArr;
+}
+
 RateBundle.prototype.setCost = function( time, amount ) {
   var costPt = null;
 

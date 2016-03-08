@@ -41,6 +41,10 @@ UsageBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
 };
 
+UsageBundle.prototype.setCostArr = function( costArr ) {
+  this.cost = costArr;
+};
+
 UsageBundle.prototype.setCost = function( time, amount ) {
   var costPt = null;
 
