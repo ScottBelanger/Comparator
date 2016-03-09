@@ -12,7 +12,9 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+	<script src="controllers/comparisonPage.js"></script>
 	<script src="controllers/pricingModelController.js"></script>
+	<script src="controllers/pmSelectionController.js"></script>
     <script>
       function showCharts() {
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
@@ -476,51 +478,61 @@
 </div>
 
 <!-- Needed an extra div here to help with controller scope -->
-<div ng-controller="pricingModelController">
+<div ng-controller="pricingModelController as pmCtrl">
+
+<div class="row" style="padding-bottom:5%">
+    <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
+		<label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
+	</div>
+</div>
+
+<div ng-repeat="row in pmCtrl.rows">
+<div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
+
 <div class="container-fluid">
   <div class="row" style="padding-bottom:5%">
     <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Country</label>
       <div class="selectContainer">
         <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="countrySelect" ng-change="countrySelectChange()">
-            <option ng-repeat="option in countryList" value="{{option.country}}" >{{option.country}}</option>
+				ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
+            <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
         </select>
       </div>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">City</label>
       <div class="selectContainer">
         <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="citySelect" ng-change="citySelectChange()">
-            <option ng-repeat="option in cityList" value="{{option.city}}" >{{option.city}}</option>
+				ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
+            <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
         </select>
       </div>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">LDC</label>
       <div class="selectContainer">
         <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="ldcSelect" ng-change="ldcSelectChange()">
-            <option ng-repeat="option in ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+				ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
+            <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
         </select>
       </div>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Rate Types</label>
       <div class="selectContainer">
         <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="rateSelect" ng-change="rateSelectChange()">
-            <option ng-repeat="option in rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+				ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
+            <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
         </select>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container-fluid" style="text-align:center">
-  <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="submitPricingModel()"><span class="glyphicon glyphicon-check"></span>Submit</a>
 </div>
+</div>
+
+<div class="container-fluid" style="text-align:center">
+  <a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="pmCtrl.submitPricingModel()"><span class="glyphicon glyphicon-check"></span>Submit</a>
+</div>
+
 </div>
 
 <!--This is hiCharts Energy Consumption Graph-->
