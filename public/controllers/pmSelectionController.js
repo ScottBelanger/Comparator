@@ -19,15 +19,16 @@ function pmSelectionController($scope, $http) {
 	selectCtrl.rateList = [];
 	selectCtrl.rateSelect = "";
 	
+	selectCtrl.btnName = "Submit";
+	
 	$http.get(rateEngineURL + '/getLDCCountries').then(function(result){
-		console.log(result);
 		selectCtrl.countryList = result.data;
 	}, function(result){
 		// error
 	});
 	
 	selectCtrl.countrySelectChange = function() {
-		console.log(selectCtrl.countrySelect);
+		//clear all fields below this one
 		selectCtrl.cityList = [];
 		selectCtrl.citySelect = "";
 		selectCtrl.ldcList = [];
@@ -36,7 +37,6 @@ function pmSelectionController($scope, $http) {
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getCitiesInCountry', { params: {country: selectCtrl.countrySelect} } ).then(function(result){
-		console.log(result);
 		selectCtrl.cityList = result.data;
 		}, function(result){
 			// error
@@ -44,14 +44,13 @@ function pmSelectionController($scope, $http) {
 	}
 	
 	selectCtrl.citySelectChange = function() {
-		console.log(selectCtrl.citySelect);
+		//clear all fields below this one
 		selectCtrl.ldcList = [];
 		selectCtrl.ldcSelect = "";
 		selectCtrl.rateList = [];
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getLDCsInCity', { params: {city: selectCtrl.citySelect} } ).then(function(result){
-		console.log(result);
 		selectCtrl.ldcList = result.data;
 		}, function(result){
 			// error
@@ -59,26 +58,55 @@ function pmSelectionController($scope, $http) {
 	}
 	
 	selectCtrl.ldcSelectChange = function() {
-		console.log(selectCtrl.countrySelect);
-		console.log(selectCtrl.citySelect);
-		console.log(selectCtrl.ldcSelect);
+		//clear all fields below this one
 		selectCtrl.rateList = [];
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getRateTypesFromLDC', { params: {city: selectCtrl.citySelect,
 																	 ldc: selectCtrl.ldcSelect} } 
 		).then(function(result){
-			console.log(result);
 			selectCtrl.rateList = result.data;
 			}, function(result){
 				// error
 		});
 	}
 	
+	//This function may not be necessary
 	selectCtrl.rateSelectChange = function() {
-		console.log(selectCtrl.countrySelect);
-		console.log(selectCtrl.citySelect);
-		console.log(selectCtrl.ldcSelect);
 		console.log(selectCtrl.rateSelect);
+	}
+	
+	selectCtrl.pmRowClick = function() {
+		if (selectCtrl.btnName == "Submit") {
+			submitPricingModel();
+		}
+		else {
+			deletePricingModel();
+		}
+	}
+	
+	function submitPricingModel() {
+		//TODO: Either make submit unclickable or have an error message
+		
+		if (selectCtrl.rateSelect == "") {
+			console.log("Cannot submit without all fields selected.");
+			return;
+		}
+		
+		selectCtrl.btnName = "Delete";
+		
+		var pricingModel = {id: $scope.row.index,
+							country: selectCtrl.countrySelect,
+							city: selectCtrl.citySelect,
+							ldc: selectCtrl.ldcSelect,
+							rateType: selectCtrl.rateSelect};
+		
+		
+		$scope.$emit('newPricingModel', pricingModel);
+	}
+	
+	function deletePricingModel() {
+		console.log("In deletePricingModel");
+		console.log("Row: " + $scope.row.index);
 	}
 }

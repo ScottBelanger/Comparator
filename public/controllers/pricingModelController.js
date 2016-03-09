@@ -13,26 +13,23 @@ function pricingModelController($scope, $http) {
 	
 	var pricingModelArray = [];
 	
-	pmCtrl.submitPricingModel = function() {
-		//TODO: Either make submit unclickable or have an error message
-		
-		/* if ($scope.rateSelect == "") {
-			console.log("Cannot submit without all fields selected.");
-			return;
-		} */
-		
-		
-		/* var pricingModel = {country: $scope.countrySelect,
-							city: $scope.citySelect,
-							ldc: $scope.ldcSelect,
-							rateType: $scope.rateSelect};
-		pricingModelArray.push(pricingModel);
-		console.log(pricingModelArray); */
-		
+	function addNewSelectionRow() {
 		rowCount++;
 		pmCtrl.rows.push({index: rowCount});
+	}
+	
+	$scope.$on('newPricingModel', function(event, pricingModel) {
+		console.log("In pricingModelController after emit");
+		console.log(pricingModel);
+		
+		//Add new pricing model to the pricingModelArray
+		console.log("All pricing models:");
+		pricingModelArray.push(pricingModel);
+		console.log(pricingModelArray);
+		
+		addNewSelectionRow();
 		
 		//here a call needs to be made to the rate engine with pricing model info and usage info (json)
 		//maybe need to emit the new pricing model to the rootScope so that it can send it to the rate engine
-	}
+	});
 }
