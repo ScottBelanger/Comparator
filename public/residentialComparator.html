@@ -36,6 +36,7 @@
 <body>
 
 <!-- Creating the header bar -->
+<div class="contaienr-fluid">
 <nav class="navbar" style="position:absolute">
   <div class="container-fluid">
   <!-- Brand and toggle get grouped for better mobile display -->
@@ -68,6 +69,7 @@
     </div>
   </div>
 </nav>
+</div>
 
 <div class="container-fluid " style="max-width:60%; box-shadow: 0 0 30px black; background-color: #00001a;">
 <!--Create the fade style background -->
@@ -86,7 +88,7 @@
   <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
     <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
       <div class="panel-title" style="text-align:center">
-        <h1 style="color: #ffffff">Start by inputting some data!</h1>
+        <h1 style="color: #ffffff">Start by Inputting Some Data</h1>
       </div>
     </div>
 </div>
@@ -451,7 +453,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload!</h4>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
             </div>
             <input type="file" style="width:100%">
             <div class="modal-footer">
@@ -470,7 +472,7 @@
   <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
     <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
       <div class="panel-title" style="text-align:center">
-        <h1 style="color: #ffffff">Select a rate type!</h1>
+        <h1 style="color: #ffffff">Select a Rate Type</h1>
       </div>
     </div>
 </div>
@@ -518,9 +520,26 @@
   </div>
 </div>
 
-<div class="container-fluid" style="text-align:center">
-  <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-check"></span>Submit</a>
-</div>
+<div class="container-fluid">
+  <div class="row" style="padding-bottom:5%">
+    <div class="col-md-4" style="text-align:center">
+        <div class="container-fluid" style="text-align:center">
+          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-check"></span>Submit</a>
+        </div>
+    </div>
+    <div class="col-md-4" style="text-align:center">
+        <div class="container-fluid" style="text-align:center">
+          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Load Comparison</a>
+        </div>
+    </div>
+    <div class="col-md-4" style="text-align:center">
+        <div class="container-fluid" style="text-align:center">
+          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-gift"></span>Save Comparison</a>
+        </div>
+    </div>
+  </div>
+</div>  
+
 
 <!--This is hiCharts Energy Consumption Graph-->
 <div class="container-fluid" style="padding-top: 4%">
