@@ -20,8 +20,10 @@ const PASSWORDS_DONOT_MATCH = -2;
  */
 var userSignup = function( req, res, next ) {
 
+  var hashUser = crypto.createHash('sha256');
   var hashPass = crypto.createHash('sha256');
   var hashRepass = crypto.createHash('sha256');
+  hashUser.update( req.body.username );
   hashPass.update( req.body.password );
   hashRepass.update( req.body.repasswd );
 
@@ -46,6 +48,8 @@ var userSignup = function( req, res, next ) {
             throw err;
 
           } else {
+
+            res.cookie('SID', hashUser.digest('hex'), { expires: new Date(Date.now() + 1000 * 60 * 2)});
 
             // Move to next middleware
             next();

@@ -1,6 +1,7 @@
 // ===== Module Imports =====
 var express    = require('express');
-var userLogin  = require('../authentication/auth');
+var path       = require('path');
+var auth       = require('../authentication/auth');
 var userSignup = require('../rds/userSignup');
 var router     = express.Router();
 
@@ -12,8 +13,8 @@ var router     = express.Router();
  *
  * Response:   Send index.html
  */
-router.get('/', function(req, res, next) {
-  res.sendFile('index.html');
+router.get('/', auth.isAuthenticated, function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'index.html'));
 });
 
 /* POST login.
@@ -27,7 +28,7 @@ router.get('/', function(req, res, next) {
  *
  * Response:    Send return code to client.
  */
-router.post('/login',  userLogin, function(req, res, next) {
+router.post('/login',  auth.userLogin, function(req, res, next) {
   res.send( JSON.stringify(res.login_status) );
 });
 

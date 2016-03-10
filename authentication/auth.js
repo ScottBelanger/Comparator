@@ -9,9 +9,10 @@ var crypto         = require( 'crypto' );
 var user = new User();
 
 // ===== Defines =====
-const SUCCESS    = 0;
-const WRONG_PASS = -1;
-const USER_DNE   = -2;
+const SUCCESS       = 0;
+const WRONG_PASS    = -1;
+const USER_DNE      = -2;
+const NOT_LOGGED_IN = -3;
 
 /* userLogin is a middleware function for the POST to /login
  * userLogin validates the login credentials and populates the
@@ -19,11 +20,14 @@ const USER_DNE   = -2;
  */
 var userLogin = function( req, res, next ) {
 
-  var hash = crypto.createHash('sha256');
-  hash.update( req.body.password );
+  var hashPass = crypto.createHash('sha256');
+  hashPass.update( req.body.password );
+
+  var hashUserId = crypto.createHash('sha256');
+  hashUserId.update( req.body.username );
 
   // Validate login info and populate model
-  validateLogin( req.body.username, hash.digest('hex'), function( err, rc, usr ) {
+  validateLogin( req.body.username, hashPass.digest('hex'), function( err, rc, usr ) {
 
     if( err ) {
 
@@ -40,12 +44,13 @@ var userLogin = function( req, res, next ) {
 
       } else {
 
-        populateModels( usr, function( err, usr ) {
+        res.cookie('SID', hashUserId.digest('hex'), { expires: new Date(Date.now() + 1000 * 60 * 2)});
 
-          res.userModel = usr;
+        populateModels( usr, function( err, usr ) {
           
           // Move to next middleware
           next();
+
 
         });
 
@@ -118,4 +123,24 @@ var validateLogin = function( username, password, callback ) {
 
 };
 
-module.exports = userLogin;
+var isAuthenticated = function( req, res, next ) {
+
+  if( req.cookies.SID ) {
+
+    req.isAuthenticated = SUCCESS;
+
+    // TODO: double check that user exists in controller
+    // i.e make a get user by hashed ID function
+
+  } else {
+
+    req.isAuthenticated = NOT_LOGGED_IN;
+
+  }
+
+  next();
+
+};
+
+module.exports =  { userLogin : userLogin,
+                    isAuthenticated : isAuthenticated };
