@@ -2,6 +2,7 @@
 var connection     = require( '../rds/connection' );
 var populateModels = require( '../rds/userLogin' );
 var User           = require( '../models/user' );
+var sess           = require( '../controller/session_controller');
 var eyes           = require( 'eyes' );
 var crypto         = require( 'crypto' );
 
@@ -43,8 +44,10 @@ var userLogin = function( req, res, next ) {
         next();
 
       } else {
-
-        res.cookie('SID', hashUserId.digest('hex'), { expires: new Date(Date.now() + 1000 * 60 * 2)});
+        var exp = new Date(Date.now() + 1000 * 60 * 120);
+        var hashID = hashUserId.digest('hex');
+        res.cookie('SID', hashID, { expires: exp });
+        req.app._sessionController.addSession( new sess.Session( usr, hashID, exp));
 
         populateModels( usr, function( err, usr ) {
           
@@ -125,18 +128,15 @@ var validateLogin = function( username, password, callback ) {
 
 var isAuthenticated = function( req, res, next ) {
 
-  if( req.cookies.SID ) {
+  req.isAuthenticated = NOT_LOGGED_IN;
 
-    req.isAuthenticated = SUCCESS;
-
-    // TODO: double check that user exists in controller
-    // i.e make a get user by hashed ID function
-
-  } else {
-
-    req.isAuthenticated = NOT_LOGGED_IN;
-
-  }
+  console.log( "Authenticating user" );
+  req.app._sessionController._sessions.forEach( function( session ) {
+    if( session._sessionID == req.cookies.SID ) {
+      req.isAuthenticated = SUCCESS;
+      req._sessionController.refreshSession( session._sessionID );
+    }
+  });
 
   next();
 

@@ -6,6 +6,7 @@ var logger       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var eyes         = require('eyes');
+var sess         = require('./controller/session_controller');
 
 // ===== Routes =====
 var routes = require('./routes/routes');
@@ -29,6 +30,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // html stored in /public
 app.disable('etag');
+
+// ===== Setup Session Controller =====
+app._sessionController = new sess.SessionController();
 
 // ===== Connect routes to express =====
 app.use('/', routes);      // routes
