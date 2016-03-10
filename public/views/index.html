@@ -199,16 +199,9 @@
           <div class="panel-title" >
             <<a href="#" id="residentialComparator" style="color: #ffffff; margin-right:30px; font-size:30px"><span class="glyphicon glyphicon-play"></span>Residential Page</a>
             <script type="text/javascript">
-              $(document).ready(function() {
-                $("#residentialComparator").click( function() {
-                  $.ajax({
-                      type: 'GET',
-                      url: '/residentialComparator',
-                      }).done(function(data){
-                        document.write(data);
-                      });
-                });
-              });
+              document.getElementById("residentialComparator").onclick = function() {
+                location.href = "http://" + window.location.host + "/residentialComparator";
+              }
             </script>
           </div>
         </div>
@@ -220,16 +213,9 @@
           <div class="panel-title" >
             <a href="#" id="commercialComparator" style="color: #ffffff; font-size:30px"><span class="glyphicon glyphicon-play"></span>Commercial Page</span></a>
             <script type="text/javascript">
-              $(document).ready(function() {
-                $("#commercialComparator").click( function() {
-                  $.ajax({
-                      type: 'GET',
-                      url: '/commercialComparator',
-                      }).done(function(data){
-                        document.write(data);
-                      });
-                });
-              });
+              document.getElementById("commercialComparator").onclick = function() {
+                location.href = "http://" + window.location.host + "/commercialComparator";
+              }
             </script>
           </div>
         </div>
