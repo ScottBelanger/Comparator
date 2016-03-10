@@ -1,6 +1,7 @@
 // ===== Module Imports =====
 var connection  = require( './connection' );
 var crypto      = require( 'crypto' );
+var sess        = require( '../controller/session_controller');
 
 // ===== Defines =====
 const SUCCESS               = 0;
@@ -20,8 +21,10 @@ const PASSWORDS_DONOT_MATCH = -2;
  */
 var userSignup = function( req, res, next ) {
 
+  var hashUser = crypto.createHash('sha256');
   var hashPass = crypto.createHash('sha256');
   var hashRepass = crypto.createHash('sha256');
+  hashUser.update( req.body.username );
   hashPass.update( req.body.password );
   hashRepass.update( req.body.repasswd );
 
@@ -46,6 +49,11 @@ var userSignup = function( req, res, next ) {
             throw err;
 
           } else {
+
+            var exp = new Date(Date.now() + 1000 * 60 *2);
+            var hashUserID = hashUser.digest('hex');
+            res.cookie('SID', hashUserID, { expires: exp });
+            req._sessionController.addSession( new sess.Session( user, hashUserID, exp ));
 
             // Move to next middleware
             next();

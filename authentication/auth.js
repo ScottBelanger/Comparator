@@ -2,6 +2,7 @@
 var connection     = require( '../rds/connection' );
 var populateModels = require( '../rds/userLogin' );
 var User           = require( '../models/user' );
+var sess           = require( '../controller/session_controller');
 var eyes           = require( 'eyes' );
 var crypto         = require( 'crypto' );
 
@@ -9,9 +10,10 @@ var crypto         = require( 'crypto' );
 var user = new User();
 
 // ===== Defines =====
-const SUCCESS    = 0;
-const WRONG_PASS = -1;
-const USER_DNE   = -2;
+const SUCCESS       = 0;
+const WRONG_PASS    = -1;
+const USER_DNE      = -2;
+const NOT_LOGGED_IN = -3;
 
 /* userLogin is a middleware function for the POST to /login
  * userLogin validates the login credentials and populates the
@@ -19,11 +21,14 @@ const USER_DNE   = -2;
  */
 var userLogin = function( req, res, next ) {
 
-  var hash = crypto.createHash('sha256');
-  hash.update( req.body.password );
+  var hashPass = crypto.createHash('sha256');
+  hashPass.update( req.body.password );
+
+  var hashUserId = crypto.createHash('sha256');
+  hashUserId.update( req.body.username );
 
   // Validate login info and populate model
-  validateLogin( req.body.username, hash.digest('hex'), function( err, rc, usr ) {
+  validateLogin( req.body.username, hashPass.digest('hex'), function( err, rc, usr ) {
 
     if( err ) {
 
@@ -39,13 +44,16 @@ var userLogin = function( req, res, next ) {
         next();
 
       } else {
+        var exp = new Date(Date.now() + 1000 * 60 * 120);
+        var hashID = hashUserId.digest('hex');
+        res.cookie('SID', hashID, { expires: exp });
+        req.app._sessionController.addSession( new sess.Session( usr, hashID, exp));
 
         populateModels( usr, function( err, usr ) {
-
-          res.userModel = usr;
           
           // Move to next middleware
           next();
+
 
         });
 
@@ -55,6 +63,15 @@ var userLogin = function( req, res, next ) {
 
   });
 
+};
+
+var userLogout = function( req, res, next ) {
+  // TODO: delete session needs to save current comparison data
+  // before logging out. Save code isn't written yet so that will
+  // happen later on.
+  req.app._sessionController.deleteSession( req.cookies.SID, req.app._sessionController );
+  res.clearCookie( 'SID' );
+  next();
 };
 
 /* validateLogin will validate provided login credentials against
@@ -118,4 +135,22 @@ var validateLogin = function( username, password, callback ) {
 
 };
 
-module.exports = userLogin;
+var isAuthenticated = function( req, res, next ) {
+
+  req.isAuthenticated = NOT_LOGGED_IN;
+
+  console.log( "Authenticating user" );
+  req.app._sessionController._sessions.forEach( function( session ) {
+    if( session._sessionID == req.cookies.SID ) {
+      req.isAuthenticated = SUCCESS;
+      req.app._sessionController.refreshSession( session._sessionID );
+    }
+  });
+
+  next();
+
+};
+
+module.exports =  { userLogin : userLogin,
+                    userLogout: userLogout,
+                    isAuthenticated : isAuthenticated };
