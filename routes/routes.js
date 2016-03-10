@@ -17,6 +17,30 @@ router.get('/', auth.isAuthenticated, function(req, res, next) {
   res.sendFile(path.join(__dirname, '../public/views/', 'index.html'));
 });
 
+/* GET commercial comparison page. 
+ * 
+ * Description: Services GET request made to /commercialComparator by client. 
+ *
+ * Middleware: None.
+ *
+ * Response:   Send commercialComparator.html
+ */
+router.get('/commercialComparator', auth.isAuthenticated, function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'commercialComparator.html'));
+});
+
+/* GET residential comparison page. 
+ * 
+ * Description: Services GET request made to /residentialComparator by client. 
+ *
+ * Middleware: None.
+ *
+ * Response:   Send residentialComparator.html
+ */
+router.get('/residentialComparator', auth.isAuthenticated, function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'residentialComparator.html'));
+});
+
 /* POST login.
  *
  * Description: Services POST request made to /login by client.
