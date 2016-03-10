@@ -32,6 +32,18 @@ router.post('/login',  auth.userLogin, function(req, res, next) {
   res.send( JSON.stringify(res.login_status) );
 });
 
+/* GET logout.
+ *
+ * Description: Services GET request made to /logout by client.
+ * 
+ * Middleware:  None.
+ *
+ * Response:    Send return code to client.
+ */
+router.get('/logout', auth.userLogout, function(req, res, next) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'index.html'));
+});
+
 /* POST signup.
  *
  * Description: Services POST request made to /signup by client.

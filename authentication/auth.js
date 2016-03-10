@@ -65,6 +65,15 @@ var userLogin = function( req, res, next ) {
 
 };
 
+var userLogout = function( req, res, next ) {
+  // TODO: delete session needs to save current comparison data
+  // before logging out. Save code isn't written yet so that will
+  // happen later on.
+  req.app._sessionController.deleteSession( req.cookies.SID, req.app._sessionController );
+  res.clearCookie( 'SID' );
+  next();
+};
+
 /* validateLogin will validate provided login credentials against
  * the database.
  * If the credentials are okay, it will call the callback function
@@ -134,7 +143,7 @@ var isAuthenticated = function( req, res, next ) {
   req.app._sessionController._sessions.forEach( function( session ) {
     if( session._sessionID == req.cookies.SID ) {
       req.isAuthenticated = SUCCESS;
-      req._sessionController.refreshSession( session._sessionID );
+      req.app._sessionController.refreshSession( session._sessionID );
     }
   });
 
@@ -143,4 +152,5 @@ var isAuthenticated = function( req, res, next ) {
 };
 
 module.exports =  { userLogin : userLogin,
+                    userLogout: userLogout,
                     isAuthenticated : isAuthenticated };

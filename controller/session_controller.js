@@ -40,7 +40,7 @@ SessionController.prototype.addSession = function( session ) {
   this._sessions.push( session );
 };
 
-SessionController.prototype.deleteSession = function( sessionID, sessionController ) {
+SessionController.prototype.deleteSession = function( sessionID, sessionController, callback ) {
   sessionController._sessions.forEach( function( session, index ) {
     if( session._sessionID == sessionID ) {
       sessionController._sessions.splice( index, 1 );
