@@ -73,7 +73,7 @@ function pmSelectionController($scope, $http) {
 	
 	//This function may not be necessary
 	selectCtrl.rateSelectChange = function() {
-		console.log(selectCtrl.rateSelect);
+		//console.log(selectCtrl.rateSelect);
 	}
 	
 	selectCtrl.pmRowClick = function() {
@@ -106,7 +106,6 @@ function pmSelectionController($scope, $http) {
 	}
 	
 	function deletePricingModel() {
-		console.log("In deletePricingModel");
-		console.log("Row: " + $scope.row.index);
+		$scope.$emit('deletePricingModel', $scope.row.index);
 	}
 }

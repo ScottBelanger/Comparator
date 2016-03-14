@@ -19,9 +19,6 @@ function pricingModelController($scope, $http) {
 	}
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
-		console.log("In pricingModelController after emit");
-		console.log(pricingModel);
-		
 		//Add new pricing model to the pricingModelArray
 		console.log("All pricing models:");
 		pricingModelArray.push(pricingModel);
@@ -31,5 +28,18 @@ function pricingModelController($scope, $http) {
 		
 		//here a call needs to be made to the rate engine with pricing model info and usage info (json)
 		//maybe need to emit the new pricing model to the rootScope so that it can send it to the rate engine
+	});
+	
+	$scope.$on('deletePricingModel', function(event, row) {
+		//search through pricing model array for the id to match the row index
+		//remove both the pricing model with that id and the row from the rows array
+		var length = pricingModelArray.length;
+		for (var i=0; i<length; i++) {
+			if (pricingModelArray[i].id == row) {
+				pricingModelArray.splice(i,1);
+				pmCtrl.rows.splice(i,1);
+				return;
+			}
+		}
 	});
 }
