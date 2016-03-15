@@ -1,11 +1,10 @@
 // ===== Module Imports =====
-var connection     = require( '../rds/connection' );
 var loadUser       = require( '../rds/loadUser' );
+var createUser     = require( '../rds/createUser' );
 var User           = require( '../models/user' );
 var sess           = require( '../controller/session_controller');
 var auth_defines   = require( './auth_defines' );
 var auth           = require( './auth' );
-var eyes           = require( 'eyes' );
 var crypto         = require( 'crypto' );
 
 // ===== Globals =====
@@ -40,7 +39,7 @@ var userLogin = function( req, res, next ) {
         next();
 
       } else {
-        var exp = new Date(Date.now() + 1000 * 60 * 120);
+        var exp = new Date(Date.now() + 1000*60*60*2);
         var hashID = hashUserId.digest('hex');
         res.cookie('SID', hashID, { expires: exp });
         req.app._sessionController.addSession( new sess.Session( usr, hashID, exp));
@@ -70,5 +69,72 @@ var userLogout = function( req, res, next ) {
   next();
 };
 
+/*
+ * userSignup()
+ *
+ * Description: Checks to confirm signup info valid, then inserts the
+ *              new user info the database.
+ *
+ * Params (in):
+ *   req  - The client request
+ *   res  - The server response
+ *   next - The next middleware
+ */
+var userSignup = function( req, res, next ) {
+
+  var hashUser = crypto.createHash('sha256');
+  var hashPass = crypto.createHash('sha256');
+  var hashRepass = crypto.createHash('sha256');
+  hashUser.update( req.body.username );
+  hashPass.update( req.body.password );
+  hashRepass.update( req.body.repasswd );
+
+  auth.verifySignupDetails( req.body.username, req.body.email, hashPass.digest('hex'), hashRepass.digest('hex'), function( err, rc, username, email, password) {
+
+    if( err ) {
+
+      console.log( err );
+      throw err;
+
+    } else {
+
+      res.signup_status = rc;
+
+      if( rc == auth_defines.SUCCESS ) {
+
+        createUser( username, email, password, function( err, user ) {
+
+          if( err ) {
+
+            console.log( err );
+            throw err;
+
+          } else {
+			  
+            var exp = new Date(Date.now() + 1000*60*60*2);
+            var hashUserID = hashUser.digest('hex');
+            res.cookie('SID', hashUserID, { expires: exp });
+            req.app._sessionController.addSession( new sess.Session( user, hashUserID, exp ));
+
+            // Move to next middleware
+            next();
+
+          }
+
+        });
+
+      } else {
+
+        next();
+
+      }
+
+    }
+    
+  });
+
+};
+
 module.exports =  { userLogin : userLogin,
-                    userLogout: userLogout };
+                    userLogout: userLogout,
+                    userSignup: userSignup};

@@ -17,7 +17,7 @@ var Session = function( user, sessionID, expires ) {
   if( expires ) {
     this._expires = expires;
   } else {
-    this._expires = new Date( Date.now() + 1000*60*120 ); // 2 hour
+    this._expires = new Date( Date.now() + 1000*60*60*2 ); // 2 hour
   }
 
   console.log( "Session Created:" );
@@ -51,7 +51,7 @@ SessionController.prototype.deleteSession = function( sessionID, sessionControll
 SessionController.prototype.refreshSession = function( sessionID ) {
   this._sessions.forEach( function( session ) {
     if( session._sessionID == sessionID ) {
-      session._expires = Date.now() + 1000*60*120; // 2 hours
+      session._expires = new Date(Date.now() + 1000*60*60*2); // 2 hours
     }
   });
 };

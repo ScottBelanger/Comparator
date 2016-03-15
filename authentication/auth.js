@@ -74,6 +74,55 @@ var validateLogin = function( username, password, callback ) {
 
 };
 
+var verifySignupDetails = function( username, email, password, repasswd, callback ) {
+
+  var SQLquery = "SELECT Username FROM User WHERE Username=\"" + username + "\"";
+
+  connection.query( SQLquery, function( err, rows, fields ) {
+
+    if( err ) {
+
+      console.log( err );
+      throw err;
+
+    } else {
+
+      if( rows[0] ) {
+
+        if( typeof callback == "function" ) {
+
+          callback( err, auth_defines.USERNAME_TAKEN );
+
+        }
+
+      } else {
+
+        if( password != repasswd ) {
+
+          if( typeof callback == "function" ) {
+
+            callback( err, auth_defines.PASSWORDS_DONOT_MATCH );
+
+          }
+
+        } else {
+
+          if( typeof callback == "function" ) {
+
+            callback( err, auth_defines.SUCCESS, username, email, password );
+
+          }
+
+        }
+
+      }
+
+    }
+
+  });
+
+};
 
 module.exports = { isAuthenticated : isAuthenticated,
-                   validateLogin : validateLogin };
+                   validateLogin : validateLogin,
+				   verifySignupDetails : verifySignupDetails };

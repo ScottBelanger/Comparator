@@ -1,4 +1,5 @@
 var connection = require( './connection' );
+var User       = require( '../models/user' );
 
 var createUser = function( username, email, password, callback ) {
 
@@ -14,7 +15,14 @@ var createUser = function( username, email, password, callback ) {
 
     } else {
 
-      callback( err, result );
+	  // User created in DB
+	  
+	  var user = new User();
+	  user.setId(result.insertId);
+	  user.setUserName(username);
+	  user.setPassword(password);
+	  user.setEmail(email);
+      callback( err, user );
 
     }
 

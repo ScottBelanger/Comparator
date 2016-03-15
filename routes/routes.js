@@ -3,7 +3,6 @@ var express         = require('express');
 var path            = require('path');
 var userActions     = require('../authentication/userActions');
 var auth            = require('../authentication/auth');
-var userSignup      = require('../authentication/userSignup');
 var router          = express.Router();
 
 /* GET home page. 
@@ -79,7 +78,7 @@ router.get('/logout', userActions.userLogout, function(req, res, next) {
  *
  * Response:    Send return code to client.
  */
-router.post('/signup', userSignup, function(req, res, next) {
+router.post('/signup', userActions.userSignup, function(req, res, next) {
   res.send( JSON.stringify(res.signup_status) );
 });
 
