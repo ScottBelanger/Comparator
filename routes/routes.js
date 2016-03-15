@@ -1,8 +1,10 @@
 // ===== Module Imports =====
 var express         = require('express');
 var path            = require('path');
-var userActions     = require('../authentication/userActions');
+var userActions     = require('../controller/userActions');
 var auth            = require('../authentication/auth');
+var auth_defines    = require('../authentication/auth_defines');
+var compActions     = require('../controller/comparisonActions');
 var router          = express.Router();
 
 /* GET home page. 
@@ -120,8 +122,12 @@ router.post('/comparison/new', function(req, res, next) {
  *
  * Response:    Send array of all comparison objects for user.
  */
-router.get('/comparison', function(req, res, next) {
-  res.send("Get comparisons");
+router.get('/comparison', auth.isAuthenticated, function(req, res, next) {
+  if(req.isAuthenticated == auth_defines.SUCCESS ) {
+	  res.send(compActions.getComparisons(req.cookies.SID, req.app._sessionController));  
+  } else {
+	  res.send(req.isAuthenticated);
+  }
 });
 
 module.exports = router;

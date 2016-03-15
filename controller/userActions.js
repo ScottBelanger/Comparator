@@ -2,9 +2,9 @@
 var loadUser       = require( '../rds/loadUser' );
 var createUser     = require( '../rds/createUser' );
 var User           = require( '../models/user' );
-var sess           = require( '../controller/session_controller');
-var auth_defines   = require( './auth_defines' );
-var auth           = require( './auth' );
+var sess           = require( './session_controller');
+var auth_defines   = require( '../authentication/auth_defines' );
+var auth           = require( '../authentication/auth' );
 var crypto         = require( 'crypto' );
 
 // ===== Globals =====

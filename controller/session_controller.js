@@ -43,6 +43,16 @@ SessionController.prototype.addSession = function( session ) {
   }
 };
 
+SessionController.prototype.getSession = function( sessionID ) {
+	var rtn_session = null;
+	this._sessions.forEach( function ( session ) {
+		if( session._sessionID == sessionID ) {
+			rtn_session = session;
+		}
+	});
+	return rtn_session;
+};
+
 SessionController.prototype.deleteSession = function( sessionID, sessionController, callback ) {
   sessionController._sessions.forEach( function( session, index ) {
     if( session._sessionID == sessionID ) {
