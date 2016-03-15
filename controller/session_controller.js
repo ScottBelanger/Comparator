@@ -17,7 +17,7 @@ var Session = function( user, sessionID, expires ) {
   if( expires ) {
     this._expires = expires;
   } else {
-    this._expires = Date.now() + 1000*60*60; // 1 hour
+    this._expires = new Date( Date.now() + 1000*60*120 ); // 2 hour
   }
 
   console.log( "Session Created:" );

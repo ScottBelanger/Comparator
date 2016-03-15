@@ -29,7 +29,7 @@ var _user = null; // User object to be used throughout this file.
  *   err  - Error object
  *   user - user object
  */
-var populateModels = function( user, callback ) {
+var loadUser = function( user, callback ) {
 
   // Set global user
   _user = user;
@@ -731,4 +731,4 @@ var getCost = function( costID, callback ) {
 };
 
 
-module.exports = populateModels;
+module.exports = loadUser;

@@ -1,7 +1,8 @@
 // ===== Module Imports =====
-var connection  = require( './connection' );
+var connection  = require( '../rds/connection' );
 var crypto      = require( 'crypto' );
 var sess        = require( '../controller/session_controller');
+var createUser  = require( '../rds/createUser' );
 
 // ===== Defines =====
 const SUCCESS               = 0;
@@ -28,7 +29,7 @@ var userSignup = function( req, res, next ) {
   hashPass.update( req.body.password );
   hashRepass.update( req.body.repasswd );
 
-  verifyUserInfo( req.body.username, req.body.email, hashPass.digest('hex'), hashRepass.digest('hex'), function( err, rc, username, email, password) {
+  verifySignupDetails( req.body.username, req.body.email, hashPass.digest('hex'), hashRepass.digest('hex'), function( err, rc, username, email, password) {
 
     if( err ) {
 
@@ -41,7 +42,7 @@ var userSignup = function( req, res, next ) {
 
       if( rc == SUCCESS ) {
 
-        createNewUser( username, email, password, function( err, user ) {
+        createUser( username, email, password, function( err, user ) {
 
           if( err ) {
 
@@ -50,10 +51,10 @@ var userSignup = function( req, res, next ) {
 
           } else {
 
-            var exp = new Date(Date.now() + 1000 * 60 *2);
+            var exp = new Date(Date.now() + 1000 * 120 * 2);
             var hashUserID = hashUser.digest('hex');
             res.cookie('SID', hashUserID, { expires: exp });
-            req._sessionController.addSession( new sess.Session( user, hashUserID, exp ));
+            req.app._sessionController.addSession( new sess.Session( user, hashUserID, exp ));
 
             // Move to next middleware
             next();
@@ -74,7 +75,7 @@ var userSignup = function( req, res, next ) {
 
 };
 
-var verifyUserInfo = function( username, email, password, repasswd, callback ) {
+var verifySignupDetails = function( username, email, password, repasswd, callback ) {
 
   var SQLquery = "SELECT Username FROM User WHERE Username=\"" + username + "\"";
 
@@ -123,26 +124,5 @@ var verifyUserInfo = function( username, email, password, repasswd, callback ) {
 
 };
 
-var createNewUser = function( username, email, password, callback ) {
-
-  var SQLquery = "INSERT INTO User SET ?";
-  var insert = { Username: username, Password: password, Email: email };
-    
-  connection.query( SQLquery, insert, function( err, result ) {
-
-    if( err ) {
-
-      console.log( err );
-      throw err;
-
-    } else {
-
-      callback( err, result );
-
-    }
-
-  });
-
-};
 
 module.exports = userSignup;
