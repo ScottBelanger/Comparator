@@ -19,9 +19,6 @@ var Session = function( user, sessionID, expires ) {
   } else {
     this._expires = new Date( Date.now() + 1000*60*60*2 ); // 2 hour
   }
-
-  console.log( "Session Created:" );
-  console.log( this );
 };
 
 var SessionController = function() {
@@ -31,13 +28,19 @@ var SessionController = function() {
   setInterval( function() {
     garbageCollection( cont )
   }, 1000*30 ); // 30 secs
-
-  console.log( "SessionController Created:" );
-  console.log( this );
 };
 
 SessionController.prototype.addSession = function( session ) {
-  this._sessions.push( session );
+  var session_exists = false;
+  this._sessions.forEach( function( _session ) {
+	 if( _session._sessionID == session._sessionID) {
+		 session_exists = true;
+	 }
+  });
+  
+  if(!session_exists) {
+	this._sessions.push( session );
+  }
 };
 
 SessionController.prototype.deleteSession = function( sessionID, sessionController, callback ) {
@@ -58,12 +61,9 @@ SessionController.prototype.refreshSession = function( sessionID ) {
 
 var garbageCollection = function( sessionController ) {
 
-  console.log( "Garbage Collection Running." );
-
   sessionController._sessions.forEach( function( session, index, array ) {
     if( session._expires < Date.now() ) {
       sessionController.deleteSession( session._sessionID, sessionController );
-      console.log( "Object deleted" );
     }
 
   });
