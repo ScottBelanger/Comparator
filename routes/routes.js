@@ -55,7 +55,15 @@ router.get('/residentialComparator', auth.isAuthenticated, function(req, res, ne
  * Response:    Send return code to client.
  */
 router.post('/login',  userActions.userLogin, function(req, res, next) {
-  res.send( JSON.stringify(res.login_status) );
+  if( res.login_status == auth_defines.SUCCESS ) {
+    req.app._sessionController._sessions.forEach( function( session ) {
+      if(session._sessionID == req.cookies.SID) {
+        res.send(JSON.stringify(session._user));
+      }
+    });
+  } else {
+    res.send( JSON.stringify(res.login_status) );
+  }
 });
 
 /* GET logout.
