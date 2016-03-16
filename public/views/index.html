@@ -55,15 +55,14 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav" style="float:none">
-            <li><a href="#" style="color: #ffffff; font-size:25px">Home</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px">Your Profile<span class="caret"></span></a>
+              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden"><span class="caret"></span></a>
               <ul class="dropdown-menu" style="font-size:25px">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
                 <li><a href="#">Something else here</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
+                <li><a href="#">Account Settings</a></li>
               </ul>
             </li>
           </ul>
@@ -71,7 +70,7 @@
       </nav>
     </div>
     
-    <div class="col-md-3">
+    <div id="signUpBox" class="col-md-3" style="visibility:show">
       <h1 style="color:white; font-size:25px" align="center">Sign In</h1>
       <ul class="nav navbar-nav" style="float:right">
         <div style="margin-bottom: 20px" class="input-group" >
@@ -82,30 +81,41 @@
           <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span> 
           <input id="login-password" type="password" class="form-control" name="password" placeholder="password" style="font-size:20px">
         </div> 
-        <button id="btn-login" class="btn btn-success" align="right" style="font-size: 25px; margin-bottom:5px;">Login </button>
-        <script type="text/javascript">
-          $(document).ready(function() {
-            $("#btn-login").click( function() {
-              var username = $("#login-username").val(); 
-              var password = $("#login-password").val();
+        <div class="container-fluid">
+          <div class class="row-fluid">
+            <div class="col-sm-4" style="text-align:center"> 
+                <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 25px; margin-bottom:5px;">Login </button>
+                <script type="text/javascript">
+                  $(document).ready(function() {
+                    $("#btn-login").click( function() {
+                      var username = $("#login-username").val(); 
+                      var password = $("#login-password").val();
 
-              $.ajax({
-                  type: 'POST',
-                  url: '/login',
-                  data: { username: username, password: password }
-                  }).done(function(data){
-                    console.log(data);
+                      $.ajax({
+                          type: 'POST',
+                          url: '/login',
+                          data: { username: username, password: password }
+                          }).done(function(data){
+                            console.log(data);
+                          });
+                    });
                   });
-            });
-          });
-        </script>
-        <div style="position:relative; font-size: 30px; display:inline-block;"><a href="#">Forgot password?</a>
-        <a href="#" id="manualEnter" style="font-size:30px; display:inline-block; " data-toggle="modal" data-target="#manualTable">Sign Up</a>
-          <div id="manualTable" class="modal fade" role="dialog" style="font-size: 20px;">>
+                </script>
+            </div>
+            <div class="col-sm-4" style="text-align:center"> 
+              <div style="position:relative; font-size: 25px; display:inline-block;" data-toggle="modal" data-target="#forgotPasswordModal"><a href="#">Forgot password?</a>
+              </div>
+            </div>
+            <div class="col-sm-4" style="text-align:center"> 
+              <a href="#" id="manualEnter" style="font-size:25px; display:inline-block; " data-toggle="modal" data-target="#signupModal">Sign Up</a>
+            </div>
+          </div>
+        </div>
+          <div id="signupModal" class="modal fade" role="dialog" style="font-size: 20px;">>
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  Welcome to sign up!
+                  Sign Up Here
                 </div>
                 <div class="modal-body">
                   <form id="signupform" class="form-horizontal" role="form">
@@ -167,6 +177,40 @@
               </div>
             </div>
           </div>
+          <div id="forgotPasswordModal" class="modal fade" role="dialog" style="font-size: 20px;">>
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  Please enter a valid username and email.
+                  Reset Instructions will be sent to the email.
+                </div>
+                <div class="modal-body">
+                  <form id="signupform" class="form-horizontal" role="form">
+                    <div id="signupalert" style="display:none" class="alert alert-danger">
+                      <p>Error:</p>
+                      <span></span>
+                    </div>
+                    <div class="form-group">
+                      <label for="username" class="col-md-3 control-label">Username</label>
+                      <div class="col-md-9">
+                        <input id="signup-username" type="text" class="form-control" name="firstname" placeholder="Username">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="email" class="col-md-3 control-label">Email</label>
+                      <div class="col-md-9">
+                        <input id="signup-email" type="text" class="form-control" name="email" placeholder="Email Address">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button id="signup-button" type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </ul>
     </div>
@@ -197,7 +241,7 @@
       <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
         <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
           <div class="panel-title" >
-            <<a href="#" id="residentialComparator" style="color: #ffffff; margin-right:30px; font-size:30px"><span class="glyphicon glyphicon-play"></span>Residential Page</a>
+            <a href="#" id="residentialComparator" style="color: #ffffff; margin-right:30px; font-size:30px"><span class="glyphicon glyphicon-play"></span>Residential Page</a>
             <script type="text/javascript">
               document.getElementById("residentialComparator").onclick = function() {
                 location.href = "http://" + window.location.host + "/residentialComparator";
@@ -224,61 +268,32 @@
   </div>
 </div>
 
-<!--
-<div class="container-fluid" style="background: rgba(0,0,0,0.5);">
-  <div class="container-fluid" style="max-width:80%;">
-    <h1 style="color:White; margin-top:30px" align="center">How to get started!</h1>
-    <div class="row vdivide">
-      <hr style="border-color:#b8b894; border-width:5px 0">
-      <h3 style="color:white">Input information in a variety of ways!</h3>
-      <div class="col-sm-4 text-center" style="border-right: 1px solid #ccc;">
-        <div class="glyphicon glyphicon-leaf" style="color:green; font-size:30px; margin-top:30px" align="center" data-toggle="tooltip">
-          <h1 data-toggle="tooltip" title="Green Button Stuff" style="color:#ffffff">Upload Green Button Data</h1>
-          <script>
-          $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
-          });
-          </script>
-        </div>
-      </div>
-      <div class="col-sm-4 text-center" style="border-right: 1px solid #ccc; color:white">
-        <div class="glyphicon glyphicon-list-alt" style="color:green; font-size:30px; margin-top:30px" align="center" data-toggle="tooltip">
-          <h1 data-toggle="tooltip" title="Manual Stuff" style="color:#ffffff">Enter Data Manually</h1>
-          <script>
-          $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
-          });
-          </script>
-        </div>
-      </div>
-      <div class="col-sm-4 text-center" style="color:white">
-        <div class="glyphicon glyphicon-arrow-up" style="color:green; font-size:30px; margin-top:30px" align="center" data-toggle="tooltip">
-          <h1 data-toggle="tooltip" title="CSV File Stuff" style="color:#ffffff">Upload a CSV File</h1>
-          <script>
-          $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip(); 
-          });
-          </script>
-        </div>
-      </div>
-    </div>
-    <hr style="border-color:#b8b894; border-width:5px 0; margin-top:10px">
-    <h3 style="color:white; margin-top:30px">Select a rate type to work with!</h3>
-    
-  </div>    
-</div> -->
-
 <!-- Site footer -->
 <footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5); ">
   <div class="container clear-top">
-    <div class="col-md-4">
-      <h3><span class="glyphicon glyphicon-info-sign"></span>About Us</h3>
+    <div class="col-md-4" style="text-align:center">
+      <a href="#" id="aboutus" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-info-sign"></span>About Us</a>
+      <script type="text/javascript">
+      document.getElementById("aboutus").onclick = function () {
+        location.href = "http://" + window.location.host + "/aboutUsPage.html";
+      };
+      </script>
     </div>
-    <div class="col-md-4">
-      <h3><span class="glyphicon glyphicon-lock"></span>Privacy Information</h3>
+    <div class="col-md-4" style="text-align:center">
+      <a href="#" id="privacyInfo" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-lock"></span>Privacy Information</a>
+      <script type="text/javascript">
+      document.getElementById("privacyInfo").onclick = function () {
+        location.href = "http://" + window.location.host + "/privacyInfoPage.html";
+      };
+      </script>
     </div>
-    <div class="col-md-4">
-      <h3><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</h3>
+    <div class="col-md-4" style="text-align:center">
+      <a href="#" id="terms" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</a>
+      <script type="text/javascript">
+      document.getElementById("terms").onclick = function () {
+        location.href = "http://" + window.location.host + "/termsPage.html";
+      };
+      </script>
     </div>
   </div>
 </footer>
