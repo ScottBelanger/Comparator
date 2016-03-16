@@ -36,12 +36,12 @@ rb.addCost( cost );
 rb.setPricingModel( pm );
 rb.setId( 1 );
 rb.setDescription( "Rate Bundle 1" );
-uc.comparison.setId( 1 );
-uc.comparison.setDescription( "Usage Comparison 1" );
+uc.setId( 1 );
+uc.setDescription( "Usage Comparison 1" );
 uc.addUsageBundle( ub );
 uc.setPricingModel( pm );
-rc.comparison.setId( 1 );
-rc.comparison.setDescription( "Rate Comparison 1" );
+rc.setId( 1 );
+rc.setDescription( "Rate Comparison 1" );
 rc.addRateBundle( rb );
 rc.setEnergyUsage( eu );
 

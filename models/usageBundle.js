@@ -1,5 +1,5 @@
-var Cost        = require( './Cost' );
-var EnergyUsage = require( './EnergyUsage' );
+var Cost        = require( './cost' );
+var EnergyUsage = require( './energyUsage' );
 
 var UsageBundle = function() {
   /* ===== UsageBundle Fields ===== */
@@ -39,6 +39,10 @@ UsageBundle.prototype.getCost = function( time, amount ) {
 
 UsageBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
+};
+
+UsageBundle.prototype.setCostArr = function( costArr ) {
+  this.cost = costArr;
 };
 
 UsageBundle.prototype.setCost = function( time, amount ) {

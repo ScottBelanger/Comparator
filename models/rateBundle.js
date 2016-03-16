@@ -1,5 +1,5 @@
-var Cost         = require( './Cost' );
-var PricingModel = require( './PricingModel' );
+var Cost         = require( './cost' );
+var PricingModel = require( './pricingModel' );
 
 var RateBundle = function() {
   /* ===== RateBundle Fields ===== */
@@ -40,6 +40,10 @@ RateBundle.prototype.getCost = function( time, amount ) {
 RateBundle.prototype.addCost = function( cost ) {
   this.cost.push( cost );
 };
+
+RateBundle.prototype.setCostArr = function( costArr ) {
+  this.cost = costArr;
+}
 
 RateBundle.prototype.setCost = function( time, amount ) {
   var costPt = null;
