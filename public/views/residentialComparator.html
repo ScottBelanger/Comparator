@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="comparisonPage" lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,14 +11,16 @@
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
-    
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+	<script src="controllers/comparisonPage.js"></script>
+	<script src="controllers/pricingModelController.js"></script>
+	<script src="controllers/pmSelectionController.js"></script>
     <script>
       function showCharts() {
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
         document.getElementById("TimeCostGraph").style.visibility = "visible";
       }
     </script>
-    
     <style type="text/css">
        a:link {color: none;
                 text-decoration: none;
@@ -464,66 +466,72 @@
 
 <div class="container-fluid">
   <div class="row" style="padding-top:3%">
-    <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
-      <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
-        <div class="panel-title" style="text-align:center">
-          <h1 style="color: #ffffff">Select a Rate Type</h1>
-        </div>
+  <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+    <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+      <div class="panel-title" style="text-align:center">
+        <h1 style="color: #ffffff">Select a pricing model!</h1>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container-fluid">
-  <div class="row" style="padding-bottom:5%">
-    <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Country</label>
-      <div class="selectContainer">
-        <select class="form-control" style="font-size: 20px;">
-          <option value="cad">Canada</option>
-          <option value="usa">United States</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Region</label>
-      <div class="selectContainer">
-        <select class="form-control" style="font-size: 20px;">
-          <option value="">Toronto</option>
-          <option value="">Hamilton</option>
-          <option value="">Vancouver</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">LDC</label>
-      <div class="selectContainer">
-        <select class="form-control" style="font-size: 20px;">
-          <option value="">Hydro One</option>
-          <option value="">The Best Energy</option>
-          <option value="">Kill me now</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <label class="control-label" style="font-size:25px; color: #ffffff;">Rate Types</label>
-      <div class="selectContainer">
-        <select class="form-control" style="font-size: 20px;">
-          <option value="">Tiered</option>
-          <option value="">Time of Use</option>
-        </select>
-      </div>
-    </div>
-  </div>
+<!-- Needed an extra divs in the section here to help with controller scope -->
+<div ng-controller="pricingModelController as pmCtrl">
+
+<div class="row" style="padding-bottom:5%">
+    <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
+		<label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
+	</div>
 </div>
+
+<div ng-repeat="row in pmCtrl.rows">
+<div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
 
 <div class="container-fluid">
   <div class="row" style="padding-bottom:5%">
-    <div class="col-md-4" style="text-align:center">
-        <div class="container-fluid" style="text-align:center">
-          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-check"></span>Submit</a>
-        </div>
+    <div class="col-md-3" style="text-align:center">
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
+            <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
+        </select>
+      </div>
     </div>
+    <div class="col-md-3" style="text-align:center">
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
+            <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
+            <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <div class="selectContainer">
+        <select class="form-control" name="size" style="font-size: 20px;" 
+				ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
+            <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+        </select>
+      </div>
+    </div>
+	<div class="container-fluid" style="text-align:center">
+		<a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
+	</div>
+  </div>
+</div> <!-- div end for ONE row -->
+</div> <!-- div end for pmSelectionController -->
+</div> <!-- div end for ng-repeat of rows -->
+</div> <!-- div end for pricingModelController -->
+
+<div class="container-fluid">
+  <div class="row" style="padding-bottom:5%">
     <div class="col-md-4" style="text-align:center">
         <div class="container-fluid" style="text-align:center">
           <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Load Comparison</a>
@@ -535,8 +543,7 @@
         </div>
     </div>
   </div>
-</div>  
-
+</div>
 
 <!--This is hiCharts Energy Consumption Graph-->
 <div class="container-fluid" style="padding-top: 4%">
