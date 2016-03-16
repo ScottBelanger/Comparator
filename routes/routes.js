@@ -1,6 +1,7 @@
 // ===== Module Imports =====
 var express         = require('express');
 var path            = require('path');
+var crypto          = require('crypto');
 var userActions     = require('../controller/userActions');
 var auth            = require('../authentication/auth');
 var auth_defines    = require('../authentication/auth_defines');
@@ -59,9 +60,10 @@ router.get('/residentialComparator', auth.isAuthenticated, function(req, res, ne
  * Response:    Send return code to client.
  */
 router.post('/login',  userActions.userLogin, function(req, res, next) {
+  var sessionID = crypto.createHash('sha256').update(req.body.username).digest('hex');
   if( res.login_status == auth_defines.SUCCESS ) {
     req.app._sessionController._sessions.forEach( function( session ) {
-      if(session._sessionID == req.cookies.SID) {
+      if(session._sessionID == sessionID ) {
         res.send(JSON.stringify(session._user));
       }
     });
@@ -79,7 +81,7 @@ router.post('/login',  userActions.userLogin, function(req, res, next) {
  * Response:    Send return code to client.
  */
 router.get('/logout', userActions.userLogout, function(req, res, next) {
-  res.sendFile(path.join(__dirname, '../public/views/', 'index.html'));
+  res.send(res.logout_status);
 });
 
 /* POST signup.
@@ -93,7 +95,16 @@ router.get('/logout', userActions.userLogout, function(req, res, next) {
  * Response:    Send return code to client.
  */
 router.post('/signup', userActions.userSignup, function(req, res, next) {
-  res.send( JSON.stringify(res.signup_status) );
+  var sessionID = crypto.createHash('sha256').update(req.body.username).digest('hex');
+  if( res.signup_status == auth_defines.SUCCESS ) {
+    req.app._sessionController._sessions.forEach( function( session ) {
+      if(session._sessionID == sessionID) {
+        res.send(JSON.stringify(session._user));
+      }
+    });
+  } else {
+    res.send( JSON.stringify(res.signup_status) );
+  }
 });
 
 /* POST comparison/:id
