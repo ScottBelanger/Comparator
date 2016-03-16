@@ -17,11 +17,8 @@ var Session = function( user, sessionID, expires ) {
   if( expires ) {
     this._expires = expires;
   } else {
-    this._expires = Date.now() + 1000*60*60; // 1 hour
+    this._expires = new Date( Date.now() + 1000*60*60*2 ); // 2 hour
   }
-
-  console.log( "Session Created:" );
-  console.log( this );
 };
 
 var SessionController = function() {
@@ -31,13 +28,29 @@ var SessionController = function() {
   setInterval( function() {
     garbageCollection( cont )
   }, 1000*30 ); // 30 secs
-
-  console.log( "SessionController Created:" );
-  console.log( this );
 };
 
 SessionController.prototype.addSession = function( session ) {
-  this._sessions.push( session );
+  var session_exists = false;
+  this._sessions.forEach( function( _session ) {
+	 if( _session._sessionID == session._sessionID) {
+		 session_exists = true;
+	 }
+  });
+  
+  if(!session_exists) {
+	this._sessions.push( session );
+  }
+};
+
+SessionController.prototype.getSession = function( sessionID ) {
+	var rtn_session = null;
+	this._sessions.forEach( function ( session ) {
+		if( session._sessionID == sessionID ) {
+			rtn_session = session;
+		}
+	});
+	return rtn_session;
 };
 
 SessionController.prototype.deleteSession = function( sessionID, sessionController, callback ) {
@@ -51,19 +64,16 @@ SessionController.prototype.deleteSession = function( sessionID, sessionControll
 SessionController.prototype.refreshSession = function( sessionID ) {
   this._sessions.forEach( function( session ) {
     if( session._sessionID == sessionID ) {
-      session._expires = Date.now() + 1000*60*120; // 2 hours
+      session._expires = new Date(Date.now() + 1000*60*60*2); // 2 hours
     }
   });
 };
 
 var garbageCollection = function( sessionController ) {
 
-  console.log( "Garbage Collection Running." );
-
   sessionController._sessions.forEach( function( session, index, array ) {
     if( session._expires < Date.now() ) {
       sessionController.deleteSession( session._sessionID, sessionController );
-      console.log( "Object deleted" );
     }
 
   });
