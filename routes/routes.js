@@ -19,6 +19,10 @@ router.get('/', auth.isAuthenticated, function(req, res, next) {
   res.sendFile(path.join(__dirname, '../public/views/', 'index.html'));
 });
 
+router.get('/aboutUsPage', function( req, res,  next ) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'aboutUsPage.html'));
+});
+
 /* GET commercial comparison page. 
  * 
  * Description: Services GET request made to /commercialComparator by client. 
