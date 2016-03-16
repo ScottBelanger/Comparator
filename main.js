@@ -13,7 +13,7 @@ var routes = require('./routes/routes');
 
 
 // view engine setup
-//app.set('views', path.join(__dirname, 'views'));
+//app.set('views', path.join(__dirname, 'public/views'));
 
 // Currently we do not want to use jade, all webpages will be
 // served as static html.
