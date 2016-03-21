@@ -132,27 +132,30 @@ var insertUsageBundle = function( usageBundle, callback ) {
   var firstCost = true;
   var costId = null;
 
-  costArr.forEach( function( cost ) {
+  costArr.forEach( function( cost, index, array ) {
     if( cost.isNew ) {
-      insertCost( cost, id, function( err, rc, id ) {
+      insertCost( cost, id, function( err, id ) {
         if( firstCost ) {
           costId = id;
+		  firstCost = false;
         }
         cost.setId( costId );
-        costDone = true;
+		if( index == array.length - 1 ) {
+          costDone = true;
+		}
         if( costDone && energyUsageDone ) {
-          callback( null, rc, id );
+          callback( null, id );
         }
       });
     }
   });
 
   if( energyUsage.isNew ) {
-    insertEnergyUsage( energyUsage, function( err, rc, id ) {
+    insertEnergyUsage( energyUsage, function( err, id ) {
       energyUsage.setId( id );
       energyUsageDone = true;
       if( costDone && energyUsageDone ) {
-        callback( null, rc, id );
+        callback( null, id );
       }
     });
   }
@@ -161,11 +164,37 @@ var insertUsageBundle = function( usageBundle, callback ) {
 var insertEnergyUsage = function( energyUsage, callback ) {
   var consumptionArr = energyUsage.consumption;
   var demandArr = energyUsage.demand;
+  var firstConsumptionDemand = true;
+  var energyUsageId = null;
+  
+  var sql = "INSERT INTO EnergyUsage SET ?";
+  var insert = null;
 
   consumptionArr.forEach( function( consumption, index, array ) {
-    insertConsupmtionDemand( consumption, demandArr[index], function( err, rc, id ) {
-      callback( err, rc, id );
-    });
+	if( consumptionArr[index] ) {
+		if(firstConsumptionDemand) {
+		  insert = {Time: consumptionArr[index].Time, Consumption: consumptionArr[index].amount};
+		} else {
+		  insert = {ID: energyUsageID, Time: consumptionArr[index].Time, Consumption: consumptionArr[index].amount};
+		}
+	}
+	if( demandArr[index]) {
+		insert.Demand = demandArr[index].amount;
+	}
+	connection.query(sql, insert, function(err, result) {
+	  if(err) {
+		  console.log(err);
+		  throw err;
+	  } else {
+	    if(firstConsumptionDemand) {
+		    energyUsageID = result.insertId;
+		    firstConsumptionDemand = false;
+	    }
+	  }
+	});
+	if(index == array.length - 1) {
+		callback(null, energyUsageID);
+	}
   });
 
 };
@@ -177,20 +206,28 @@ var insertPricingModel = function( pricingModel, callback ) {
 
 var insertCost = function( cost, id, callback ) {
 
-  var insertId = null;
-
-  if( id ) {
-    insertId = id;
+  var sql = "INSERT INTO Cost SET ?";
+  var insert = null;
+  
+  if(id) {
+    // Insert with given ID
+	insert = {ID : id, Time : cost.time, Cost : cost.amount};
+  } else {
+	// Use generated ID
+	insert = {Time : cost.time, Cost : cost.amount};
+	
   }
-
-  //SQL insert
-  callback( err, rc, insertId );
-
-};
-
-var insertConsumptionDemand = function( consumption, demand, callback ) {
-
-
+  
+  connection.query(sql, insert, function( err, result ) {
+	if(err) {
+	  console.log(err);
+	  throw err;
+    } else {
+	  cost.isNew = false;
+	  cost.needUpdate = false;
+	  callback( null, result.insertId );
+    }
+  });
 };
 
 var updateComparison = function( userID, comparison, callback ) {

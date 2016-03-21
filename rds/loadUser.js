@@ -709,6 +709,7 @@ var getCost = function( costID, callback ) {
         var cost = new Cost();
         costArr.push( cost );
         cost.setPoint( item.Time, item.Cost );
+		cost.setId( costID );
 
         costCount++;
 

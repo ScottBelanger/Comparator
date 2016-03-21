@@ -5,6 +5,7 @@ var EnergyUsage = function() {
 /* ===== EnergyUsage Fields ===== */
   this.consumption = [];
   this.demand      = [];
+  this.id          = 0;
   this.isNew       = true;
   this.needsUpdate = true;
 };
@@ -28,6 +29,10 @@ EnergyUsage.prototype.getConsumption = function( time ) {
   // Returns null if consumption does not exist
   return conPt;
 };
+
+EnergyUsage.prototype.setId = function(id) {
+	this.id = id;
+}
 
 EnergyUsage.prototype.addConsumption = function( consumption ) {
   this.consumption.push( consumption );

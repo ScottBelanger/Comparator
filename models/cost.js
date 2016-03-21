@@ -2,6 +2,7 @@ var Cost = function() {
 /* ===== Cost Fields ===== */
   this.time   = Date();
   this.amount = 0;
+  this.id = 0;
   this.isNew  = true;
   this.needUpdate = true;
 };
@@ -17,5 +18,9 @@ Cost.prototype.getPoint = function() {
            amount : this.amount 
          };
 };
+
+Cost.prototype.setId = function( id ) {
+	this.id = id;
+}
 
 module.exports = Cost;
