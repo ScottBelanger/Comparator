@@ -2,6 +2,8 @@ var Cost = function() {
 /* ===== Cost Fields ===== */
   this.time   = Date();
   this.amount = 0;
+  this.isNew  = true;
+  this.needUpdate = true;
 };
 
 /* ===== Cost Methods ===== */

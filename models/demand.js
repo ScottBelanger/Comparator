@@ -2,6 +2,8 @@ var Demand = function() {
 /* ===== Demand Fields ===== */
   this.time   = Date();
   this.amount = 0;
+  this.isNew  = true;
+  this.needsUpdate = true;
 };
 
 /* ===== Demand Methods ===== */

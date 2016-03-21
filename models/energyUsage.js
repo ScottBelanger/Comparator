@@ -5,6 +5,8 @@ var EnergyUsage = function() {
 /* ===== EnergyUsage Fields ===== */
   this.consumption = [];
   this.demand      = [];
+  this.isNew       = true;
+  this.needsUpdate = true;
 };
 
 /* ===== EnergyUsage Methods ===== */

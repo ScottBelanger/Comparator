@@ -8,6 +8,8 @@ var util         = require('util');
 var Comparison = function() {
   this.id          = 0;
   this.description = "";
+  this.isNew       = true;
+  this.needsUpdate = true;
 };
 
 /* ===== Comparison Methods ===== */

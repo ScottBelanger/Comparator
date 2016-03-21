@@ -4,6 +4,8 @@ var PricingModel = function() {
   this.LDC      = "";
   this.country  = "";
   this.city     = "";
+  this.isNew    = true;
+  this.needsUpdate = true;
 };
 
 /* ===== PricingModel Methods ===== */

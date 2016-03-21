@@ -2,6 +2,8 @@ var Consumption = function() {
 /* ===== Consumption Fields ===== */
   this.time   = Date();
   this.amount = 0;
+  this.isNew = true;
+  this.needsUpdate = true;
 };
 
 /* ===== Consumption Methods ===== */
