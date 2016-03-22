@@ -21,6 +21,6 @@ Cost.prototype.getPoint = function() {
 
 Cost.prototype.setId = function( id ) {
 	this.id = id;
-}
+};
 
 module.exports = Cost;

@@ -1,5 +1,6 @@
 /* ===== PricingModel Fields ===== */
 var PricingModel = function() {
+  this.id = 0;
   this.rateType = "";
   this.LDC      = "";
   this.country  = "";
