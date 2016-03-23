@@ -9,9 +9,6 @@ var Demand      = require( '../models/demand' );
 var Cost        = require( '../models/cost' );
 var Comparison  = require( '../models/comparison' );
 
-// ===== Globals =====
-var _user = null; // User object to be used throughout this file.
-
 var saveComparison = function( userID, comparison, isNew, callback ) {
 
   if( isNew ) {
@@ -28,19 +25,19 @@ var saveComparison = function( userID, comparison, isNew, callback ) {
 var insertComparison = function( userID, comparison, callback ) {
   
   if( comparison.rateBundle ) {
-    insertRateComparison(userID, comparison, function() {
-      
+    insertRateComparison(userID, comparison, function(err, id) {
+      comparison.id = id;
+      callback();
     });
   } else if ( comparison.usageBundle ) {
     insertUsageComparison(userID, comparison, function(err, id) {
-		comparison.id = id;
-		callback();
+      comparison.id = id;
+      callback();
     });
   } else {
-	  console.log(comparison);
+    console.log(comparison);
     throw new Error( "No comparison type" );
   }
-
 };
 
 var insertRateComparison = function( userID, rateComparison, callback ) {
@@ -85,72 +82,73 @@ var insertUsageComparison = function( userID, usageComparison, callback ) {
           throw err;
         } else {
           usageBundle.id = id;
-		  usageBundleIdArr.push(id);
-		  if(index == array.length - 1) {
-			  usageBundleDone = true;
-		  }
+	  usageBundleIdArr.push(id);
+
+	  if(index == array.length - 1) {
+	    usageBundleDone = true;
+	  }
+
           if(usageBundleDone && pricingModelDone) {
-			  usageBundleIdArr.forEach(function( usageBundleId, index1, array1 ) {
-				if(firstComparison) {
-				  insert = {UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
-				} else {
-				  insert = {ID: comparisonID, UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
-				}
-				
-				connnection.query(sql, insert, function( err, result ) {
-					if(err) {
-						console.log(err);
-						throw err;
-					} else {
-						if(firstComparison) {
-							comparisonID = result.insertId;
-						}
-						
-						if( index1 == array1.length - 1) {
-							callback( null, comparisonID);
-						}
-					}
-				});
-			  });
+	    usageBundleIdArr.forEach(function( usageBundleId, index1, array1 ) {
+	      if(firstComparison) {
+	        insert = {UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
+              } else {
+	        insert = {ID: comparisonID, UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
+	      }
+	      connnection.query(sql, insert, function( err, result ) {
+	        if(err) {
+		  console.log(err);
+		  throw err;
+		} else {
+	          if(firstComparison) {
+		    comparisonID = result.insertId;
 		  }
+						
+	          if( index1 == array1.length - 1) {
+		    callback( null, comparisonID);
+		  }
+		}
+	      });
+	    });
+	  }
         }
       });
     }
   });
+
   if( pricingModel.isNew ) {
-	  insertPricingModel( pricingModel, function(err, id) {
-		  if(err) {
-			  console.log(err);
-			  throw err;
-		  } else {
-			  pricingModel.id = pricingModelId = id;
-			  pricingModelDone = true;
-			  if(usageBundleDone && pricingModelDone) {
-				usageBundleIdArr.forEach(function( usageBundleId, index1, array1 ) {
-				if(firstComparison) {
-				  insert = {UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
-				} else {
-				  insert = {ID: comparisonID, UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
-				}
+    insertPricingModel( pricingModel, function(err, id) {
+      if(err) {
+        console.log(err);
+        throw err;
+      } else {
+        pricingModel.id = pricingModelId = id;
+        pricingModelDone = true;
+        if(usageBundleDone && pricingModelDone) {
+          usageBundleIdArr.forEach(function( usageBundleId, index1, array1 ) {
+	    if(firstComparison) {
+	      insert = {UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
+	    } else {
+	      insert = {ID: comparisonID, UserID: userID, PricingModelID: pricingModelId, ComparisonType: 1, UsageBundleID: usageBundleId };
+	    }
 				
-				connection.query(sql, insert, function( err, result ) {
-					if(err) {
-						console.log(err);
-						throw err;
-					} else {
-						if(firstComparison) {
-							comparisonID = result.insertId;
-						}
-						
-						if( index1 == array1.length - 1) {
-							callback( null, comparisonID);
-						}
-					}
-				});
-			  });  
-			  }
-		  }
-	  });
+	    connection.query(sql, insert, function( err, result ) {
+	      if(err) {
+	        console.log(err);
+	        throw err;
+	      } else {
+	        if(firstComparison) {
+	          comparisonID = result.insertId;
+		}
+	        if( index1 == array1.length - 1) {
+	          callback( null, comparisonID);
+		}
+	      }
+	    });
+	  });  
+	}
+      }
+    });
   }
 };
 
@@ -172,14 +170,14 @@ var insertRateBundle = function( rateBundle, callback ) {
         cost.setId( costId );
         costDone = true;
         if( costDone && pricingModelDone ) {
-			connection.query("INSERT INTO RateBundle SET ?", {PricingModelID: pricingModelId, CostID: costId}, function(err, result) {
-				if(err) {
-					console.log(err);
-					throw err;
-				} else {
-					callback(null, result.insertId);
-				}
-			});
+	  connection.query("INSERT INTO RateBundle SET ?", {PricingModelID: pricingModelId, CostID: costId}, function(err, result) {
+	    if(err) {
+	      console.log(err);
+	      throw err;
+	    } else {
+	      callback(null, result.insertId);
+	    }
+	  });
         }
       });
     }
@@ -187,18 +185,17 @@ var insertRateBundle = function( rateBundle, callback ) {
 
   if( pricingModel.isNew ) {
     insertPricingModel( pricingModel, function( err, id ) {
-      pricingModel.setId( id );
-	  pricingModelId = id;
+      pricingModel.id = pricingModelId = id;
       pricingModelDone = true;
       if( costDone && pricingModelDone ) {
-		connection.query("INSERT INTO RateBundle SET ?", {PricingModelID: pricingModelId, CostID: costId}, function(err, result) {
-			if(err) {
-				console.log(err);
-				throw err;
-			} else {
-				callback(null, result.insertId);
-			}
-		});
+        connection.query("INSERT INTO RateBundle SET ?", {PricingModelID: pricingModelId, CostID: costId}, function(err, result) {
+          if(err) {
+	    console.log(err);
+	    throw err;
+	  } else {
+	    callback(null, result.insertId);
+	  }
+	});
       }
     });
   }
@@ -219,22 +216,22 @@ var insertUsageBundle = function( usageBundle, callback ) {
       insertCost( cost, costId, function( err, id ) {
         if( firstCost ) {
           costId = id;
-		  firstCost = false;
+	  firstCost = false;
         }
         cost.id = costId;
-		if( index == array.length - 1 ) {
+        if( index == array.length - 1 ) {
           costDone = true;
-		}
+	}
         if( costDone && energyUsageDone ) {
-		  insert = {CostID: costId, EnergyUsageID: energyUsage.id};
-		  connection.query(sql, insert, function(err, result) {
-			  if(err) {
-				  console.log(err);
-				  throw err;
-			  } else {
-			    callback( null, result.insertId );
-			  }
-		  });
+	  insert = {CostID: costId, EnergyUsageID: energyUsage.id};
+          connection.query(sql, insert, function(err, result) {
+            if(err) {
+              console.log(err);
+              throw err;
+            } else {
+              callback( null, result.insertId );
+            }
+          });
         }
       });
     }
@@ -245,15 +242,15 @@ var insertUsageBundle = function( usageBundle, callback ) {
       energyUsage.id = id
       energyUsageDone = true;
       if( costDone && energyUsageDone ) {
-		insert = {CostID: costId, EnergyUsageID: energyUsage.id};
-		connection.query(sql, insert, function(err, result){
-		  if(err) {
-			console.log(err);
-			throw err;
-		  } else {
-		    callback( null, result.insertId );
-		  }
-	    });
+        insert = {CostID: costId, EnergyUsageID: energyUsage.id};
+	connection.query(sql, insert, function(err, result){
+	  if(err) {
+	    console.log(err);
+	    throw err;
+	  } else {
+	    callback( null, result.insertId );
+	  }
+	});
       }
     });
   }
@@ -269,35 +266,34 @@ var insertEnergyUsage = function( energyUsage, callback ) {
   var insert = null;
 
   consumptionArr.forEach( function( consumption, index, array ) {
-	if( consumption ) {
-		if(firstConsumptionDemand) {
-		  insert = {Time: consumption.time, Consumption: consumption.amount};
-		} else {
-		  insert = {ID: energyUsageID, Time: consumption.time, Consumption: consumption.amount};
-		}
+    if( consumption ) {
+      if(firstConsumptionDemand) {
+        insert = {Time: consumption.time, Consumption: consumption.amount};
+      } else {
+        insert = {ID: energyUsageID, Time: consumption.time, Consumption: consumption.amount};
+      }
+    }
+    if( demandArr[index]) {
+      insert.Demand = demandArr[index].amount;
+    }
+    connection.query(sql, insert, function(err, result) {
+      if(err) {
+        console.log(err);
+	throw err;
+      } else {
+        if(firstConsumptionDemand) {
+          energyUsageID = result.insertId;
+	  firstConsumptionDemand = false;
 	}
-	if( demandArr[index]) {
-		insert.Demand = demandArr[index].amount;
+		
+	consumption.isNew = consumption.needUpdate = false;
+	demandArr[index].isnew = demandArr.needUpdate = false;
+		
+        if(index == array.length - 1) {
+	  callback(null, energyUsageID);
 	}
-	connection.query(sql, insert, function(err, result) {
-	  if(err) {
-		  console.log(err);
-		  throw err;
-	  } else {
-	    if(firstConsumptionDemand) {
-		    energyUsageID = result.insertId;
-		    firstConsumptionDemand = false;
-	    }
-		
-		consumption.isNew = consumption.needUpdate = false;
-		demandArr[index].isnew = demandArr.needUpdate = false;
-		
-		if(index == array.length - 1) {
-		  callback(null, energyUsageID);
-	    }
-	  }
-	});
-
+      }
+    });
   });
 };
 
@@ -308,91 +304,91 @@ var insertPricingModel = function( pricingModel, callback ) {
   var insert = null;
   
   connection.query(sql1, function(err, LDCrows, fields) {
-	if(err) {
-		console.log(err);
-		throw err;
-	} else {
-		if(LDCrows[0]) {
-			connection.query(sql2, function(err, RTrows, fields) {
-				if(err) {
-					console.log(err);
-					throw err;
-				} else {
-					if(RTrows[0]) {
-						insert = {LDCID: LDCrows[0].ID, RateTypeID: RTrows[0].ID};
-						connection.query(sql3, insert, function(err, result) {
-							if(err) {
-								console.log(err);
-								throw err;
-							} else {
-								callback(null, result.insertId);
-							}
-						});
-					} else {
-						connection.query("INSERT INTO RateType SET ?", {Name: pricingModel.rateType}, function(err, result3) {
-							if(err) {
-								console.log(err);
-								throw err;
-							} else {
-								insert = {LDCID: LDCrows[0].ID, RateTypeID: result3.insertId};
-								connection.query(sql3, insert, function(err, result4) {
-									if(err) {
-										console.log(err);
-										throw err;
-									} else {
-										callback(null, result4.insertId);
-									}
-								});
-							}
-						});
-					}
-				}
-			});
+    if(err) {
+      console.log(err);
+      throw err;
+    } else {
+      if(LDCrows[0]) {
+        connection.query(sql2, function(err, RTrows, fields) {
+          if(err) {
+	    console.log(err);
+	    throw err;
+	  } else {
+	    if(RTrows[0]) {
+	      insert = {LDCID: LDCrows[0].ID, RateTypeID: RTrows[0].ID};
+	      connection.query(sql3, insert, function(err, result) {
+	        if(err) {
+	          console.log(err);
+		  throw err;
 		} else {
-			connection.query("INSERT INTO LDC SET ?", {Name: pricingModel.LDC}, function(err, result1) {
-				if(err) {
-					console.log(err);
-					throw err;
-				} else {
-					connection.query(sql2, function(err, RTrows, fields) {
-						if(err) {
-							console.log(err);
-							throw err;
-						} else {
-							if(RTrows[0]) {
-								insert = {LDCID: result1.insertId, RateTypeID: RTrows[0].ID};
-								connection.query(sql3, insert, function(err, result2) {
-									if(err) {
-										console.log(err);
-										throw err;
-									} else {
-										callback(null, result2.insertId);
-									}
-								});
-							} else {
-								connection.query("INSERT INTO RateType SET ?", {Name: pricingModel.rateType}, function(err, result3) {
-									if(err) {
-										console.log(err);
-										throw err;
-									} else {
-										insert = {LDCID: result1.insertId, RateTypeID: result3.insertId};
-										connection.query(sql3, insert, function(err, result4) {
-											if(err) {
-												console.log(err);
-												throw err;
-											} else {
-												callback(null, result4.insertId);
-											}
-										});
-									}
-								});
-							}
-						}
-					});
-				}
-			});
+	          callback(null, result.insertId);
 		}
-	}
+	      });
+	    } else {
+	      connection.query("INSERT INTO RateType SET ?", {Name: pricingModel.rateType}, function(err, result3) {
+	        if(err) {
+	          console.log(err);
+		  throw err;
+		} else {
+	          insert = {LDCID: LDCrows[0].ID, RateTypeID: result3.insertId};
+                  connection.query(sql3, insert, function(err, result4) {
+                    if(err) {
+                      console.log(err);
+                      throw err;
+                    } else {
+                      callback(null, result4.insertId);
+                    }
+                  });
+		}
+	      });
+	    }
+	  }
+	});
+      } else {
+        connection.query("INSERT INTO LDC SET ?", {Name: pricingModel.LDC}, function(err, result1) {
+          if(err) {
+	    console.log(err);
+	    throw err;
+	  } else {
+	    connection.query(sql2, function(err, RTrows, fields) {
+	      if(err) {
+	        console.log(err);
+	        throw err;
+	      } else {
+	        if(RTrows[0]) {
+	          insert = {LDCID: result1.insertId, RateTypeID: RTrows[0].ID};
+		  connection.query(sql3, insert, function(err, result2) {
+		    if(err) {
+		      console.log(err);
+		      throw err;
+		    } else {
+		      callback(null, result2.insertId);
+		    }
+		  });
+		} else {
+	          connection.query("INSERT INTO RateType SET ?", {Name: pricingModel.rateType}, function(err, result3) {
+		    if(err) {
+		      console.log(err);
+		      throw err;
+		    } else {
+		      insert = {LDCID: result1.insertId, RateTypeID: result3.insertId};
+		      connection.query(sql3, insert, function(err, result4) {
+		        if(err) {
+		          console.log(err);
+			  throw err;
+			} else {
+		          callback(null, result4.insertId);
+			}
+		      });
+		    }
+		 });
+	       }
+	     }
+	   });
+	 }
+       });
+     }
+   }
   });
 };
 
@@ -403,21 +399,20 @@ var insertCost = function( cost, id, callback ) {
   
   if(id) {
     // Insert with given ID
-	insert = {ID : id, Time : cost.time, Cost : cost.amount};
+    insert = {ID : id, Time : cost.time, Cost : cost.amount};
   } else {
-	// Use generated ID
-	insert = {Time : cost.time, Cost : cost.amount};
-	
+    // Use generated ID
+    insert = {Time : cost.time, Cost : cost.amount};
   }
   
   connection.query(sql, insert, function( err, result ) {
-	if(err) {
-	  console.log(err);
-	  throw err;
+    if(err) {
+      console.log(err);
+      throw err;
     } else {
-	  cost.isNew = false;
-	  cost.needUpdate = false;
-	  callback( null, result.insertId );
+      cost.isNew = false;
+      cost.needUpdate = false;
+      callback( null, result.insertId );
     }
   });
 };
