@@ -6,6 +6,7 @@ var userActions     = require('../controller/userActions');
 var auth            = require('../authentication/auth');
 var auth_defines    = require('../authentication/auth_defines');
 var compActions     = require('../controller/comparisonActions');
+var saveComparison  = require('../rds/saveComparison');
 var router          = express.Router();
 
 /* GET home page. 
@@ -132,7 +133,9 @@ router.post('/comparison', function(req, res, next) {
  * Response:    Send comparison id to client if success.
  */
 router.post('/comparison/new', function(req, res, next) {
-  res.send("Comparison New");
+  saveComparison(req.body.userID, JSON.parse(req.body.comparison), true, function() {
+	 res.send("hello"); 
+  });
 });
 
 /* GET comparison

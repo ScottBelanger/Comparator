@@ -1,9 +1,12 @@
 /* ===== PricingModel Fields ===== */
 var PricingModel = function() {
+  this.id = 0;
   this.rateType = "";
   this.LDC      = "";
   this.country  = "";
   this.city     = "";
+  this.isNew    = true;
+  this.needsUpdate = true;
 };
 
 /* ===== PricingModel Methods ===== */
