@@ -37,7 +37,7 @@ function pmSelectionController($scope, $http) {
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getCitiesInCountry', { params: {country: selectCtrl.countrySelect} } ).then(function(result){
-		selectCtrl.cityList = result.data;
+			selectCtrl.cityList = result.data;
 		}, function(result){
 			// error
 		});
@@ -51,7 +51,7 @@ function pmSelectionController($scope, $http) {
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getLDCsInCity', { params: {city: selectCtrl.citySelect} } ).then(function(result){
-		selectCtrl.ldcList = result.data;
+			selectCtrl.ldcList = result.data;
 		}, function(result){
 			// error
 		});

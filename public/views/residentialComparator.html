@@ -13,8 +13,11 @@
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 	<script src="controllers/comparisonPage.js"></script>
+	<script src="controllers/comparisonMasterController.js"></script>
+	<script src="controllers/energyUsageController.js"></script>
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
+	<script src="controllers/graphController.js"></script>
     <script>
       function showCharts() {
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
@@ -35,7 +38,7 @@
                  outline:none;}    /* selected link */
     </style>
   </head>
-<body>
+<body ng-controller="comparisonMasterController as masterCtrl">
 
 <div class="contaienr-fluid">
 <nav class="navbar" style="position:absolute">
@@ -65,7 +68,6 @@
       </ul>
     </div>
     </div>
-  </div>
 </nav>
 </div>
 
@@ -90,7 +92,7 @@
   </div>
 </div>
 
-<div class="container-fluid" align="center">
+<div class="container-fluid" align="center" ng-controller="energyUsageController as euCtrl">
   <div class="row">
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
@@ -122,13 +124,13 @@
               </div>
               <div class="container-fluid">
               <form>
-                <div class="form-group">
-                  <label class="control-label col-xs-5">0:00 to 1:00am </label>
+                <div class="form-group" ng-repeat="consumption in euCtrl.consumptionArray">
+                  <label class="control-label col-xs-5">{{consumption.time}}</label>
                   <div class="col-xs-7">
-                    <input type="number" class="form-control">
+                    <input type="number" class="form-control" ng-model="consumption.amount">
                   </div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label class="control-label col-xs-5">1:00 to 2:00am </label>
                   <div class="col-xs-7">
                     <input type="number" class="form-control">
@@ -265,12 +267,12 @@
                   <div class="col-xs-7">
                     <input type="number" class="form-control">
                   </div>
-                </div>
+                </div> -->
               </form>
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="euCtrl.submitDaily()">Submit</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -546,89 +548,31 @@
 </div>
 
 <!--This is hiCharts Energy Consumption Graph-->
-<div class="container-fluid" style="padding-top: 4%">
+<div class="container-fluid" style="padding-top: 4%" ng-controller="graphController as graphCtrl">
   <div class="row" >
     <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
       </div>
       
-      <!--Javascript for highchart, draggable chart -->
+      <!-- <!--Javascript for highchart, draggable chart
       <script type="text/javascript">
-        var chart = new Highcharts.Chart({
-          chart: {
-            renderTo: 'EnergyRateConsumption',
-            animation: false
-          },
-          title: {
-            text: 'Energy Rate Consumption'
-          },
-          xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            
-          },
-          plotOptions: {
-            
-            column: {
-              stacking: 'normal'
-            },
-            line: {
-              cursor: 'ns-resize'
-            }
-          },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: [{
-            data: [0, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-            draggableY: true,
-            rotation: 90
-          }]
-        });
-      </script>
+        
+      </script> -->
     </div>
   </div>
 </div>
 
 <!--This is hiCharts Time Cost Graph-->
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="graphController as graphCtrl">
   <div class="row" >
     <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-      <div id="TimeCostGraph" style="height: 400px; font-size:15px;">
+      <div id="CostTime" style="height: 400px; font-size:15px;">
       </div>
       
       <!--Javascript for highchart, draggable chart -->
-      <script type="text/javascript">
-        var chart = new Highcharts.Chart({
-          chart: {
-            renderTo: 'TimeCostGraph',
-            animation: false
-          },
-          title: {
-            text: 'Time Cost Graph'
-          },
-          xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            
-          },
-          plotOptions: {
-            
-            column: {
-              stacking: 'normal'
-            },
-            line: {
-              cursor: 'ns-resize'
-            }
-          },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: [{
-            data: [216.4, 100.1, 73, 194.1, 61.1, 144.0, 176.0, 135.6, 148.5, 78.3, 95.6, 123.4],
-            draggableY: true,
-            rotation: 90
-          }]
-        });
-      </script>
+      <!-- <script type="text/javascript">
+        
+      </script> -->
     </div>
   </div>
 </div>
