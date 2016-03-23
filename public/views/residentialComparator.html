@@ -20,66 +20,110 @@
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
         document.getElementById("TimeCostGraph").style.visibility = "visible";
       }
+      
+      function getUsername() {
+        document.getElementById("userProfile").innerHTML = "Welcome, " + localStorage.getItem('username');
+      }
     </script>
     <style type="text/css">
-       a:link {color: none;
-                text-decoration: none;
-                outline:none;}      /* unvisited link */
-       a:visited {color: white;
-                  text-decoration: none;
-                  outline:none;}   /* visited link */
-       a:hover {color: none;
-                text-decoration: none;}     /* mouse over link */
-       a:active {color: none;
-                 text-decoration: none;
-                 outline:none;}    /* selected link */
+      a:link {color: none;
+        text-decoration: none;
+        outline:none;}      /* unvisited link */
+      a:visited {color: white;
+        text-decoration: none;
+        outline:none;}   /* visited link */
+      a:hover {color: none;
+        text-decoration: none;}     /* mouse over link */
+      a:active {color: none;
+        text-decoration: none;
+        outline:none;}    /* selected link */
+      
+      @media (max-width: @screen-xs) {
+        body{font-size: 10px;}
+      }
+
+      @media (max-width: @screen-sm) {
+        body{font-size: 14px;}
+      }
+      
+      @media (max-width: @screen-md) {
+        body{font-size: 16px;}
+      }
     </style>
+    <script type="text/javascript">
+      var checkCookie = function(){
+        if(document.cookie) {
+          $("#userProfile").css("visibility", "visible");
+          $("#rateEngine").css("visibility", "visible");
+          $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+          $("#signUpBox").hide()
+        }
+        else {
+          $("#userProfile").css("visibility", "hidden");
+        }
+      }
+      
+    </script>
+    <body onload="checkCookie()">
+    <body onload="getUsername()">
   </head>
 <body>
 
-<div class="contaienr-fluid">
-<nav class="navbar" style="position:absolute">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
+<div class="container-fluid">
+  <div class="carousel slide carousel-fade" data-ride="carousel">
+    <div class="carousel-inner" role="listbox">
+      <div class="item active">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid " style="max-width:60%; box-shadow: 0 0 30px black; background-color: #00001a;">
+
+<div class="container-fluid" style="max-width:100%">
+<nav class="navbar" style="position:relative">
+    <div class="navbar-header" style="padding-bottom:5%; ">
+      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
       <script type="text/javascript">
       document.getElementById("homePage").onclick = function () {
         location.href = "http://localhost:3000";
       };
       </script>
     </div>
-    
-    <div class="collapse navbar-collapse">
-      <ul class="nav navbar-nav" style="float:none">
-        <li><a href="#" style="color: #ffffff; font-size:25px">Home</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px">Your Profile<span class="caret"></span></a>
-          <ul class="dropdown-menu" style="font-size:25px">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
+  
+    <div class="collapse navbar-collapse" >
+      <ul class="nav navbar-nav dropdown" style="float:none">
+        <a href="#" class="dropdown-toggle" id="userProfile" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px"><span class="caret"></span></a>
+        <ul class="dropdown-menu" style="font-size:25px">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Account Settings</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#" id="logout">Logout</a></li>
+          <script type="text/javascript">
+                $(document).ready(function() {
+                    $("#logout").click(logout);
+                    
+                });
+                var logout = function() {
+                  $("#userProfile").css("visibility", "hidden");
+                  localStorage.clear()
+                  $.ajax({
+                    type: 'GET',
+                    url: '/logout'
+                  });
+                  location.href = "http://localhost:3000";
+                };
+                
+          </script>
+        </ul>
       </ul>
     </div>
-    </div>
-  </div>
 </nav>
 </div>
 
-<div class="container-fluid " style="max-width:60%; box-shadow: 0 0 30px black; background-color: #00001a;">
-
-<div class="carousel slide carousel-fade" data-ride="carousel">
-  <div class="carousel-inner" role="listbox">
-    <div class="item active">
-    </div>
-  </div>
-</div>
-
 <div class="container-fluid">
-  <div class="row-fluid" style="padding-top:15%">
+  <div class="row-fluid" style="padding-top:2%;">
     <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
       <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
         <div class="panel-title" style="text-align:center">
@@ -100,7 +144,7 @@
     </div>
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#hourlyTable"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
-      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">>
+      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
         <div class="modal-dialog" >
           <div class="modal-content">
             <div class="modal-header">
@@ -109,9 +153,9 @@
             <div class="modal-body">
               <button id="calendar" type="button" class="btn btn-default">Calendar</button>
               <script>
-              $(document).ready(function () {
+              /*$(document).ready(function () {
                 $("#calendar").jqxCalendar({theme: "arctic", width:250, height:250});
-              });
+              });*/
               </script>
               <div>
                 Or select an interval you wish to use:
@@ -465,11 +509,12 @@
 </div>
 
 <div class="container-fluid">
-  <div class="row" style="padding-top:3%">
-  <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
-    <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
-      <div class="panel-title" style="text-align:center">
-        <h1 style="color: #ffffff">Select a pricing model!</h1>
+  <div class="row" style="padding-top:3%;">
+    <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+      <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+        <div class="panel-title" style="text-align:center">
+          <h1 style="color: #ffffff">Select a pricing model!</h1>
+        </div>
       </div>
     </div>
   </div>
@@ -478,69 +523,69 @@
 <!-- Needed an extra divs in the section here to help with controller scope -->
 <div ng-controller="pricingModelController as pmCtrl">
 
-<div class="row" style="padding-bottom:5%">
-    <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
-		<label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
-	</div>
-</div>
-
-<div ng-repeat="row in pmCtrl.rows">
-<div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
-
-<div class="container-fluid">
   <div class="row" style="padding-bottom:5%">
-    <div class="col-md-3" style="text-align:center">
-      <div class="selectContainer">
-        <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
-            <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <div class="selectContainer">
-        <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
-            <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <div class="selectContainer">
-        <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
-            <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center">
-      <div class="selectContainer">
-        <select class="form-control" name="size" style="font-size: 20px;" 
-				ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
-            <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
-        </select>
-      </div>
-    </div>
-	<div class="container-fluid" style="text-align:center">
-		<a href="" id="submitBtn" style="font-size:30px; display:inline-block;" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
+    <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
 	</div>
   </div>
-</div> <!-- div end for ONE row -->
-</div> <!-- div end for pmSelectionController -->
-</div> <!-- div end for ng-repeat of rows -->
+
+  <div ng-repeat="row in pmCtrl.rows">
+    <div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
+
+      <div class="container-fluid">
+        <div class="row" style="padding-bottom:5%">
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+			    ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
+                <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
+                <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
+                <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
+                <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+              </select>
+            </div>
+          </div>
+	      <div class="container-fluid" style="text-align:center">
+		    <a href="" id="submitBtn" style="font-size:30px; display:inline-block; padding-top:1%" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
+	      </div>
+        </div>
+      </div> <!-- div end for ONE row -->
+    </div> <!-- div end for pmSelectionController -->
+  </div> <!-- div end for ng-repeat of rows -->
 </div> <!-- div end for pricingModelController -->
 
 <div class="container-fluid">
   <div class="row" style="padding-bottom:5%">
     <div class="col-md-4" style="text-align:center">
-        <div class="container-fluid" style="text-align:center">
-          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Load Comparison</a>
-        </div>
+      <div class="container-fluid" style="text-align:center">
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Load Comparison</a>
+      </div>
     </div>
     <div class="col-md-4" style="text-align:center">
-        <div class="container-fluid" style="text-align:center">
-          <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-gift"></span>Save Comparison</a>
-        </div>
+      <div class="container-fluid" style="text-align:center">
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-gift"></span>Save Comparison</a>
+      </div>
     </div>
   </div>
 </div>
