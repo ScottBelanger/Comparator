@@ -38,14 +38,14 @@ a :visited{
 }
 a { outline: none; }
 
-/* Extra Small Devices, .visible-xs-* */
-@media (max-width: 767px) {}
+@media (max-width: @screen-xs) {
+  body{font-size: 10px;}
+}
 
-/* Small Devices, .visible-sm-* */
-@media (min-width: 768px) and (max-width: 991px) {}
-
-/* Medium Devices, .visible-md-* */
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-/* Large Devices, .visible-lg-* */
-@media (min-width: 1200px) {} 
+@media (max-width: @screen-sm) {
+  body{font-size: 14px;}
+}
+      
+@media (max-width: @screen-md) {
+  body{font-size: 16px;}
+}
