@@ -56,13 +56,68 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav" style="float:none">
             <li class="dropdown">
-              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden"><span class="caret"></span></a>
+              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden;"><span class="caret"></span></a>
               <ul class="dropdown-menu" style="font-size:25px">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
+                <li><a href="#accountSettings" id="accountSettings" data-dismiss="modal" data-toggle="modal">Account Settings</a></li>
+                <div id="accountSettings" class="modal fade" role="dialog" style="font-size: 20px;">
+                  <div class="modal-dialog" >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        Account Settings!
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid">
+                          <form>
+                            <div class="form-group">
+                              <label class="control-label col-xs-5">January </label>
+                              <div class="col-xs-7">
+                                <input type="number" class="form-control">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-xs-5">February </label>
+                              <div class="col-xs-7">
+                                <input type="number" class="form-control">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-xs-5">March </label>
+                              <div class="col-xs-7">
+                                <input type="number" class="form-control">
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Account Settings</a></li>
+                <li><a href="#" id="logout">Logout</a></li>
+                <script type="text/javascript">
+                $(document).ready(function(){
+                  $("#logout").click(function(){
+                    $("#userProfile").css("visibility", "hidden");
+                    $("#userProfile").text("")
+                    $("#signUpBox").show()
+                    
+                    $("#login-username").css("value", ""); 
+                    $("#login-password").css("value", "");
+                      $.ajax({
+                      
+                      }).done(function(data){
+                      
+                      });
+                  });
+                });
+                </script>
               </ul>
             </li>
           </ul>
@@ -87,7 +142,15 @@
                 <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 25px; margin-bottom:5px;">Login </button>
                 <script type="text/javascript">
                   $(document).ready(function() {
-                    $("#btn-login").click( function() {
+                    $("#btn-login").click(login);
+                    
+                  },$("#login-password").keypress( function(e){
+                    if(e.which==13) {
+                      login();
+                    }
+                    
+                  }));
+                  var login = function() {
                       var username = $("#login-username").val(); 
                       var password = $("#login-password").val();
 
@@ -96,10 +159,13 @@
                           url: '/login',
                           data: { username: username, password: password }
                           }).done(function(data){
-                            console.log(data);
+                            data = JSON.parse(data)
+                            console.log(data.userName)
+                            $("#userProfile").css("visibility", "visible");
+                            $("#userProfile").text("Welcome, " + data.userName)
+                            $("#signUpBox").hide()
                           });
-                    });
-                  });
+                    };
                 </script>
             </div>
             <div class="col-sm-4" style="text-align:center"> 
