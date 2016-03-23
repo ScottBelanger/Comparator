@@ -53,12 +53,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 		
 		var data = {consumption: consumption,
-					ldc: pricingModel.ldc};
+					pricingModel: pricingModel};
 		
 		console.log("data to pass:");
 		console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateResidentialCost', data).then(function(result){
+		$http.put(rateEngineURL + '/calculateCost', data).then(function(result){
 			//console.log(result.data);
 			var costObject = {id: pricingModel.id,
 							  values: result.data};
