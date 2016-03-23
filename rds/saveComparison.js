@@ -41,23 +41,94 @@ var insertComparison = function( userID, comparison, callback ) {
 };
 
 var insertRateComparison = function( userID, rateComparison, callback ) {
-  var rateBundleArr = rateComparison.getAllRateBundle();
+  var rateBundleArr = rateComparison.rateBundle;
+  var energyUsage = rateComparison.energyUsage;
+  var sql = "INSERT INTO Comparison SET ?";
+  var insert = null;
+  var rateBundleDone = false;
+  var energyUsageDone = false;
+  var energyUsageId = 0;
+  var rateBundleIdArr = [];
+  var firstComparison = true;
+  var comparisonID = 0;
 
   // Iterate through each rateBundle and see which ones are new and 
   // need to be inserted
-  rateBundleArr.forEach( function( rateBundle ) {
+  rateBundleArr.forEach( function( rateBundle, index, array ) {
     if( rateBundle.isNew ) {
       insertRateBundle( rateBundle, function( err, id ) {
         if( err ) {
           console.log(err);
           throw err;
         } else {
-          rateBundle.setId( id );
-          connection.query("INSERT INTO Comparison SET ?", {UserID: userID, RateBundleID: rateBundle.id, })
+          rateBundle.id = id;
+          rateBundleIdArr.push(id);
+
+          if(index == array.length - 1) {
+            rateBundleDone = true;
+          }
+
+          if(rateBundleDone && energyUsageDone) {
+            rateBundleIdArr.forEach(function( rateBundleId, index1, array1 ) {
+              if(firstComparison) {
+                insert = {UserID: userID, EnergyUsageID: energyUsageId, ComparisonType: 0, RateBundleID: rateBundleId };
+              } else {
+	        insert = {ID: comparisonID, UserID: userID, EnergyUsageID: energyUsageId, ComparisonType: 0, RateBundleID: rateBundleId };
+              }
+	      connnection.query(sql, insert, function( err, result ) {
+	        if(err) {
+		  console.log(err);
+		  throw err;
+		} else {
+	          if(firstComparison) {
+		    comparisonID = result.insertId;
+		  }
+						
+	          if( index1 == array1.length - 1) {
+		    callback( null, comparisonID);
+		  }
+		}
+	      });
+            });
+          }
         }
       });
     }
   });
+  if( energyUsage.isNew ) {
+    insertEnergyUsage( energyUsage, function(err, id) {
+      if(err) {
+        console.log(err);
+        throw err;
+      } else {
+        energyUsage.id = energyUsageId = id;
+        energyUsageDone = true;
+        if(rateBundleDone && energyUsageDone) {
+          rateBundleIdArr.forEach(function( rateBundleId, index1, array1 ) {
+	    if(firstComparison) {
+	      insert = {UserID: userID, PricingModelID: energyUsageId, ComparisonType: 0, RateBundleID: rateBundleId };
+	    } else {
+	      insert = {ID: comparisonID, UserID: userID, PricingModelID: energyUsageId, ComparisonType: 0, RateBundleID: rateBundleId };
+	    }
+				
+	    connection.query(sql, insert, function( err, result ) {
+	      if(err) {
+	        console.log(err);
+	        throw err;
+	      } else {
+	        if(firstComparison) {
+	          comparisonID = result.insertId;
+		}
+	        if( index1 == array1.length - 1) {
+	          callback( null, comparisonID);
+		}
+	      }
+	    });
+	  });  
+	}
+      }
+    });
+  }
 };
 
 var insertUsageComparison = function( userID, usageComparison, callback ) {
