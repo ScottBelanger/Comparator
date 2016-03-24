@@ -142,6 +142,11 @@
   <div class="row">
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
+      <script type="text/javascript">
+      document.getElementById("greenButton").onclick = function () {
+        location.href = "https://greenbutton-testlab-prod.appspot.com/login";
+      };
+      </script>
     </div>
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-file"></span>Download CSV</a>
@@ -366,7 +371,37 @@
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
             </div>
-            <input type="file" style="width:100%">
+            <input type="file" id="csv" style="width:100%">
+            <script>
+              document.getElementById('csv').addEventListener('change', readFile, false);
+              function readFile (evt) {
+                var files = evt.target.files;
+                var file = files[0];           
+                var consumptionArray = [];
+                var reader = new FileReader();
+                reader.onload = function() {
+
+                  // By lines
+                  var lines = this.result.split('\n');
+                  for(var line = 5; line < lines.length; line++){
+                    var consumption = {};
+                    var csvs = lines[line].split(',');
+                    for(var csv = 0; csv < csvs.length; csv++) {
+                      if(csv == 0) {
+                        var ssvs = csvs[csv].split('\ ');
+                        consumption.time = ssvs[0].replace(/\//g, "-") + " " + ssvs[1];
+                      }
+                      if(csv == 1) {
+                        consumption.amount = csvs[csv];
+                      }
+                    }
+                    consumptionArray.push(consumption);
+                  }
+                  console.log(consumptionArray);
+                }
+                  reader.readAsText(file)
+                }
+            </script>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
