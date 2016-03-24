@@ -94,6 +94,7 @@ function graphController($scope) {
 			costValues.push(costPoints[i].amount);
 		}
 		
+		//TODO: This needs to be fixed so that it is not called all the time
 		costTimeGraph.xAxis[0].setCategories(costTimes, false);
 		
 		costTimeGraph.addSeries({
