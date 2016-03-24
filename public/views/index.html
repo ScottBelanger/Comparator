@@ -9,6 +9,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     
+    <script type="text/javascript">
+      var checkCookie = function(){
+        if(document.cookie) {
+          $("#userProfile").css("visibility", "visible");
+          $("#rateEngine").css("visibility", "visible");
+          $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+          $("#signUpBox").hide()
+        }
+        else {
+          logout()
+        }
+      }
+      
+    </script>
+    <body onload="checkCookie()">
   </head>
 <body>
 <style>
@@ -54,17 +69,56 @@
           <a class="navbar-brand" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
         </div>
         <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav" style="float:none">
-            <li class="dropdown">
-              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden"><span class="caret"></span></a>
+          <ul class="nav navbar-nav dropdown" style="float:none">
+              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden;"><span class="caret"></span></a>
               <ul class="dropdown-menu" style="font-size:25px">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
+                <li><a href="#" id="accountSettings" data-toggle="modal" data-target="#hourlyTable">Account Settings</a></li>
+                <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+                  <div class="modal-dialog" >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        Account Settings!
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid">
+                          <form>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Account Settings</a></li>
+                <li><a href="#" id="logout">Logout</a></li>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    $("#logout").click(logout);
+                    
+                });
+                var logout = function() {
+                  $("#userProfile").css("visibility", "hidden");
+                  $("#rateEngine").css("visibility", "hidden");
+                  $("#userProfile").text("")
+                  $("#signUpBox").show()
+                  
+                  $("#login-username").val(""); 
+                  $("#login-password").val("");
+                  localStorage.clear()
+                  $.ajax({
+                    type: 'GET',
+                    url: '/logout',
+                  });
+                };
+                
+                </script>
               </ul>
-            </li>
           </ul>
         </div>
       </nav>
@@ -84,10 +138,18 @@
         <div class="container-fluid">
           <div class class="row-fluid">
             <div class="col-sm-4" style="text-align:center"> 
-                <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 25px; margin-bottom:5px;">Login </button>
+                <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 20px; margin-bottom:5px;">Login </button>
                 <script type="text/javascript">
                   $(document).ready(function() {
-                    $("#btn-login").click( function() {
+                    $("#btn-login").click(login);
+                    
+                  },$("#login-password").keypress( function(e){
+                    if(e.which==13) {
+                      login();
+                    }
+                    
+                  }));
+                  var login = function() {
                       var username = $("#login-username").val(); 
                       var password = $("#login-password").val();
 
@@ -96,18 +158,23 @@
                           url: '/login',
                           data: { username: username, password: password }
                           }).done(function(data){
-                            console.log(data);
+                            data = JSON.parse(data)
+                            localStorage.setItem('username', data.userName)
+                            $("#userProfile").css("visibility", "visible");
+                            $("#rateEngine").css("visibility", "visible");
+                            $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+                            $("#signUpBox").hide()
+                            console.log(data.isAdmin)
                           });
-                    });
-                  });
+                    };
                 </script>
             </div>
             <div class="col-sm-4" style="text-align:center"> 
-              <div style="position:relative; font-size: 25px; display:inline-block;" data-toggle="modal" data-target="#forgotPasswordModal"><a href="#">Forgot password?</a>
+              <div style="font-size: 20px; display:inline-block;" data-toggle="modal" data-target="#forgotPasswordModal"><a href="#">Forgot password?</a>
               </div>
             </div>
             <div class="col-sm-4" style="text-align:center"> 
-              <a href="#" id="manualEnter" style="font-size:25px; display:inline-block; " data-toggle="modal" data-target="#signupModal">Sign Up</a>
+              <a href="#" id="manualEnter" style="font-size:20px; display:inline-block; " data-toggle="modal" data-target="#signupModal">Sign Up</a>
             </div>
           </div>
         </div>
@@ -236,7 +303,7 @@
 </div>
 
 <div class="container-fluid" align="center" style="font-size:40px; max-width:60%">
-  <div class="row" style="padding-top:10%; padding-bottom:10%">
+  <div class="row" style="padding-top:10%; padding-bottom:1%">
     <div class="col-sm-6"> 
       <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
         <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
@@ -268,6 +335,23 @@
   </div>
 </div>
 
+<div class="container-fluid" id="rateEngine" align="center" style="font-size:40px; max-width:30%; visibility:hidden;">
+  <div class="row" style="padding-bottom:10%">
+    <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+      <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+        <div class="panel-title" >
+          <a href="#" id="rateEngineLink" style="color: #ffffff; font-size:30px"><span class="glyphicon glyphicon-play"></span>Rate Engine</span></a>
+          <script type="text/javascript">
+            document.getElementById("rateEngineLink").onclick = function() {
+              location.href = "http://" + window.location.host + "/rateEngine";
+            }
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Site footer -->
 <footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5); ">
   <div class="container clear-top">
@@ -283,7 +367,7 @@
       <a href="#" id="privacyInfo" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-lock"></span>Privacy Information</a>
       <script type="text/javascript">
       document.getElementById("privacyInfo").onclick = function () {
-        location.href = "http://" + window.location.host + "/privacyInfoPage.html";
+        location.href = "http://" + window.location.host + "/privacyInfoPage";
       };
       </script>
     </div>
@@ -291,7 +375,7 @@
       <a href="#" id="terms" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</a>
       <script type="text/javascript">
       document.getElementById("terms").onclick = function () {
-        location.href = "http://" + window.location.host + "/termsPage.html";
+        location.href = "http://" + window.location.host + "/termsPage";
       };
       </script>
     </div>

@@ -85,6 +85,11 @@ var getComparisons = function ( callback ) {
       // For counting when to callback
       var callbackCount = 0;
 	
+      // If user does not have any comparisons
+      if(rows.length == 0 ) {
+        callback( err, _user );
+      }
+      
       // Iterate through each user comparison	
       rows.forEach( function( item, index, array ) {
 
@@ -709,6 +714,7 @@ var getCost = function( costID, callback ) {
         var cost = new Cost();
         costArr.push( cost );
         cost.setPoint( item.Time, item.Cost );
+		cost.setId( costID );
 
         costCount++;
 

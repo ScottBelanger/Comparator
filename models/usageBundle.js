@@ -7,6 +7,8 @@ var UsageBundle = function() {
   this.cost        = [];
   this.id          = 0;
   this.description = "";
+  this.isNew       = true;
+  this.needsUpdate = true;
 };
 
 /* ===== UsageBungle Methods ===== */
