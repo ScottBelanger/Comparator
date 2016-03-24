@@ -6,9 +6,9 @@ function pmSelectionController($scope, $http) {
 	var selectCtrl = this;
 	
 	//for local
-	var rateEngineURL = 'http://localhost:3001';
+	//var rateEngineURL = 'http://localhost:3001';
 	//for remote
-	//var rateEngineURL = 'website';
+	var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	selectCtrl.countryList = [];
 	selectCtrl.countrySelect = "";
@@ -37,7 +37,7 @@ function pmSelectionController($scope, $http) {
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getCitiesInCountry', { params: {country: selectCtrl.countrySelect} } ).then(function(result){
-		selectCtrl.cityList = result.data;
+			selectCtrl.cityList = result.data;
 		}, function(result){
 			// error
 		});
@@ -51,7 +51,7 @@ function pmSelectionController($scope, $http) {
 		selectCtrl.rateSelect = "";
 		
 		$http.get(rateEngineURL + '/getLDCsInCity', { params: {city: selectCtrl.citySelect} } ).then(function(result){
-		selectCtrl.ldcList = result.data;
+			selectCtrl.ldcList = result.data;
 		}, function(result){
 			// error
 		});
