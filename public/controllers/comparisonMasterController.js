@@ -17,9 +17,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	$scope.$on('newConsumptionArray', function(event, consArray) {
 		//Add new pricing model to the pricingModelArray
-		console.log("In master newConsumptionArray");
+		//console.log("In master newConsumptionArray");
 		consumptionArray = consArray;
-		console.log(consumptionArray);
+		//console.log(consumptionArray);
 		
 		$rootScope.$broadcast('consumptionForGraph', consumptionArray);
 	});

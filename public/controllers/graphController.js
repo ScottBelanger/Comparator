@@ -120,23 +120,27 @@ function graphController($scope) {
 		  },
         });
 	
-	$scope.$on('consumptionForGraph', function(event, consumptionPoints) {
+	$scope.$on('consumptionForGraph', function(event, consumptionData) {
 		console.log("In graphController");
-		console.log(consumptionPoints);
-		console.log(consumptionGraph.xAxis[0]);
-		console.log(consumptionGraph.series[0]);
+		console.log(consumptionData);
+		//console.log(consumptionGraph.xAxis[0]);
+		//console.log(consumptionGraph.series[0]);
 		
-		var consumptionTimes = [];
-		var consumptionValues = [];
+		var consumptionPoints = [];
 		
-		var length = consumptionPoints.length;
+		var length = consumptionData.length;
 		for (var i=0; i<length; i++) {
-			consumptionTimes.push(consumptionPoints[i].time);
-			consumptionValues.push(consumptionPoints[i].amount);
+			var point = [consumptionData[i].time, consumptionData[i].amount];
+			consumptionPoints.push(point);
 		}
 		
-		consumptionGraph.xAxis[0].setCategories(consumptionTimes, false);
-		consumptionGraph.series[0].setData(consumptionValues);
+		consumptionGraph.addSeries({
+			id: 1,
+			name: 'consumption',
+			data: consumptionPoints,
+			draggableY: true,
+            rotation: 90
+		});
 	});
 	
 	$scope.$on('updateCostTimePM', function(event, seriesName, costPoints) {
