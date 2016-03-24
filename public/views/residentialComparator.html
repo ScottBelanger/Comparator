@@ -141,6 +141,11 @@
   <div class="row">
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
+      <script type="text/javascript">
+      document.getElementById("greenButton").onclick = function () {
+        location.href = "https://greenbutton-testlab-prod.appspot.com/login";
+      };
+      </script>
     </div>
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-file"></span>Download CSV</a>
