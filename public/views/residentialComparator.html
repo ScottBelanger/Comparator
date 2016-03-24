@@ -142,7 +142,7 @@
 <div class="container-fluid" align="center" ng-controller="energyUsageController as euCtrl">
   <div class="row">
     <div class="col-md-3" style="text-align:center">
-      <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button</a>
+      <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button Connect My Data</a>
       <script type="text/javascript">
       document.getElementById("greenButton").onclick = function () {
         location.href = "https://greenbutton-testlab-prod.appspot.com/login";
@@ -150,7 +150,25 @@
       </script>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-file"></span>Download CSV</a>
+      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+    </div>
+    <div class="col-md-3" style="text-align:center" ng-controller="csvController as csvCtrl">
+      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button CSV</a>
+      <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
+            </div>
+            <input type="file" id="csvFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#hourlyTable" ng-click="euCtrl.setupManual()"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
@@ -359,24 +377,6 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3" style="text-align:center" ng-controller="csvController as csvCtrl">
-      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-arrow-up"></span>Upload CSV</a>
-      <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
-            </div>
-			<input type="file" id="csvFile" style="width:100%">
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
           </div>
         </div>
       </div>
