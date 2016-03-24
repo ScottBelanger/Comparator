@@ -156,4 +156,9 @@ router.get('/comparison', auth.isAuthenticated, function(req, res, next) {
   }
 });
 
+
+router.get('/rateEngine', auth.isAuthenticated, function( req, res,  next ) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'rateEngine.html'));
+});
+
 module.exports = router;
