@@ -6,7 +6,7 @@ function graphController($scope) {
 	var graphCtrl = this;
 	//masterCtrl RateComparison which has many rateBundles
 	
-	var consumptionGraph = new Highcharts.Chart({
+	var consumptionGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'EnergyRateConsumption',
             animation: false
@@ -14,9 +14,11 @@ function graphController($scope) {
           title: {
             text: 'Energy Rate Consumption'
           },
-          xAxis: {
-            categories: ['a', 'b', 'c', 'd']
-          },
+		  yAxis: {
+			title: {
+				text: 'Consumption (KWh)'
+			}  
+		  },
           plotOptions: {
             column: {
               stacking: 'normal'
@@ -25,26 +27,51 @@ function graphController($scope) {
               cursor: 'ns-resize'
             }
           },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: [{
-            data: [1, 2, 3, 4],
-            draggableY: true,
-            rotation: 90
-          }]
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: false,
+			selected: 0
+		  },
         });
 		
-		var costTimeGraph = new Highcharts.Chart({
+		var costTimeGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'CostTime',
             animation: false
           },
           title: {
             text: 'Cost Time Graph'
-          },
-          xAxis: {
-            categories: []
           },
           plotOptions: {
             
@@ -55,10 +82,42 @@ function graphController($scope) {
               cursor: 'ns-resize'
             }
           },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: []
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: false,
+			selected: 0
+		  },
         });
 	
 	$scope.$on('consumptionForGraph', function(event, consumptionPoints) {
