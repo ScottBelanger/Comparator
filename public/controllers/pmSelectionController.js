@@ -19,7 +19,7 @@ function pmSelectionController($scope, $http) {
 	selectCtrl.rateList = [];
 	selectCtrl.rateSelect = "";
 	
-	selectCtrl.btnName = "Submit";
+	selectCtrl.btnName = "Calculate";
 	
 	$http.get(rateEngineURL + '/getLDCCountries').then(function(result){
 		selectCtrl.countryList = result.data;
@@ -77,7 +77,7 @@ function pmSelectionController($scope, $http) {
 	}
 	
 	selectCtrl.pmRowClick = function() {
-		if (selectCtrl.btnName == "Submit") {
+		if (selectCtrl.btnName == "Calculate") {
 			submitPricingModel();
 		}
 		else {

@@ -13,9 +13,13 @@
       var checkCookie = function(){
         if(document.cookie) {
           $("#userProfile").css("visibility", "visible");
-          $("#rateEngine").css("visibility", "visible");
           $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
           $("#signUpBox").hide()
+          
+          if(localStorage.getItem('isAdmin') == 1){
+            $("#rateEngine").css("visibility", "visible");
+          }
+          else { $("#rateEngine").hide() }
         }
         else {
           logout()
@@ -26,22 +30,6 @@
     <body onload="checkCookie()">
   </head>
 <body>
-<style>
-    * {
-      font-family: arial;
-    }
-   a:link {color: none;
-            text-decoration: none;
-            outline:none;}      /* unvisited link */
-   a:visited {color: white;
-              text-decoration: none;
-              outline:none;}   /* visited link */
-   a:hover {color: none;
-            text-decoration: none;}     /* mouse over link */
-   a:active {color: none;
-             text-decoration: none;
-             outline:none;}    /* selected link */
-</style>
 
 <!--Create the fade style background -->
 <div class="container-fluid">
@@ -64,36 +52,16 @@
     <div class="col-md-3">
     </div>
     <div class="col-md-6">
-      <nav class="navbar" style="position:relative; margin-top:3%">
+      <nav class="navbar" style="position:relative; margin-top:5%">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
+          <a class="navbar-brand" href="#" style="font-size:60px; color: #ffffff;"><span class="glyphicon glyphicon-home"></span>Energy Rate Comparator</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav dropdown" style="float:none">
-              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px; visibility:hidden;"><span class="caret"></span></a>
+              <a href="#" id="userProfile" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" 
+              style="color: #ffffff; font-size:25px; visibility:hidden;"><span class="glyphicon glyphicon-chevron-down"></span></a>
               <ul class="dropdown-menu" style="font-size:25px">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#" id="accountSettings" data-toggle="modal" data-target="#hourlyTable">Account Settings</a></li>
-                <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
-                  <div class="modal-dialog" >
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        Account Settings!
-                      </div>
-                      <div class="modal-body">
-                        <div class="container-fluid">
-                          <form>
-                          </form>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <li><a href="#" id="accountSettings">Account Settings</a></li>
                 
                 <li role="separator" class="divider"></li>
                 <li><a href="#" id="logout">Logout</a></li>
@@ -105,6 +73,7 @@
                 var logout = function() {
                   $("#userProfile").css("visibility", "hidden");
                   $("#rateEngine").css("visibility", "hidden");
+                  $("#errorMessage").hide();
                   $("#userProfile").text("")
                   $("#signUpBox").show()
                   
@@ -126,6 +95,7 @@
     
     <div id="signUpBox" class="col-md-3" style="visibility:show">
       <h1 style="color:white; font-size:25px" align="center">Sign In</h1>
+      <p style="color:red; font-size:15px; visibility:hidden" id="errorMessage">Incorrect Login Credentials</p>
       <ul class="nav navbar-nav" style="float:right">
         <div style="margin-bottom: 20px" class="input-group" >
           <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
@@ -141,11 +111,19 @@
                 <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 20px; margin-bottom:5px;">Login </button>
                 <script type="text/javascript">
                   $(document).ready(function() {
-                    $("#btn-login").click(login);
+                    if(($("#login-username").val()!="") || ($("#login-password").val()!= "")){
+                      $("#btn-login").click(login);
+                    }
+                    else { $("#errorMessage").css("visibility", "visible"); }
+                    
                     
                   },$("#login-password").keypress( function(e){
-                    if(e.which==13) {
-                      login();
+                    if(e.which==13 ) {
+                      if(($("#login-username").val()!= "") || ($("#login-password").val()!= "")){
+                        login();
+                      }
+                      else { $("#errorMessage").css("visibility", "visible"); }
+                      
                     }
                     
                   }));
@@ -160,12 +138,18 @@
                           }).done(function(data){
                             data = JSON.parse(data)
                             localStorage.setItem('username', data.userName)
+                            localStorage.setItem('isAdmin', data.isAdmin)
                             $("#userProfile").css("visibility", "visible");
-                            $("#rateEngine").css("visibility", "visible");
+                            $("#errorMessage").hide();
                             $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
                             $("#signUpBox").hide()
-                            console.log(data.isAdmin)
+                            if(localStorage.getItem('isAdmin') == 1){
+                              $("#rateEngine").css("visibility", "visible");
+                            }
+                            else { $("#rateEngine").hide() }
                           });
+                          
+                          
                     };
                 </script>
             </div>
@@ -220,7 +204,16 @@
                   <button id="signup-button" type="button" class="btn btn-default" data-dismiss="modal">Sign Up</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <script type="text/javascript">
-                    $(document).ready(function(){
+                    $(document).ready(function() {
+                    $("#signup-button").click(signup);
+                    
+                    },$("#signup-repasswd").keypress( function(e){
+                      if(e.which==13) {
+                      signup();
+                    }
+                    
+                    }));
+                    var signup = function() {
                         $("#signup-button").click(function(){
                           var signupusername = $("#signup-username").val();
                           var signupemail = $("#signup-email").val();
@@ -235,10 +228,20 @@
                                       email: signupemail,
                                       repasswd: signuprepasswd}
                           }).done(function(data){
-                            console.log(data);
+                            data = JSON.parse(data)
+                            localStorage.setItem('username', data.userName)
+                            console.log(data.userName)
+                            $("#signup-username").val(""); 
+                            $("#signup-email").val("");
+                            $("#signup-password").val(""); 
+                            $("#signup-repasswd").val("");
+                            $("#userProfile").css("visibility", "visible");
+                            $("#rateEngine").css("visibility", "visible");
+                            $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+                            $("#signUpBox").hide()
                           });
                         });
-                    });
+                    };
                   </script>
                 </div>
               </div>
@@ -352,9 +355,8 @@
   </div>
 </div>
 
-<!-- Site footer -->
-<footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5); ">
-  <div class="container clear-top">
+<footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5); bottom:0; position:absolute; width:100%">
+  <div class="container clear-top" >
     <div class="col-md-4" style="text-align:center">
       <a href="#" id="aboutus" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-info-sign"></span>About Us</a>
       <script type="text/javascript">
@@ -367,7 +369,7 @@
       <a href="#" id="privacyInfo" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-lock"></span>Privacy Information</a>
       <script type="text/javascript">
       document.getElementById("privacyInfo").onclick = function () {
-        location.href = "http://" + window.location.host + "/privacyInfoPage";
+        location.href = "http://" + window.location.host + "/privacyInformation";
       };
       </script>
     </div>

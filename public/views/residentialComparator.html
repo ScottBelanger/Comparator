@@ -28,31 +28,6 @@
         document.getElementById("userProfile").innerHTML = "Welcome, " + localStorage.getItem('username');
       }
     </script>
-    <style type="text/css">
-      a:link {color: none;
-        text-decoration: none;
-        outline:none;}      /* unvisited link */
-      a:visited {color: white;
-        text-decoration: none;
-        outline:none;}   /* visited link */
-      a:hover {color: none;
-        text-decoration: none;}     /* mouse over link */
-      a:active {color: none;
-        text-decoration: none;
-        outline:none;}    /* selected link */
-      
-      @media (max-width: @screen-xs) {
-        body{font-size: 10px;}
-      }
-
-      @media (max-width: @screen-sm) {
-        body{font-size: 14px;}
-      }
-      
-      @media (max-width: @screen-md) {
-        body{font-size: 16px;}
-      }
-    </style>
     <script type="text/javascript">
       var checkCookie = function(){
         if(document.cookie) {
@@ -86,10 +61,10 @@
 <div class="container-fluid" style="max-width:100%">
 <nav class="navbar" style="position:relative">
     <div class="navbar-header" style="padding-bottom:5%; ">
-      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px;"><span class="glyphicon glyphicon-tree-conifer"></span>Energy Rate Comparator</a>
+      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px;"><span class="glyphicon glyphicon-home"></span>Energy Rate Comparator</a>
       <script type="text/javascript">
       document.getElementById("homePage").onclick = function () {
-        location.href = "http://localhost:3000";
+        location.href = "http://" + window.location.host;
       };
       </script>
     </div>
@@ -98,8 +73,6 @@
       <ul class="nav navbar-nav dropdown" style="float:none">
         <a href="#" class="dropdown-toggle" id="userProfile" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px"><span class="caret"></span></a>
         <ul class="dropdown-menu" style="font-size:25px">
-          <li><a href="#">Action</a></li>
-          <li><a href="#">Another action</a></li>
           <li><a href="#">Account Settings</a></li>
           <li role="separator" class="divider"></li>
           <li><a href="#" id="logout">Logout</a></li>
@@ -115,7 +88,7 @@
                     type: 'GET',
                     url: '/logout'
                   });
-                  location.href = "http://localhost:3000";
+                  location.href = "http://" + window.location.host;
                 };
                 
           </script>
@@ -151,7 +124,7 @@
       <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
     </div>
     <div class="col-md-3" style="text-align:center">
-      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML CSV</a>
+      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button CSV</a>
       <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
         <div class="modal-dialog">
           <div class="modal-content">
@@ -427,7 +400,7 @@
 <!-- Needed an extra divs in the section here to help with controller scope -->
 <div ng-controller="pricingModelController as pmCtrl">
 
-  <div class="row" style="padding-bottom:5%">
+  <div class="row" style="padding-bottom:2%">
     <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
       <label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
 	</div>
@@ -437,7 +410,7 @@
     <div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
 
       <div class="container-fluid">
-        <div class="row" style="padding-bottom:5%">
+        <div class="row" style="padding-bottom:3%">
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
@@ -471,7 +444,7 @@
             </div>
           </div>
 	      <div class="container-fluid" style="text-align:center">
-		    <a href="" id="submitBtn" style="font-size:30px; display:inline-block; padding-top:1%" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
+		    <a href="" id="submitBtn" style="font-size:30px; display:inline-block; padding-top:2%" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
 	      </div>
         </div>
       </div> <!-- div end for ONE row -->
@@ -479,23 +452,25 @@
   </div> <!-- div end for ng-repeat of rows -->
 </div> <!-- div end for pricingModelController -->
 
+
 <div class="container-fluid">
-  <div class="row" style="padding-bottom:5%">
-    <div class="col-md-4" style="text-align:center">
+  <div class="row" style="padding-bottom:3%">
+    <div class="col-md-6" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
-    <div class="col-md-4" style="text-align:center">
+    <div class="col-md-6" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-gift"></span>Save Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
       </div>
     </div>
   </div>
 </div>
 
+
 <!--This is hiCharts Energy Consumption Graph-->
-<div class="container-fluid" style="padding-top: 4%" ng-controller="graphController as graphCtrl">
+<div class="container-fluid" ng-controller="graphController as graphCtrl">
   <div class="row" >
     <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
       <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
@@ -525,21 +500,35 @@
 </div>
 
 
- <!-- Site footer -->
-<div class="bottom" style=" color: #ffffff;">
-  <div class="container-fluid">
-    <div class="col-md-4" style="text-align:center">
-      <h3><span class="glyphicon glyphicon-info-sign"></span>About Us</h3>
-    </div>
-    <div class="col-md-4" style="text-align:center">
-      <h3><span class="glyphicon glyphicon-lock"></span>Privacy Information</h3>
-    </div>
-    <div class="col-md-4" style="text-align:center">
-      <h3><span class="glyphicon glyphicon-list-alt" ></span>Terms and Conditions</h3>
-    </div>
+<footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5);">
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="aboutus" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-info-sign"></span>About Us</a>
+    <script type="text/javascript">
+    document.getElementById("aboutus").onclick = function () {
+      location.href = "http://" + window.location.host + "/aboutUsPage";
+    };
+    </script>
   </div>
-</div>
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="privacyInfo" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-lock"></span>Privacy Information</a>
+    <script type="text/javascript">
+    document.getElementById("privacyInfo").onclick = function () {
+      location.href = "http://" + window.location.host + "/privacyInformation";
+    };
+    </script>
+  </div>
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="terms" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</a>
+    <script type="text/javascript">
+    document.getElementById("terms").onclick = function () {
+      location.href = "http://" + window.location.host + "/termsPage";
+    };
+    </script>
+  </div>
+</footer>
 
 </div>
+
+
 </body>
 </html>
