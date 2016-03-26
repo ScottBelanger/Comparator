@@ -122,15 +122,24 @@ function graphController($scope) {
 	
 	$scope.$on('consumptionForGraph', function(event, consumptionData) {
 		console.log("In graphController");
+		console.log("initial consumption Data");
 		console.log(consumptionData);
-		//console.log(consumptionGraph.xAxis[0]);
-		//console.log(consumptionGraph.series[0]);
 		
 		var consumptionPoints = [];
 		
 		var length = consumptionData.length;
+		//populate the array for data with the consumption information
 		for (var i=0; i<length; i++) {
-			var point = [consumptionData[i].time, consumptionData[i].amount];
+			//put the date in the necessary format for Date parsing
+			var date = consumptionData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = consumptionData[i].amount;
+			
+			console.log("x: " + x);
+			console.log("y: " + y);
+			
+			var point = [x, y];
 			consumptionPoints.push(point);
 		}
 		
