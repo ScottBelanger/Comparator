@@ -12,7 +12,7 @@ function graphController($scope) {
             animation: false
           },
           title: {
-            text: 'Energy Rate Consumption'
+            text: 'Consumption Time Graph'
           },
 		  yAxis: {
 			title: {
@@ -73,6 +73,12 @@ function graphController($scope) {
           title: {
             text: 'Cost Time Graph'
           },
+		   yAxis: {
+			title: {
+				//TODO: is this dollars or cents?
+				text: 'Cost ($)'
+			}  
+		  },
           plotOptions: {
             
             column: {
@@ -152,26 +158,33 @@ function graphController($scope) {
 		});
 	});
 	
-	$scope.$on('updateCostTimePM', function(event, seriesName, costPoints) {
-		console.log("In graphController updateCostTimePM");
-		console.log(seriesName);
-		console.log(costPoints);
+	$scope.$on('updateCostTimePM', function(event, seriesID, seriesName, costData) {
+		//console.log("In graphController updateCostTimePM");
+		//console.log(seriesID);
+		//console.log(seriesName);
+		//console.log(costData);
 		
-		var costTimes = [];
-		var costValues = [];
+		var costPoints = [];
 		
-		var length = costPoints.length;
+		var length = costData.length;
 		for (var i=0; i<length; i++) {
-			costTimes.push(costPoints[i].time);
-			costValues.push(costPoints[i].amount);
+			//put the date in the necessary format for Date parsing
+			var date = costData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = costData[i].amount;
+			
+			console.log("x: " + x);
+			console.log("y: " + y);
+			
+			var point = [x, y];
+			costPoints.push(point);
 		}
 		
-		//TODO: This needs to be fixed so that it is not called all the time
-		costTimeGraph.xAxis[0].setCategories(costTimes, false);
-		
 		costTimeGraph.addSeries({
+			id: seriesID,
 			name: seriesName,
-			data: costValues,
+			data: costPoints,
 			draggableY: true,
             rotation: 90
 		});

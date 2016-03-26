@@ -63,10 +63,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			var costObject = {id: pricingModel.id,
 							  values: result.data};
 			costArray.push(costObject);
-			console.log(costObject);
-			
-			$rootScope.$broadcast('updateCostTimePM', pricingModel.ldc, costObject.values);
-			
+			//console.log(costObject);
+			var pricingModelLabel = pricingModel.ldc + ": " + pricingModel.rateType;
+			$rootScope.$broadcast('updateCostTimePM', pricingModel.id,  pricingModelLabel, costObject.values);
 		}, function(result){
 			// error
 		});
