@@ -21,7 +21,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		consumptionArray = consArray;
 		//console.log(consumptionArray);
 		
-		$rootScope.$broadcast('consumptionForGraph', consumptionArray);
+		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", consumptionArray);
 	});
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
@@ -31,6 +31,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	});
 	
 	$scope.$on('deletePricingModel', function(event, id) {
+		$rootScope.$broadcast('removeCostSeries', id);
 		//search through pricing model array for the id to match the argument id and remove the pricing model with that id
 		var length = pricingModelArray.length;
 		for (var i=0; i<length; i++) {

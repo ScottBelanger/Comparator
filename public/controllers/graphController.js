@@ -27,6 +27,12 @@ function graphController($scope) {
               cursor: 'ns-resize'
             }
           },
+		  navigator: {
+			enabled: true,
+			series: {
+					id: 'navigator'
+			}
+		  },
 		  rangeSelector: {
             buttons: [{
                 count: 1,
@@ -60,7 +66,7 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
@@ -121,15 +127,19 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
 	
-	$scope.$on('consumptionForGraph', function(event, consumptionData) {
+	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
 		console.log("In graphController");
 		console.log("initial consumption Data");
 		console.log(consumptionData);
+		
+		if (consumptionGraph.get(seriesID) != undefined) {
+			consumptionGraph.get(seriesID).remove();
+		}
 		
 		var consumptionPoints = [];
 		
@@ -142,20 +152,28 @@ function graphController($scope) {
 			var x = Date.parse(stringDate);
 			var y = consumptionData[i].amount;
 			
-			console.log("x: " + x);
-			console.log("y: " + y);
+			//console.log("x: " + x);
+			//console.log("y: " + y);
 			
 			var point = [x, y];
 			consumptionPoints.push(point);
 		}
 		
-		consumptionGraph.addSeries({
-			id: 1,
-			name: 'consumption',
+		var newSeries = {
+			id: seriesID,
+			name: seriesName,
 			data: consumptionPoints,
 			draggableY: true,
             rotation: 90
-		});
+		};
+		
+		consumptionGraph.addSeries(newSeries);
+		
+		//needed for resetting a single consumption line
+		var nav = consumptionGraph.get('navigator');
+		console.log(nav);
+		nav.setData(newSeries.data);
+		consumptionGraph.xAxis[0].setExtremes();
 	});
 	
 	$scope.$on('updateCostTimePM', function(event, seriesID, seriesName, costData) {
@@ -174,8 +192,8 @@ function graphController($scope) {
 			var x = Date.parse(stringDate);
 			var y = costData[i].amount;
 			
-			console.log("x: " + x);
-			console.log("y: " + y);
+			//console.log("x: " + x);
+			//console.log("y: " + y);
 			
 			var point = [x, y];
 			costPoints.push(point);
@@ -188,5 +206,10 @@ function graphController($scope) {
 			draggableY: true,
             rotation: 90
 		});
+	});
+	
+	$scope.$on('removeCostSeries', function(event, id) {
+		console.log("Made it to the graph controller with id: " + id);
+		costTimeGraph.get(id).remove();
 	});
 }
