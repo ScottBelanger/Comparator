@@ -23,8 +23,7 @@ function csvController($scope) {
 			for(var csv = 0; csv < csvs.length; csv++) {
 			  if(csv == 0) {
 				var ssvs = csvs[csv].split('\ ');
-				var date = new Date(ssvs[0].replace(/\//g, "-") + " " + ssvs[1]);
-				consumption.time = date;
+				consumption.time = ssvs[0].replace(/\//g, "-") + " " + ssvs[1];
 			  }
 			  if(csv == 1) {
 				consumption.amount = parseFloat(csvs[csv]);
