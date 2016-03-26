@@ -6,7 +6,7 @@ function graphController($scope) {
 	var graphCtrl = this;
 	//masterCtrl RateComparison which has many rateBundles
 	
-	var consumptionGraph = new Highcharts.Chart({
+	var consumptionGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'EnergyRateConsumption',
             animation: false
@@ -14,9 +14,11 @@ function graphController($scope) {
           title: {
             text: 'Energy Rate Consumption'
           },
-          xAxis: {
-            categories: ['a', 'b', 'c', 'd']
-          },
+		  yAxis: {
+			title: {
+				text: 'Consumption (KWh)'
+			}  
+		  },
           plotOptions: {
             column: {
               stacking: 'normal'
@@ -25,26 +27,51 @@ function graphController($scope) {
               cursor: 'ns-resize'
             }
           },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: [{
-            data: [1, 2, 3, 4],
-            draggableY: true,
-            rotation: 90
-          }]
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: false,
+			selected: 0
+		  },
         });
 		
-		var costTimeGraph = new Highcharts.Chart({
+		var costTimeGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'CostTime',
             animation: false
           },
           title: {
             text: 'Cost Time Graph'
-          },
-          xAxis: {
-            categories: []
           },
           plotOptions: {
             
@@ -55,29 +82,74 @@ function graphController($scope) {
               cursor: 'ns-resize'
             }
           },
-          tooltip: {
-            yDecimals: 2
-          },
-          series: []
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: false,
+			selected: 0
+		  },
         });
 	
-	$scope.$on('consumptionForGraph', function(event, consumptionPoints) {
+	$scope.$on('consumptionForGraph', function(event, consumptionData) {
 		console.log("In graphController");
-		console.log(consumptionPoints);
-		console.log(consumptionGraph.xAxis[0]);
-		console.log(consumptionGraph.series[0]);
+		console.log("initial consumption Data");
+		console.log(consumptionData);
 		
-		var consumptionTimes = [];
-		var consumptionValues = [];
+		var consumptionPoints = [];
 		
-		var length = consumptionPoints.length;
+		var length = consumptionData.length;
+		//populate the array for data with the consumption information
 		for (var i=0; i<length; i++) {
-			consumptionTimes.push(consumptionPoints[i].time);
-			consumptionValues.push(consumptionPoints[i].amount);
+			//put the date in the necessary format for Date parsing
+			var date = consumptionData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = consumptionData[i].amount;
+			
+			console.log("x: " + x);
+			console.log("y: " + y);
+			
+			var point = [x, y];
+			consumptionPoints.push(point);
 		}
 		
-		consumptionGraph.xAxis[0].setCategories(consumptionTimes, false);
-		consumptionGraph.series[0].setData(consumptionValues);
+		consumptionGraph.addSeries({
+			id: 1,
+			name: 'consumption',
+			data: consumptionPoints,
+			draggableY: true,
+            rotation: 90
+		});
 	});
 	
 	$scope.$on('updateCostTimePM', function(event, seriesName, costPoints) {

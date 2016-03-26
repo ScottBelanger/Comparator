@@ -6,9 +6,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var masterCtrl = this;
 	
 	//for local
-	//var rateEngineURL = 'http://localhost:3001';
+	var rateEngineURL = 'http://localhost:3001';
 	//for remote
-	var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
+	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	//masterCtrl RateComparison which has many rateBundles
 	var consumptionArray = [];
@@ -17,9 +17,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	$scope.$on('newConsumptionArray', function(event, consArray) {
 		//Add new pricing model to the pricingModelArray
-		console.log("In master newConsumptionArray");
+		//console.log("In master newConsumptionArray");
 		consumptionArray = consArray;
-		console.log(consumptionArray);
+		//console.log(consumptionArray);
 		
 		$rootScope.$broadcast('consumptionForGraph', consumptionArray);
 	});

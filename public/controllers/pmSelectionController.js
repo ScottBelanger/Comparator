@@ -6,9 +6,9 @@ function pmSelectionController($scope, $http) {
 	var selectCtrl = this;
 	
 	//for local
-	//var rateEngineURL = 'http://localhost:3001';
+	var rateEngineURL = 'http://localhost:3001';
 	//for remote
-	var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
+	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	selectCtrl.countryList = [];
 	selectCtrl.countrySelect = "";
