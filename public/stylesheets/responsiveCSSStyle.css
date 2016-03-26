@@ -33,7 +33,7 @@
 }
 
 a :visited{ 
-    color: pink;
+    color: none;
     outline: none;
 }
 a { outline: none; }
@@ -49,3 +49,19 @@ a { outline: none; }
 @media (max-width: @screen-md) {
   body{font-size: 16px;}
 }
+
+* {
+  font-family: arial;
+}
+a:link {color: none;
+        text-decoration: none;
+        outline:none;}      /* unvisited link */
+a:visited {color: white;
+          text-decoration: none;
+          outline:none;}   /* visited link */
+a:hover {color: none;
+        text-decoration: none;}     /* mouse over link */
+a:active {color: none;
+         text-decoration: none;
+         outline:none;}    /* selected link */
+         

@@ -1,22 +1,529 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="comparisonPage" lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/responsiveCSSStyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+	<script src="controllers/comparisonPage.js"></script>
+	<script src="controllers/comparisonMasterController.js"></script>
+	<script src="controllers/energyUsageController.js"></script>
+	<script src="controllers/pricingModelController.js"></script>
+	<script src="controllers/pmSelectionController.js"></script>
+	<script src="controllers/graphController.js"></script>
+    <script>
+      function showCharts() {
+        document.getElementById("EnergyRateConsumption").style.visibility = "visible";
+        document.getElementById("TimeCostGraph").style.visibility = "visible";
+      }
+      
+      function getUsername() {
+        document.getElementById("userProfile").innerHTML = "Welcome, " + localStorage.getItem('username');
+      }
+    </script>
+    <script type="text/javascript">
+      var checkCookie = function(){
+        if(document.cookie) {
+          $("#userProfile").css("visibility", "visible");
+          $("#rateEngine").css("visibility", "visible");
+          $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+          $("#signUpBox").hide()
+        }
+        else {
+          $("#userProfile").css("visibility", "hidden");
+        }
+      }
+      
+    </script>
+    <body onload="checkCookie()">
+    <body onload="getUsername()">
   </head>
-<body>
+<body ng-controller="comparisonMasterController as masterCtrl">
 
-<div class="jumbotron container-fluid">
-  <div class="container">
-    <h1>Energy Rate Comparator</h1>
-    <p>Welcome, to the commercial comparator</p>
-  </div>    
+<div class="container-fluid">
+  <div class="carousel slide carousel-fade" data-ride="carousel">
+    <div class="carousel-inner" role="listbox">
+      <div class="item active">
+      </div>
+    </div>
+  </div>
 </div>
 
+<div class="container-fluid " style="max-width:60%; box-shadow: 0 0 30px black; background-color: #00001a;">
 
+<div class="container-fluid" style="max-width:100%">
+<nav class="navbar" style="position:relative">
+    <div class="navbar-header" style="padding-bottom:5%; ">
+      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px;"><span class="glyphicon glyphicon-home"></span>Energy Rate Comparator</a>
+      <script type="text/javascript">
+      document.getElementById("homePage").onclick = function () {
+        location.href = "http://" + window.location.host;
+      };
+      </script>
+    </div>
+  
+    <div class="collapse navbar-collapse" >
+      <ul class="nav navbar-nav dropdown" style="float:none">
+        <a href="#" class="dropdown-toggle" id="userProfile" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; font-size:25px"><span class="caret"></span></a>
+        <ul class="dropdown-menu" style="font-size:25px">
+          <li><a href="#">Account Settings</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#" id="logout">Logout</a></li>
+          <script type="text/javascript">
+                $(document).ready(function() {
+                    $("#logout").click(logout);
+                    
+                });
+                var logout = function() {
+                  $("#userProfile").css("visibility", "hidden");
+                  localStorage.clear()
+                  $.ajax({
+                    type: 'GET',
+                    url: '/logout'
+                  });
+                  location.href = "http://" + window.location.host;
+                };
+                
+          </script>
+        </ul>
+      </ul>
+    </div>
+</nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row-fluid" style="padding-top:2%;">
+    <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+      <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+        <div class="panel-title" style="text-align:center">
+          <h1 style="color: #ffffff">Start by Inputting Some Data</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" align="center" ng-controller="energyUsageController as euCtrl">
+  <div class="row">
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="greenButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-leaf"></span>Green Button Connect My Data</a>
+      <script type="text/javascript">
+      document.getElementById("greenButton").onclick = function () {
+        location.href = "https://greenbutton-testlab-prod.appspot.com/login";
+      };
+      </script>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button CSV</a>
+      <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
+            </div>
+            <input type="file" id="csv" style="width:100%">
+            <script>
+              document.getElementById('csv').addEventListener('change', readFile, false);
+              function readFile (evt) {
+                var files = evt.target.files;
+                var file = files[0];           
+                var consumptionArray = [];
+                var reader = new FileReader();
+                reader.onload = function() {
+
+                  // By lines
+                  var lines = this.result.split('\n');
+                  for(var line = 5; line < lines.length; line++){
+                    var consumption = {};
+                    var csvs = lines[line].split(',');
+                    for(var csv = 0; csv < csvs.length; csv++) {
+                      if(csv == 0) {
+                        var ssvs = csvs[csv].split('\ ');
+                        consumption.time = ssvs[0].replace(/\//g, "-") + " " + ssvs[1];
+                      }
+                      if(csv == 1) {
+                        consumption.amount = csvs[csv];
+                      }
+                    }
+                    consumptionArray.push(consumption);
+                  }
+                  console.log(consumptionArray);
+                }
+                  reader.readAsText(file)
+                }
+            </script>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3" style="text-align:center">
+      <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#hourlyTable" ng-click="euCtrl.setupManual()"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
+      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog" >
+          <div class="modal-content">
+            <div class="modal-header">
+              Please enter the Hourly Data
+            </div>
+            <div class="modal-body">
+              <button id="calendar" type="button" class="btn btn-default">Calendar</button>
+              <script>
+              /*$(document).ready(function () {
+                $("#calendar").jqxCalendar({theme: "arctic", width:250, height:250});
+              });*/
+              </script>
+              <div>
+                Or select an interval you wish to use:
+              </div>
+              <div>
+                  <a href="#weeklyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Weekly</a>
+                  <a href="#monthlyTable" id="monthly" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Monthly</a>
+              </div>
+              <div class="container-fluid">
+              <form>
+				<label class="control-label col-xs-5">Date:</label>
+                  <div class="col-xs-7">
+                    <input type="string" class="form-control" ng-model="euCtrl.date">
+                  </div>
+                <div class="form-group" ng-repeat="consumption in euCtrl.consumptionArray">
+                  <label class="control-label col-xs-5">{{consumption.time}}</label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control" ng-model="consumption.amount">
+                  </div>
+                </div>
+              </form>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="euCtrl.submitUsage()">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="weeklyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+          <div class="modal-dialog" >
+            <div class="modal-content">
+              <div class="modal-header">
+                Please enter the weekly data!
+              </div>
+              <div class="modal-body">
+                <div>
+                  Or select an interval you wish to use:
+                </div>
+                <div>
+                  <a href="#hourlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Hourly</a>
+                  <a href="#monthlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Monthly</a>
+                </div>
+                <div class="container-fluid">
+                  <form>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Monday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Tuesday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Wednesday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Thursday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Friday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Saturday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-xs-5">Sunday </label>
+                      <div class="col-xs-7">
+                        <input type="number" class="form-control">
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div id="monthlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+      <div class="modal-dialog" >
+        <div class="modal-content">
+          <div class="modal-header">
+            Please enter the monthly data!
+          </div>
+          <div class="modal-body">
+            <div>
+              Or select an interval you wish to use:
+            </div>
+            <div>
+              <a href="#hourlyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Hourly</a>
+              <a href="#weeklyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Weekly</a>
+            </div>
+            <div class="container-fluid">
+              <form>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">January </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">February </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">March </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">April </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">May </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">June </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">July </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">August </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">September </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">October </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">November </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label col-xs-5">December </label>
+                  <div class="col-xs-7">
+                    <input type="number" class="form-control">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row" style="padding-top:3%;">
+    <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
+      <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
+        <div class="panel-title" style="text-align:center">
+          <h1 style="color: #ffffff">Select a pricing model!</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Needed an extra divs in the section here to help with controller scope -->
+<div ng-controller="pricingModelController as pmCtrl">
+
+  <div class="row" style="padding-bottom:5%">
+    <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
+      <label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
+	</div>
+  </div>
+
+  <div ng-repeat="row in pmCtrl.rows">
+    <div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
+
+      <div class="container-fluid">
+        <div class="row" style="padding-bottom:5%">
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+			    ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
+                <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
+                <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
+                <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align:center">
+            <div class="selectContainer">
+              <select class="form-control" name="size" style="font-size: 20px;" 
+                ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
+                <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+              </select>
+            </div>
+          </div>
+	      <div class="container-fluid" style="text-align:center">
+		    <a href="" id="submitBtn" style="font-size:30px; display:inline-block; padding-top:2%" ng-click="selectCtrl.pmRowClick()"><span class="glyphicon glyphicon-check"></span>{{selectCtrl.btnName}}</a>
+	      </div>
+        </div>
+      </div> <!-- div end for ONE row -->
+    </div> <!-- div end for pmSelectionController -->
+  </div> <!-- div end for ng-repeat of rows -->
+</div> <!-- div end for pricingModelController -->
+
+<div class="container-fluid">
+  <div class="row" style="padding-bottom:5%">
+    <div class="col-md-6" style="text-align:center">
+      <div class="container-fluid" style="text-align:center">
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+      </div>
+    </div>
+    <div class="col-md-6" style="text-align:center">
+      <div class="container-fluid" style="text-align:center">
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--This is hiCharts Energy Consumption Graph-->
+<div class="container-fluid" style="padding-top: 4%" ng-controller="graphController as graphCtrl">
+  <div class="row" >
+    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+      <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
+      </div>
+      
+      <!-- <!--Javascript for highchart, draggable chart
+      <script type="text/javascript">
+        
+      </script> -->
+    </div>
+  </div>
+</div>
+
+<!--This is hiCharts Time Cost Graph-->
+<div class="container-fluid" ng-controller="graphController as graphCtrl">
+  <div class="row" >
+    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+      <div id="CostTime" style="height: 400px; font-size:15px;">
+      </div>
+      
+      <!--Javascript for highchart, draggable chart -->
+      <!-- <script type="text/javascript">
+        
+      </script> -->
+    </div>
+  </div>
+</div>
+
+<footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5);">
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="aboutus" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-info-sign"></span>About Us</a>
+    <script type="text/javascript">
+    document.getElementById("aboutus").onclick = function () {
+      location.href = "http://" + window.location.host + "/aboutUsPage";
+    };
+    </script>
+  </div>
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="privacyInfo" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-lock"></span>Privacy Information</a>
+    <script type="text/javascript">
+    document.getElementById("privacyInfo").onclick = function () {
+      location.href = "http://" + window.location.host + "/privacyInformation";
+    };
+    </script>
+  </div>
+  <div class="col-md-4" style="text-align:center">
+    <a href="#" id="terms" style="color: #ffffff; font-size:25px"><span class="glyphicon glyphicon-list-alt"></span>Terms and Conditions</a>
+    <script type="text/javascript">
+    document.getElementById("terms").onclick = function () {
+      location.href = "http://" + window.location.host + "/termsPage";
+    };
+    </script>
+  </div>
+</footer>
+
+</div>
 </body>
 </html>
