@@ -36,7 +36,6 @@ function xmlController($scope) {
         xmlCtrl.consumptionArray.push({time: time, amount: value}); 
       });
 
-      console.log(xmlCtrl.consumptionArray);
       $scope.$emit('newConsumptionArray', xmlCtrl.consumptionArray);
     }
 
