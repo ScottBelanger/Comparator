@@ -482,34 +482,26 @@
   </div>
 </div>
 
-<!--This is hiCharts Energy Consumption Graph-->
-<div class="container-fluid" style="padding-top: 4%" ng-controller="graphController as graphCtrl">
-  <div class="row" >
-    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-      <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
-      </div>
-      
-      <!-- <!--Javascript for highchart, draggable chart
-      <script type="text/javascript">
-        
-      </script> -->
-    </div>
-  </div>
-</div>
+<div ng-controller="graphController as graphCtrl">
+	<!--This is hiCharts Energy Consumption Graph-->
+	<div class="container-fluid" style="padding-top: 4%">
+	  <div class="row" >
+		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+		  <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
+		  </div>
+		</div>
+	  </div>
+	</div>
 
-<!--This is hiCharts Time Cost Graph-->
-<div class="container-fluid" ng-controller="graphController as graphCtrl">
-  <div class="row" >
-    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-      <div id="CostTime" style="height: 400px; font-size:15px;">
-      </div>
-      
-      <!--Javascript for highchart, draggable chart -->
-      <!-- <script type="text/javascript">
-        
-      </script> -->
-    </div>
-  </div>
+	<!--This is hiCharts Time Cost Graph-->
+	<div class="container-fluid">
+	  <div class="row" >
+		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+		  <div id="CostTime" style="height: 400px; font-size:15px;">
+		  </div>
+		</div>
+	  </div>
+	</div>
 </div>
 
 
