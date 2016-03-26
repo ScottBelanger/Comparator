@@ -9,12 +9,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <!-- <script src="http://code.highcharts.com/highcharts.js"></script> -->
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 	<script src="controllers/comparisonPage.js"></script>
 	<script src="controllers/comparisonMasterController.js"></script>
 	<script src="controllers/energyUsageController.js"></script>
+	<script src="controllers/csvController.js"></script>
+	<script src="controllers/xmlController.js"></script>
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
 	<script src="controllers/graphController.js"></script>
@@ -120,10 +123,25 @@
       };
       </script>
     </div>
-    <div class="col-md-3" style="text-align:center">
-      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+    <div class="col-md-3" style="text-align:center" ng-controller="xmlController as xmlCtrl">
+      <a href="#" id="xmlUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadXML"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+      <div id="uploadXML" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a XML file to upload</h4>
+            </div>
+            <input type="file" id="xmlFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="xmlCtrl.parseXML()">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col-md-3" style="text-align:center">
+    <div class="col-md-3" style="text-align:center" ng-controller="csvController as csvCtrl">
       <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button CSV</a>
       <div id="uploadCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
         <div class="modal-dialog">
@@ -132,39 +150,9 @@
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
             </div>
-            <input type="file" id="csv" style="width:100%">
-            <script>
-              document.getElementById('csv').addEventListener('change', readFile, false);
-              function readFile (evt) {
-                var files = evt.target.files;
-                var file = files[0];           
-                var consumptionArray = [];
-                var reader = new FileReader();
-                reader.onload = function() {
-
-                  // By lines
-                  var lines = this.result.split('\n');
-                  for(var line = 5; line < lines.length; line++){
-                    var consumption = {};
-                    var csvs = lines[line].split(',');
-                    for(var csv = 0; csv < csvs.length; csv++) {
-                      if(csv == 0) {
-                        var ssvs = csvs[csv].split('\ ');
-                        consumption.time = ssvs[0].replace(/\//g, "-") + " " + ssvs[1];
-                      }
-                      if(csv == 1) {
-                        consumption.amount = csvs[csv];
-                      }
-                    }
-                    consumptionArray.push(consumption);
-                  }
-                  console.log(consumptionArray);
-                }
-                  reader.readAsText(file)
-                }
-            </script>
+            <input type="file" id="csvFile" style="width:100%">
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -400,7 +388,7 @@
 <!-- Needed an extra divs in the section here to help with controller scope -->
 <div ng-controller="pricingModelController as pmCtrl">
 
-  <div class="row" style="padding-bottom:5%">
+  <div class="row" style="padding-bottom:2%">
     <div class="col-md-3" style="text-align:center" ng-repeat="label in pmCtrl.columnLabels">
       <label class="control-label" style="font-size:25px; color: #ffffff;">{{label.title}}</label>
 	</div>
@@ -410,7 +398,7 @@
     <div id="{{row.index}}" ng-controller="pmSelectionController as selectCtrl">
 
       <div class="container-fluid">
-        <div class="row" style="padding-bottom:5%">
+        <div class="row" style="padding-bottom:3%">
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
@@ -452,8 +440,9 @@
   </div> <!-- div end for ng-repeat of rows -->
 </div> <!-- div end for pricingModelController -->
 
+
 <div class="container-fluid">
-  <div class="row" style="padding-bottom:5%">
+  <div class="row" style="padding-bottom:3%">
     <div class="col-md-6" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
         <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
@@ -467,35 +456,27 @@
   </div>
 </div>
 
-<!--This is hiCharts Energy Consumption Graph-->
-<div class="container-fluid" style="padding-top: 4%" ng-controller="graphController as graphCtrl">
-  <div class="row" >
-    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-      <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
-      </div>
-      
-      <!-- <!--Javascript for highchart, draggable chart
-      <script type="text/javascript">
-        
-      </script> -->
-    </div>
-  </div>
+<div ng-controller="graphController as graphCtrl">
+	<!--This is hiCharts Energy Consumption Graph-->
+	<div class="container-fluid" style="padding-top: 4%">
+	  <div class="row" >
+		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+		  <div id="EnergyRateConsumption" style="height: 400px; font-size:15px;">
+		  </div>
+		</div>
+	  </div>
+	</div>
+	<!--This is hiCharts Time Cost Graph-->
+	<div class="container-fluid">
+	  <div class="row" >
+		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+		  <div id="CostTime" style="height: 400px; font-size:15px;">
+		  </div>
+		</div>
+	  </div>
+	</div>
 </div>
 
-<!--This is hiCharts Time Cost Graph-->
-<div class="container-fluid" ng-controller="graphController as graphCtrl">
-  <div class="row" >
-    <div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-      <div id="CostTime" style="height: 400px; font-size:15px;">
-      </div>
-      
-      <!--Javascript for highchart, draggable chart -->
-      <!-- <script type="text/javascript">
-        
-      </script> -->
-    </div>
-  </div>
-</div>
 
 <footer class="footer" style="color: #ffffff; background: rgba(0,0,0,0.5);">
   <div class="col-md-4" style="text-align:center">
@@ -525,5 +506,7 @@
 </footer>
 
 </div>
+
+
 </body>
 </html>
