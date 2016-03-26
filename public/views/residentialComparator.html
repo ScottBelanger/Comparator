@@ -17,6 +17,7 @@
 	<script src="controllers/comparisonMasterController.js"></script>
 	<script src="controllers/energyUsageController.js"></script>
 	<script src="controllers/csvController.js"></script>
+	<script src="controllers/xmlController.js"></script>
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
 	<script src="controllers/graphController.js"></script>
@@ -149,8 +150,23 @@
       };
       </script>
     </div>
-    <div class="col-md-3" style="text-align:center">
-      <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+    <div class="col-md-3" style="text-align:center" ng-controller="xmlController as xmlCtrl">
+      <a href="#" id="xmlUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadXML"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
+      <div id="uploadXML" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a XML file to upload</h4>
+            </div>
+            <input type="file" id="xmlFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="xmlCtrl.parseXML()">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-md-3" style="text-align:center" ng-controller="csvController as csvCtrl">
       <a href="#" id="csvUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadCSV"><span class="glyphicon glyphicon-upload"></span>Upload Green Button CSV</a>
