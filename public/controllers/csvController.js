@@ -14,6 +14,10 @@ function csvController($scope) {
 		  // By lines
 		  var lines = this.result.split('\n');
 		  for(var line = 5; line < lines.length; line++){
+                    if( lines[line] != undefined &&
+                        lines[line] != null &&
+                        lines[line] != " " &&
+                        lines[line] != "" ) {
 			var consumption = {};
 			var csvs = lines[line].split(',');
 			for(var csv = 0; csv < csvs.length; csv++) {
@@ -28,6 +32,7 @@ function csvController($scope) {
 			}
 			 csvCtrl.consumptionArray.push(consumption);
 		   }
+                  }
 			//console.log(csvCtrl.consumptionArray);
 			$scope.$emit('newConsumptionArray', csvCtrl.consumptionArray);
 		  }
