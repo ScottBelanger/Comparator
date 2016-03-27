@@ -44,9 +44,30 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 	});
 	
+	$scope.$on('modifiedConsumptionPoint', function(event, index, date, newAmount) {
+		//console.log("In master at modifiedConsumptionPoint");
+		//console.log(index);
+		//console.log(date);
+		//console.log(newAmount);
+		
+		//update the consumption array to have new value
+		consumptionArray[index].amount = newAmount;
+		//console.log(consumptionArray);
+		
+		//send the single point to the rate engine for EACH pricing model series in cost graph
+		var newConsumption = {time: date,
+							  amount: newAmount};
+		
+		//For each pricingModel series, update the cost point
+		getCostPoint([newConsumption], 0, pricingModelArray.length);
+		
+		//also need to update costArray as well
+		
+	});
+	
 	function getCost(consumption, pricingModel) {
-		console.log(pricingModel);
-		console.log(consumption);
+		//console.log(pricingModel);
+		//console.log(consumption);
 		
 		if (pricingModel == undefined || consumption == []) {
 			console.log("Cannot get cost yet");
@@ -59,7 +80,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("data to pass:");
 		console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result){
+		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
 			var costObject = {id: pricingModel.id,
 							  values: result.data};
@@ -67,6 +88,27 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//console.log(costObject);
 			var pricingModelLabel = pricingModel.ldc + ": " + pricingModel.rateType;
 			$rootScope.$broadcast('updateCostTimePM', pricingModel.id,  pricingModelLabel, costObject.values);
+		}, function(result){
+			// error
+		});
+	}
+	
+	function getCostPoint(consumption, index, total) {
+		console.log("In getCostPoint");
+		var data = {consumption: consumption,
+					pricingModel: pricingModelArray[index]};
+					
+		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
+			//console.log(result.data);
+			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, result.data);
+			//Now continue cycling through all the pricing models to update each point
+			index++;
+			if (index < total) {
+				getCostPoint(consumption, index, total);
+			}
+			else {
+				return;
+			}
 		}, function(result){
 			// error
 		});

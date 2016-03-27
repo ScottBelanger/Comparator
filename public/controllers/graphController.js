@@ -25,7 +25,25 @@ function graphController($scope) {
             },
             line: {
               cursor: 'ns-resize'
-            }
+            },
+			series: {
+				point: {
+					events: {
+						drag: function (e) {
+							//console.log("drag");
+							//console.log(e);
+						},
+						drop: function () {
+							console.log("drop");
+							//console.log(this.series.name);
+							//console.log(this.x);
+							//console.log(this.y);
+							//console.log(this);
+							consumptionPointDrop(this.index, this.x, this.y);
+						}
+					}
+				}
+			}
           },
 		  navigator: {
 			enabled: true,
@@ -133,9 +151,9 @@ function graphController($scope) {
         });
 	
 	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
-		console.log("In graphController");
-		console.log("initial consumption Data");
-		console.log(consumptionData);
+		//console.log("In graphController");
+		//console.log("initial consumption Data");
+		//console.log(consumptionData);
 		
 		if (consumptionGraph.get(seriesID) != undefined) {
 			consumptionGraph.get(seriesID).remove();
@@ -171,7 +189,7 @@ function graphController($scope) {
 		
 		//needed for resetting a single consumption line
 		var nav = consumptionGraph.get('navigator');
-		console.log(nav);
+		//console.log(nav);
 		nav.setData(newSeries.data);
 		consumptionGraph.xAxis[0].setExtremes();
 	});
@@ -203,13 +221,33 @@ function graphController($scope) {
 			id: seriesID,
 			name: seriesName,
 			data: costPoints,
-			draggableY: true,
             rotation: 90
 		});
 	});
 	
 	$scope.$on('removeCostSeries', function(event, id) {
-		console.log("Made it to the graph controller with id: " + id);
+		//console.log("Made it to the graph controller with id: " + id);
 		costTimeGraph.get(id).remove();
 	});
+	
+	$scope.$on('updateCostPoint', function(event, id, costData) {
+		console.log("graphController");
+		console.log(id);
+		console.log(costData);
+	});
+	
+	function consumptionPointDrop(index, x, y) {
+		//console.log("In drop funtion");
+		//console.log(x);
+		//console.log(y);
+		//console.log(index);
+		
+		//convert date back to string format
+		var date = new Date(x);
+		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
+		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
+		//console.log("date: " + date);
+		
+		$scope.$emit('modifiedConsumptionPoint', index, date, y);
+	}
 }
