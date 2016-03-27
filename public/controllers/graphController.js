@@ -25,8 +25,32 @@ function graphController($scope) {
             },
             line: {
               cursor: 'ns-resize'
-            }
+            },
+			series: {
+				point: {
+					events: {
+						drag: function (e) {
+							//console.log("drag");
+							//console.log(e);
+						},
+						drop: function () {
+							console.log("drop");
+							//console.log(this.series.name);
+							//console.log(this.x);
+							//console.log(this.y);
+							//console.log(this);
+							consumptionPointDrop(this.index, this.x, this.y);
+						}
+					}
+				}
+			}
           },
+		  navigator: {
+			enabled: true,
+			series: {
+					id: 'navigator'
+			}
+		  },
 		  rangeSelector: {
             buttons: [{
                 count: 1,
@@ -60,7 +84,7 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
@@ -121,15 +145,19 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
 	
-	$scope.$on('consumptionForGraph', function(event, consumptionData) {
-		console.log("In graphController");
-		console.log("initial consumption Data");
-		console.log(consumptionData);
+	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
+		//console.log("In graphController");
+		//console.log("initial consumption Data");
+		//console.log(consumptionData);
+		
+		if (consumptionGraph.get(seriesID) != undefined) {
+			consumptionGraph.get(seriesID).remove();
+		}
 		
 		var consumptionPoints = [];
 		
@@ -142,20 +170,28 @@ function graphController($scope) {
 			var x = Date.parse(stringDate);
 			var y = consumptionData[i].amount;
 			
-			console.log("x: " + x);
-			console.log("y: " + y);
+			//console.log("x: " + x);
+			//console.log("y: " + y);
 			
 			var point = [x, y];
 			consumptionPoints.push(point);
 		}
 		
-		consumptionGraph.addSeries({
-			id: 1,
-			name: 'consumption',
+		var newSeries = {
+			id: seriesID,
+			name: seriesName,
 			data: consumptionPoints,
 			draggableY: true,
             rotation: 90
-		});
+		};
+		
+		consumptionGraph.addSeries(newSeries);
+		
+		//needed for resetting a single consumption line
+		var nav = consumptionGraph.get('navigator');
+		//console.log(nav);
+		nav.setData(newSeries.data);
+		consumptionGraph.xAxis[0].setExtremes();
 	});
 	
 	$scope.$on('updateCostTimePM', function(event, seriesID, seriesName, costData) {
@@ -174,8 +210,8 @@ function graphController($scope) {
 			var x = Date.parse(stringDate);
 			var y = costData[i].amount;
 			
-			console.log("x: " + x);
-			console.log("y: " + y);
+			//console.log("x: " + x);
+			//console.log("y: " + y);
 			
 			var point = [x, y];
 			costPoints.push(point);
@@ -185,8 +221,46 @@ function graphController($scope) {
 			id: seriesID,
 			name: seriesName,
 			data: costPoints,
-			draggableY: true,
             rotation: 90
 		});
 	});
+	
+	$scope.$on('removeCostSeries', function(event, id) {
+		//console.log("Made it to the graph controller with id: " + id);
+		costTimeGraph.get(id).remove();
+	});
+	
+	$scope.$on('updateCostPoint', function(event, seriesID, costData, pointIndex) {
+		console.log("graphController");
+		console.log(seriesID);
+		console.log(costData);
+		console.log(pointIndex);
+		
+		var date = costData[0].time;
+		var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+		var x = Date.parse(stringDate);
+		var y = costData[0].amount;
+		
+		//console.log("x: " + x);
+		//console.log("y: " + y);
+		
+		var point = [x, y];
+		
+		costTimeGraph.get(seriesID).data[pointIndex].update(point);
+	});
+	
+	function consumptionPointDrop(index, x, y) {
+		//console.log("In drop funtion");
+		//console.log(x);
+		//console.log(y);
+		//console.log(index);
+		
+		//convert date back to string format
+		var date = new Date(x);
+		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
+		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
+		//console.log("date: " + date);
+		
+		$scope.$emit('modifiedConsumptionPoint', index, date, y);
+	}
 }

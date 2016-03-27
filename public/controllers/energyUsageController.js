@@ -20,14 +20,14 @@ function energyUsageController($scope) {
 	}
 	
 	euCtrl.submitUsage = function() {
-		console.log(euCtrl.consumptionArray);
+		//console.log(euCtrl.consumptionArray);
 		
 		var length = euCtrl.consumptionArray.length;
 		for (var i=0; i<length; i++) {
 			euCtrl.consumptionArray[i].time = euCtrl.date + " " + euCtrl.consumptionArray[i].time;
 		}
 		
-		console.log("In manual usage");
+		//console.log("In manual usage");
 		//need to send consumptionArray to comparison controller
 		$scope.$emit('newConsumptionArray', euCtrl.consumptionArray);
 	}
