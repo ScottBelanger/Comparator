@@ -230,10 +230,23 @@ function graphController($scope) {
 		costTimeGraph.get(id).remove();
 	});
 	
-	$scope.$on('updateCostPoint', function(event, id, costData) {
+	$scope.$on('updateCostPoint', function(event, seriesID, costData, pointIndex) {
 		console.log("graphController");
-		console.log(id);
+		console.log(seriesID);
 		console.log(costData);
+		console.log(pointIndex);
+		
+		var date = costData[0].time;
+		var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+		var x = Date.parse(stringDate);
+		var y = costData[0].amount;
+		
+		//console.log("x: " + x);
+		//console.log("y: " + y);
+		
+		var point = [x, y];
+		
+		costTimeGraph.get(seriesID).data[pointIndex].update(point);
 	});
 	
 	function consumptionPointDrop(index, x, y) {

@@ -11,9 +11,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	//masterCtrl RateComparison which has many rateBundles
-	var consumptionArray = [];
+	var consumptionArray = []; //currently just an array of consumption objects associated with one single consumption
 	var pricingModelArray = [];
-	var costArray = [];
+	var costArray = []; //array of CostObjects, which each contain id and array of "cost" objects
 	
 	$scope.$on('newConsumptionArray', function(event, consArray) {
 		//Add new pricing model to the pricingModelArray
@@ -50,7 +50,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//console.log(date);
 		//console.log(newAmount);
 		
-		//update the consumption array to have new value
+		//update the consumption and cost arrays to reflect new value
 		consumptionArray[index].amount = newAmount;
 		//console.log(consumptionArray);
 		
@@ -59,7 +59,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 							  amount: newAmount};
 		
 		//For each pricingModel series, update the cost point
-		getCostPoint([newConsumption], 0, pricingModelArray.length);
+		getCostPoint([newConsumption], 0, pricingModelArray.length, index);
 		
 		//also need to update costArray as well
 		
@@ -93,18 +93,32 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	function getCostPoint(consumption, index, total) {
+	function getCostPoint(consumption, pmIndex, total, pointIndex) {
+		if (pricingModelArray[pmIndex] == undefined || consumption == []) {
+			console.log("Cannot get cost yet");
+			return;
+		}
+		
 		console.log("In getCostPoint");
 		var data = {consumption: consumption,
-					pricingModel: pricingModelArray[index]};
+					pricingModel: pricingModelArray[pmIndex]};
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
-			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, result.data);
+			var costData = result.data;
+			
+			//update cost point on the graph
+			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, costData, pointIndex);
+			
+			//update the cost array
+			costArray[pmIndex].values[pointIndex].amount = costData[0].amount;
+			//console.log("New cost array");
+			//console.log(costArray);
+			
 			//Now continue cycling through all the pricing models to update each point
-			index++;
-			if (index < total) {
-				getCostPoint(consumption, index, total);
+			pmIndex++;
+			if (pmIndex < total) {
+				getCostPoint(consumption, pmIndex, total);
 			}
 			else {
 				return;
