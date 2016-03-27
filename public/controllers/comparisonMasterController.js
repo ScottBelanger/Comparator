@@ -12,13 +12,6 @@ var Demand           = require( '../../models/demand' );
 var Cost             = require( '../../models/cost' );
 var Comparison       = require( '../../models/comparison' );
 
-var isRateComp = 1;
-var comparison = new Comparison();
-var bundle = "";
-
-console.log("when does this fire");
-
-
 function comparisonMasterController($scope, $rootScope, $http) {
 	var masterCtrl = this;
 	
@@ -26,8 +19,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var rateEngineURL = 'http://localhost:3001';
 	//for remote
 	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
+	
+	var isRateComp = true;
+	//var comparison = new Comparison();
+	var bundle = "";
 
-	console.log("does isRateComp work" + isRateComp);
+	console.log("does isRateComp work: " + isRateComp);
 	
 	//masterCtrl RateComparison which has many rateBundles
 	//when i uncomment these lines, it breaks the page. the graphs don't load properly. can't figure out why
@@ -43,12 +40,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 */
 
-
-	//variables used before Laura implemented new model structure, shoukd be able to delete them once model is implemented 
-	var consumptionArray = [];
+	//variables used before Laura implemented new model structure, should be able to delete them once model is implemented 
+	var consumptionArray = []; //currently just an array of consumption objects associated with one single consumption
 	var pricingModelArray = [];
-	var costArray = [];
-
+	var costArray = []; //array of CostObjects, which each contain id and array of "cost" objects
 	
 	$scope.$on('newConsumptionArray', function(event, consArray) {
 		//Add new pricing model to the pricingModelArray
@@ -77,14 +72,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			comparison.addUsageBundle(newUsageBundle);
 		}
 		
-
 		//need to send just the comparison to the graph, not the whole energy usage
 		$rootScope.$broadcast('consumptionForGraph', energyUsage.getAllConsumption());
-*/
-
+*/		
 		//comment out when testing new model
 		consumptionArray = consArray;
-		$rootScope.$broadcast('consumptionForGraph', consumptionArray);
+		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", consumptionArray);
 	});
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
@@ -117,6 +110,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	});
 	
 	$scope.$on('deletePricingModel', function(event, id) {
+		$rootScope.$broadcast('removeCostSeries', id);
 		//search through pricing model array for the id to match the argument id and remove the pricing model with that id
 		var length = pricingModelArray.length;
 		for (var i=0; i<length; i++) {
@@ -129,9 +123,30 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 	});
 	
+	$scope.$on('modifiedConsumptionPoint', function(event, index, date, newAmount) {
+		//console.log("In master at modifiedConsumptionPoint");
+		//console.log(index);
+		//console.log(date);
+		//console.log(newAmount);
+		
+		//update the consumption and cost arrays to reflect new value
+		consumptionArray[index].amount = newAmount;
+		//console.log(consumptionArray);
+		
+		//send the single point to the rate engine for EACH pricing model series in cost graph
+		var newConsumption = {time: date,
+							  amount: newAmount};
+		
+		//For each pricingModel series, update the cost point
+		getCostPoint([newConsumption], 0, pricingModelArray.length, index);
+		
+		//also need to update costArray as well
+		
+	});
+	
 	function getCost(consumption, pricingModel) {
-		console.log(pricingModel);
-		console.log(consumption);
+		//console.log(pricingModel);
+		//console.log(consumption);
 		
 		if (pricingModel == undefined || consumption == []) {
 			console.log("Cannot get cost yet");
@@ -144,15 +159,49 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("data to pass:");
 		console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result){
+		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
 			var costObject = {id: pricingModel.id,
 							  values: result.data};
 			costArray.push(costObject);
-			console.log(costObject);
+			//console.log(costObject);
+			var pricingModelLabel = pricingModel.ldc + ": " + pricingModel.rateType;
+			$rootScope.$broadcast('updateCostTimePM', pricingModel.id,  pricingModelLabel, costObject.values);
+		}, function(result){
+			// error
+		});
+	}
+	
+	function getCostPoint(consumption, pmIndex, total, pointIndex) {
+		if (pricingModelArray[pmIndex] == undefined || consumption == []) {
+			console.log("Cannot get cost yet");
+			return;
+		}
+		
+		console.log("In getCostPoint");
+		var data = {consumption: consumption,
+					pricingModel: pricingModelArray[pmIndex]};
+					
+		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
+			//console.log(result.data);
+			var costData = result.data;
 			
-			$rootScope.$broadcast('updateCostTimePM', pricingModel.ldc, costObject.values);
+			//update cost point on the graph
+			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, costData, pointIndex);
 			
+			//update the cost array
+			costArray[pmIndex].values[pointIndex].amount = costData[0].amount;
+			//console.log("New cost array");
+			//console.log(costArray);
+			
+			//Now continue cycling through all the pricing models to update each point
+			pmIndex++;
+			if (pmIndex < total) {
+				getCostPoint(consumption, pmIndex, total);
+			}
+			else {
+				return;
+			}
 		}, function(result){
 			// error
 		});

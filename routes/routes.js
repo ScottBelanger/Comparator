@@ -25,6 +25,14 @@ router.get('/aboutUsPage', function( req, res,  next ) {
   res.sendFile(path.join(__dirname, '../public/views/', 'aboutUsPage.html'));
 });
 
+router.get('/privacyInformation', function( req, res,  next ) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'privacyInformation.html'));
+});
+
+router.get('/termsPage', function( req, res,  next ) {
+  res.sendFile(path.join(__dirname, '../public/views/', 'termsPage.html'));
+});
+
 /* GET commercial comparison page. 
  * 
  * Description: Services GET request made to /commercialComparator by client. 

@@ -12,7 +12,7 @@ function graphController($scope) {
             animation: false
           },
           title: {
-            text: 'Energy Rate Consumption'
+            text: 'Consumption Time Graph'
           },
 		  yAxis: {
 			title: {
@@ -25,8 +25,32 @@ function graphController($scope) {
             },
             line: {
               cursor: 'ns-resize'
-            }
+            },
+			series: {
+				point: {
+					events: {
+						drag: function (e) {
+							//console.log("drag");
+							//console.log(e);
+						},
+						drop: function () {
+							console.log("drop");
+							//console.log(this.series.name);
+							//console.log(this.x);
+							//console.log(this.y);
+							//console.log(this);
+							consumptionPointDrop(this.index, this.x, this.y);
+						}
+					}
+				}
+			}
           },
+		  navigator: {
+			enabled: true,
+			series: {
+					id: 'navigator'
+			}
+		  },
 		  rangeSelector: {
             buttons: [{
                 count: 1,
@@ -60,7 +84,7 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
@@ -73,6 +97,12 @@ function graphController($scope) {
           title: {
             text: 'Cost Time Graph'
           },
+		   yAxis: {
+			title: {
+				//TODO: is this dollars or cents?
+				text: 'Cost ($)'
+			}  
+		  },
           plotOptions: {
             
             column: {
@@ -115,56 +145,122 @@ function graphController($scope) {
                 type: 'all',
                 text: 'All'
             }],
-			inputEnabled: false,
+			inputEnabled: true,
 			selected: 0
 		  },
         });
 	
-	$scope.$on('consumptionForGraph', function(event, consumptionData) {
-		console.log("In graphController");
-		console.log(consumptionData);
-		//console.log(consumptionGraph.xAxis[0]);
-		//console.log(consumptionGraph.series[0]);
+	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
+		//console.log("In graphController");
+		//console.log("initial consumption Data");
+		//console.log(consumptionData);
+		
+		if (consumptionGraph.get(seriesID) != undefined) {
+			consumptionGraph.get(seriesID).remove();
+		}
 		
 		var consumptionPoints = [];
 		
 		var length = consumptionData.length;
+		//populate the array for data with the consumption information
 		for (var i=0; i<length; i++) {
-			var point = [consumptionData[i].time, consumptionData[i].amount];
+			//put the date in the necessary format for Date parsing
+			var date = consumptionData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = consumptionData[i].amount;
+			
+			//console.log("x: " + x);
+			//console.log("y: " + y);
+			
+			var point = [x, y];
 			consumptionPoints.push(point);
 		}
 		
-		consumptionGraph.addSeries({
-			id: 1,
-			name: 'consumption',
+		var newSeries = {
+			id: seriesID,
+			name: seriesName,
 			data: consumptionPoints,
 			draggableY: true,
+            rotation: 90
+		};
+		
+		consumptionGraph.addSeries(newSeries);
+		
+		//needed for resetting a single consumption line
+		var nav = consumptionGraph.get('navigator');
+		//console.log(nav);
+		nav.setData(newSeries.data);
+		consumptionGraph.xAxis[0].setExtremes();
+	});
+	
+	$scope.$on('updateCostTimePM', function(event, seriesID, seriesName, costData) {
+		//console.log("In graphController updateCostTimePM");
+		//console.log(seriesID);
+		//console.log(seriesName);
+		//console.log(costData);
+		
+		var costPoints = [];
+		
+		var length = costData.length;
+		for (var i=0; i<length; i++) {
+			//put the date in the necessary format for Date parsing
+			var date = costData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = costData[i].amount;
+			
+			//console.log("x: " + x);
+			//console.log("y: " + y);
+			
+			var point = [x, y];
+			costPoints.push(point);
+		}
+		
+		costTimeGraph.addSeries({
+			id: seriesID,
+			name: seriesName,
+			data: costPoints,
             rotation: 90
 		});
 	});
 	
-	$scope.$on('updateCostTimePM', function(event, seriesName, costPoints) {
-		console.log("In graphController updateCostTimePM");
-		console.log(seriesName);
-		console.log(costPoints);
-		
-		var costTimes = [];
-		var costValues = [];
-		
-		var length = costPoints.length;
-		for (var i=0; i<length; i++) {
-			costTimes.push(costPoints[i].time);
-			costValues.push(costPoints[i].amount);
-		}
-		
-		//TODO: This needs to be fixed so that it is not called all the time
-		costTimeGraph.xAxis[0].setCategories(costTimes, false);
-		
-		costTimeGraph.addSeries({
-			name: seriesName,
-			data: costValues,
-			draggableY: true,
-            rotation: 90
-		});
+	$scope.$on('removeCostSeries', function(event, id) {
+		//console.log("Made it to the graph controller with id: " + id);
+		costTimeGraph.get(id).remove();
 	});
+	
+	$scope.$on('updateCostPoint', function(event, seriesID, costData, pointIndex) {
+		console.log("graphController");
+		console.log(seriesID);
+		console.log(costData);
+		console.log(pointIndex);
+		
+		var date = costData[0].time;
+		var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+		var x = Date.parse(stringDate);
+		var y = costData[0].amount;
+		
+		//console.log("x: " + x);
+		//console.log("y: " + y);
+		
+		var point = [x, y];
+		
+		costTimeGraph.get(seriesID).data[pointIndex].update(point);
+	});
+	
+	function consumptionPointDrop(index, x, y) {
+		//console.log("In drop funtion");
+		//console.log(x);
+		//console.log(y);
+		//console.log(index);
+		
+		//convert date back to string format
+		var date = new Date(x);
+		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
+		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
+		//console.log("date: " + date);
+		
+		$scope.$emit('modifiedConsumptionPoint', index, date, y);
+	}
 }

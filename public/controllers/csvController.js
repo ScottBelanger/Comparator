@@ -14,13 +14,16 @@ function csvController($scope) {
 		  // By lines
 		  var lines = this.result.split('\n');
 		  for(var line = 5; line < lines.length; line++){
+                    if( lines[line] != undefined &&
+                        lines[line] != null &&
+                        lines[line] != " " &&
+                        lines[line] != "" ) {
 			var consumption = {};
 			var csvs = lines[line].split(',');
 			for(var csv = 0; csv < csvs.length; csv++) {
 			  if(csv == 0) {
 				var ssvs = csvs[csv].split('\ ');
-				var date = new Date(ssvs[0].replace(/\//g, "-") + " " + ssvs[1]);
-				consumption.time = date;
+				consumption.time = ssvs[0].replace(/\//g, "-") + " " + ssvs[1];
 			  }
 			  if(csv == 1) {
 				consumption.amount = parseFloat(csvs[csv]);
@@ -28,6 +31,7 @@ function csvController($scope) {
 			}
 			 csvCtrl.consumptionArray.push(consumption);
 		   }
+                  }
 			//console.log(csvCtrl.consumptionArray);
 			$scope.$emit('newConsumptionArray', csvCtrl.consumptionArray);
 		  }
