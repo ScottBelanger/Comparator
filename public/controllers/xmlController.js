@@ -22,7 +22,7 @@ function xmlController($scope) {
         value = null;
         time = null;
         $(this).find("value").each(function() {
-          value = parseFloat($(this).text());
+          value = parseFloat($(this).text())/1000;
         });
         $(this).find("start").each(function() {
           tmptime = new Date($(this).text() * 1000);
