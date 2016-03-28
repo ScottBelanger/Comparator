@@ -149,9 +149,11 @@
                           data: { username: username, password: password }
                           }).done(function(data){
                             data = JSON.parse(data)
+							
                             if(data != -3) {
                               localStorage.setItem('username', data.userName)
                               localStorage.setItem('isAdmin', data.isAdmin)
+							  localStorage.setItem('userId', data.userId)
                               $("#userProfile").css("visibility", "visible");
                               $("#errorMessage").hide();
                               $("#userProfile").text("Welcome, " + localStorage.getItem('username'))

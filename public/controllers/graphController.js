@@ -194,11 +194,13 @@ function graphController($scope) {
 		consumptionGraph.xAxis[0].setExtremes();
 	});
 	
-	$scope.$on('updateCostTimePM', function(event, seriesID, seriesName, costData) {
+	$scope.$on('newCostTimePM', function(event, seriesID, seriesName, costData, totalCost) {
 		//console.log("In graphController updateCostTimePM");
 		//console.log(seriesID);
 		//console.log(seriesName);
 		//console.log(costData);
+		
+		//TODO handle totalCost
 		
 		var costPoints = [];
 		
@@ -231,10 +233,10 @@ function graphController($scope) {
 	});
 	
 	$scope.$on('updateCostPoint', function(event, seriesID, costData, pointIndex) {
-		console.log("graphController");
-		console.log(seriesID);
-		console.log(costData);
-		console.log(pointIndex);
+		//console.log("graphController");
+		//console.log(seriesID);
+		//console.log(costData);
+		//console.log(pointIndex);
 		
 		var date = costData[0].time;
 		var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
