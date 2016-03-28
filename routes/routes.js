@@ -141,7 +141,12 @@ router.post('/comparison', function(req, res, next) {
  * Response:    Send comparison id to client if success.
  */
 router.post('/comparison/new', function(req, res, next) {
-  saveComparison(req.body.userID, JSON.parse(req.body.comparison), true, function() {
+  console.log("In comparison/new");
+  console.log(req.body);
+  /* saveComparison(req.body.userID, JSON.parse(req.body.comparison), true, function() {
+	 res.send("hello"); 
+  }); */
+  saveComparison(req.body.userID, req.body.comparison, true, function() {
 	 res.send("hello"); 
   });
 });

@@ -12,6 +12,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	var isRateComp = true;
 	
+	console.log(localStorage.getItem('username'));
+	console.log(localStorage.getItem('userId'));
+	
+	var userID = localStorage.getItem('userId');
+	
+	//should put this in an initializer
+	
 	if (isRateComp) {
 		var rateComp = {
 			energyUsage: {
@@ -119,7 +126,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//console.log(consumption);
 		
 		if (pricingModel == undefined || consumption == []) {
-			console.log("Cannot get cost yet");
+			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
 		}
 		
@@ -155,7 +162,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	function getCostPointRateComp(consumption, rbIndex, total, pointIndex) {
 		if (rateComp.rateBundle[rbIndex] == undefined || consumption == []) {
-			console.log("Cannot get cost yet");
+			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
 		}
 		
@@ -186,5 +193,53 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}, function(result){
 			// error
 		});
+	}
+	
+	masterCtrl.saveComparison = function() {
+		console.log("In saveComparison");
+		console.log("userID: " + userID);
+		
+		if (userID == 'undefined') {
+			//TODO
+			alert("Need to sign up to save comparisons!");
+			return;
+		}
+		
+		if (isRateComp) {
+			console.log(rateComp);
+			
+			if (rateComp.rateBundle.length == 0) {
+				//TODO
+				alert("No comparisons to save!");
+				return;
+			}
+			
+			saveComparison(rateComp);
+		}
+	}
+	
+	function saveComparison(comparison) {
+		data = {userID: userID,
+				comparison: comparison};
+		$http.post('/comparison/new', data).then(function(result) {
+			//TODO
+			console.log(result);
+		}, function(result){
+			// error
+		});
+	}
+	
+	masterCtrl.loadComparison = function() {
+		console.log("In loadComparison");
+		
+		if (userID == 'undefined') {
+			//TODO
+			alert("Need to sign up to load comparisons that you have saved!");
+			return;
+		}
+		
+		if (isRateComp) {
+			console.log("userID: " + userID);
+		}
 	}
 }
