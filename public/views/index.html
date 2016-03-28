@@ -25,9 +25,28 @@
           logout()
         }
       }
-      
+      var checkURL = function() {
+        var currentURL = (document.URL)
+        var part = currentURL.split("?")[1];
+        console.log(part);
+        if(part == "scope=FB=4_5_15;IntervalDuration=3600;BlockDuration=daily;HistoryLength=13&DataCustodianID=greenbuttontestlab.ca"){
+          var auth_code = "FB=4_5_15;IntervalDuration=3600;BlockDuration=daily;HistoryLength=13"
+        
+          var client_id = "westernuniversity.greenbuttontestlab.ca"
+          var secret = "secret"
+          var token = "Bearer 77faecc5-56f9-4429-81f1-b10d899bbd45"
+          var Authorization = "Token"
+          $.ajax({
+            type: 'GET',
+            url: 'https://greenbutton-testlab-prod.appspot.com/oauth/token',
+            data: { token, Authorization}
+            }).done(function(data){
+              console.log(data)
+          }); 
+        }
+      }
     </script>
-    <body onload="checkCookie()">
+    <body onload="checkCookie(), checkURL()">
   </head>
 <body>
 
@@ -316,6 +335,7 @@
             <script type="text/javascript">
               document.getElementById("residentialComparator").onclick = function() {
                 location.href = "http://" + window.location.host + "/residentialComparator";
+                localStorage.setItem('comparisonPage', "residential")
               }
             </script>
           </div>
@@ -329,7 +349,8 @@
             <a href="#" id="commercialComparator" style="color: #ffffff; font-size:30px"><span class="glyphicon glyphicon-play"></span>Commercial Page</span></a>
             <script type="text/javascript">
               document.getElementById("commercialComparator").onclick = function() {
-                location.href = "http://" + window.location.host + "/commercialComparator";
+                location.href = "http://" + window.location.host + "/residentialComparator";
+                localStorage.setItem('comparisonPage', "commercial")
               }
             </script>
           </div>

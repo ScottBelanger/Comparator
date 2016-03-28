@@ -22,17 +22,21 @@
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
 	<script src="controllers/graphController.js"></script>
-    <script>
+    <script type="text/javascript">
       function showCharts() {
-        document.getElementById("EnergyRateConsumption").style.visibility = "visible";
-        document.getElementById("TimeCostGraph").style.visibility = "visible";
+      console.log(localStorage.getItem('comparisonPage'))
+        if(localStorage.getItem('comparisonPage') === "residential") {
+          document.getElementById("otherGraph").style.display = "none"
+        }
+        else {
+          document.getElementById("otherGraph").style.display = "block"
+        }
       }
       
       function getUsername() {
         document.getElementById("userProfile").innerHTML = "Welcome, " + localStorage.getItem('username');
       }
-    </script>
-    <script type="text/javascript">
+      
       var checkCookie = function(){
         if(document.cookie) {
           $("#userProfile").css("visibility", "visible");
@@ -46,10 +50,44 @@
       }
       
     </script>
-    <body onload="checkCookie()">
-    <body onload="getUsername()">
+    <body onload="comparisonSelect(), checkCookie(), getUsername(), showCharts()">
   </head>
 <body ng-controller="comparisonMasterController as masterCtrl">
+
+<script type="text/javascript">
+  var comparisonSelect = function() {
+    jQuery.noConflict();
+	$(document).ready(function(){
+		$("#comparisonSelection").modal('show');
+	});
+  }
+</script>
+
+<div id="comparisonSelection" class="modal fade" style="font-size:20px">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Please select which style comparison you would like to use.</h4>
+      </div>
+      <div class="modal-body">
+        <div class="checkbox">
+          <label><input type="radio" name="comparsionType" value="" checked="checked">Rate Comparison</label>
+          <p>Allows users to create comparisons using Rate Types</p>
+        </div>
+        <p> </p>
+        <div class="checkbox">
+          <label><input type="radio" name="comparsionType" value="">Usage Comparison</label>
+          <p>Allows users to create comparisons using Usage Amounts</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="comparisonSubmit" type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="container-fluid">
   <div class="carousel slide carousel-fade" data-ride="carousel">
@@ -154,7 +192,7 @@
             <input type="file" id="csvFile" style="width:100%">
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="buton" class="btn btn-default" data-dismiss="modal">Close</button>t
             </div>
           </div>
         </div>
@@ -444,12 +482,17 @@
 
 <div class="container-fluid">
   <div class="row" style="padding-bottom:3%">
-    <div class="col-md-6" style="text-align:center">
+    <div class="col-md-4" style="text-align:center">
+      <div class="container-fluid" style="text-align:center">
+        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection"><span class="glyphicon glyphicon-plus-sign""></span>New Comparison</a>
+      </div>
+    </div>
+    <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
         <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparison()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
-    <div class="col-md-6" style="text-align:center">
+    <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
         <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparison()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
       </div>
@@ -469,6 +512,14 @@
 	</div>
 	<!--This is hiCharts Time Cost Graph-->
 	<div class="container-fluid">
+	  <div class="row" >
+		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
+		  <div id="CostTime" style="height: 400px; font-size:15px;">
+		  </div>
+		</div>
+	  </div>
+	</div>
+    <div class="container-fluid" style="display:none" id="otherGraph">
 	  <div class="row" >
 		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
 		  <div id="CostTime" style="height: 400px; font-size:15px;">

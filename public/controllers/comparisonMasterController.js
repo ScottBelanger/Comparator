@@ -15,6 +15,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
 	
+	var pageType = localStorage.getItem('comparisonPage');
+	console.log("page type: " + pageType);
+	
 	var userID = localStorage.getItem('userId');
 	
 	//should put this in an initializer
@@ -62,6 +65,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				id: pricingModel.id,
 				pricingModel: pricingModel,
 				cost: [],
+				totalCost: 0,
 				description: ""
 			}
 			//add the rateBundle to the rateComparison
@@ -103,6 +107,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//console.log(date);
 		//console.log(newAmount);
 		
+		//index is the point in the array that the consumption and cost points are located
+		
 		if (isRateComp) {
 			//update the consumption array to reflect new value
 			rateComp.energyUsage.consumption[index].amount = newAmount;
@@ -138,13 +144,17 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
-			var costData = result.data;
+			var costData = result.data.costArray;
+			//TODO handle total cost
+			var totalCost = result.data.totalCost;
 			var seriesID = undefined;
 			var seriesLabel = "";
 			
 			if (isRateComp) {
 				var index = rateComp.rateBundle.length - 1;
 				rateComp.rateBundle[index].cost = costData;
+				//SAVE TOTAL COST to rateBundle
+				rateComp.rateBundle[index].totalCost = totalCost;
 				//console.log("NEW COST");
 				//console.log(rateComp);
 				seriesID = pricingModel.id;
@@ -154,7 +164,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				//TODO
 			}
 			
-			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData);
+			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData, totalCost);
 		}, function(result){
 			// error
 		});
@@ -165,6 +175,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
 		}
+		//TODO handle new total cost
+		//total is total number of rateBundle objects
 		
 		//console.log("In getCostPointRateComp");
 		var data = {consumption: consumption,
@@ -172,12 +184,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
-			var costData = result.data;
+			var costData = result.data.costArray;
 			
 			//update cost point on the graph
 			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, costData, pointIndex);
 			
 			//update the cost array
+			//update total cost as well
 			rateComp.rateBundle[rbIndex].cost[pointIndex].amount = costData[0].amount;
 			//console.log("Updated cost");
 			//console.log(rateComp);
