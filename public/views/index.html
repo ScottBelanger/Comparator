@@ -46,7 +46,7 @@
         }
       }
     </script>
-    <body onload="checkCookie(), checkURL()">
+    <body onload="checkCookie()">
   </head>
 <body>
 
@@ -114,7 +114,7 @@
     
     <div id="signUpBox" class="col-md-3" style="visibility:show">
       <h1 style="color:white; font-size:25px" align="center">Sign In</h1>
-      <p style="color:red; font-size:15px; visibility:hidden" id="errorMessage">Incorrect Login Credentials</p>
+      <p style="color:red; font-size:20px; display:none" id="errorMessage">Incorrect Login Credentials</p>
       <ul class="nav navbar-nav" style="float:right">
         <div style="margin-bottom: 20px" class="input-group" >
           <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
@@ -130,19 +130,12 @@
                 <button id="btn-login" class="btn btn-primary" align="center" style="font-size: 20px; margin-bottom:5px;">Login </button>
                 <script type="text/javascript">
                   $(document).ready(function() {
-                    if(($("#login-username").val()!="") || ($("#login-password").val()!= "")){
-                      $("#btn-login").click(login);
-                    }
-                    else { $("#errorMessage").css("visibility", "visible"); }
+                    $("#btn-login").click(login);
                     
                     
                   },$("#login-password").keypress( function(e){
                     if(e.which==13 ) {
-                      if(($("#login-username").val()!= "") || ($("#login-password").val()!= "")){
-                        login();
-                      }
-                      else { $("#errorMessage").css("visibility", "visible"); }
-                      
+                      login();
                     }
                     
                   }));
@@ -156,17 +149,21 @@
                           data: { username: username, password: password }
                           }).done(function(data){
                             data = JSON.parse(data)
-                            localStorage.setItem('username', data.userName)
-                            localStorage.setItem('isAdmin', data.isAdmin)
-							localStorage.setItem('userId', data.userId)
-                            $("#userProfile").css("visibility", "visible");
-                            $("#errorMessage").hide();
-                            $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
-                            $("#signUpBox").hide()
-                            if(localStorage.getItem('isAdmin') == 1){
-                              $("#rateEngine").css("visibility", "visible");
+							
+                            if(data != -3) {
+                              localStorage.setItem('username', data.userName)
+                              localStorage.setItem('isAdmin', data.isAdmin)
+							  localStorage.setItem('userId', data.userId)
+                              $("#userProfile").css("visibility", "visible");
+                              $("#errorMessage").hide();
+                              $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+                              $("#signUpBox").hide()
+                              if(localStorage.getItem('isAdmin') == 1){
+                                $("#rateEngine").css("visibility", "visible");
+                              }
+                              else { $("#rateEngine").hide() }
                             }
-                            else { $("#rateEngine").hide() }
+                            else { document.getElementById("errorMessage").style.display = "block"}
                           });
                           
                           
@@ -225,42 +222,39 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <script type="text/javascript">
                     $(document).ready(function() {
-                    $("#signup-button").click(signup);
+                      $("#signup-button").click(signup);
                     
-                    },$("#signup-repasswd").keypress( function(e){
-                      if(e.which==13) {
-                      signup();
-                    }
-                    
-                    }));
+                    });
                     var signup = function() {
-                        $("#signup-button").click(function(){
-                          var signupusername = $("#signup-username").val();
-                          var signupemail = $("#signup-email").val();
-                          var signuppassword = $("#signup-password").val();
-                          var signuprepasswd = $("#signup-repasswd").val();
+                      var signupusername = $("#signup-username").val();
+                      var signupemail = $("#signup-email").val();
+                      var signuppassword = $("#signup-password").val();
+                      var signuprepasswd = $("#signup-repasswd").val();
 
-                          $.ajax({
-                              type: 'POST',
-                              url: '/signup',
-                              data: { username: signupusername, 
-                                      password: signuppassword,
-                                      email: signupemail,
-                                      repasswd: signuprepasswd}
-                          }).done(function(data){
-                            data = JSON.parse(data)
-                            localStorage.setItem('username', data.userName)
-                            console.log(data.userName)
-                            $("#signup-username").val(""); 
-                            $("#signup-email").val("");
-                            $("#signup-password").val(""); 
-                            $("#signup-repasswd").val("");
-                            $("#userProfile").css("visibility", "visible");
-                            $("#rateEngine").css("visibility", "visible");
-                            $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
-                            $("#signUpBox").hide()
-                          });
-                        });
+                      $.ajax({
+                          type: 'POST',
+                          url: '/signup',
+                          data: { username: signupusername, 
+                                  password: signuppassword,
+                                  email: signupemail,
+                                  repasswd: signuprepasswd}
+                      }).done(function(data){
+                        data = JSON.parse(data)
+                        if(data != -4){
+                          localStorage.setItem('username', data.userName)
+                        
+                          $("#signup-username").val(""); 
+                          $("#signup-email").val("");
+                          $("#signup-password").val(""); 
+                          $("#signup-repasswd").val("");
+                          $("#userProfile").css("visibility", "visible");
+                          $("#rateEngine").css("visibility", "visible");
+                          $("#userProfile").text("Welcome, " + localStorage.getItem('username'))
+                          $("#signUpBox").hide() 
+                        }
+                        else { logout()}
+                        
+                      });
                     };
                   </script>
                 </div>
@@ -295,7 +289,7 @@
                   </form>
                 </div>
                 <div class="modal-footer">
-                  <button id="signup-button" type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+                  <button id="forgotPassword" type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
               </div>
