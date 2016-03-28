@@ -81,11 +81,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log(data);
 		
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
-			//console.log(result.data);
 			var costObject = {id: pricingModel.id,
-							  values: result.data};
+							  values: result.data.costArray};
 			costArray.push(costObject);
-			//console.log(costObject);
+			console.log("The total cost for all points is " + result.data.totalCost);
 			var pricingModelLabel = pricingModel.ldc + ": " + pricingModel.rateType;
 			$rootScope.$broadcast('updateCostTimePM', pricingModel.id,  pricingModelLabel, costObject.values);
 		}, function(result){
@@ -105,7 +104,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
-			var costData = result.data;
+			var costData = result.data.costArray;
 			
 			//update cost point on the graph
 			$rootScope.$broadcast('updateCostPoint', data.pricingModel.id, costData, pointIndex);
