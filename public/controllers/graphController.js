@@ -2,6 +2,7 @@ angular
 	.module('comparisonPage')
 	.controller('graphController', graphController); //this is where injection could occur
 	
+	var totalCost = [];
 function graphController($scope) {
 	var graphCtrl = this;
 	//masterCtrl RateComparison which has many rateBundles
@@ -93,6 +94,23 @@ function graphController($scope) {
           chart: {
             renderTo: 'CostTime',
             animation: false
+          },
+          legend: {
+            enabled: true,
+            //align: 'right',
+            borderColor: 'black',
+            borderWidth: 2,
+            //layout: 'vertical',
+            //verticalAlign: 'top',
+            //y: 100,
+            shadow: true,
+            //labelFormat: this.totalCost,
+            labelFormatter: function() {
+      		var total = 0;
+      		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
+      			return Math.round(total*100)/100;
+   			},
+            title: {text:"Total Costs"}
           },
           title: {
             text: 'Cost Time Graph'
@@ -203,7 +221,7 @@ function graphController($scope) {
 		//TODO handle totalCost
 		
 		var costPoints = [];
-		
+
 		var length = costData.length;
 		for (var i=0; i<length; i++) {
 			//put the date in the necessary format for Date parsing
@@ -225,6 +243,7 @@ function graphController($scope) {
 			data: costPoints,
             rotation: 90
 		});
+		console.log(costTimeGraph);
 	});
 	
 	$scope.$on('removeCostSeries', function(event, id) {
@@ -249,6 +268,9 @@ function graphController($scope) {
 		var point = [x, y];
 		
 		costTimeGraph.get(seriesID).data[pointIndex].update(point);
+
+		//update legend to update graph
+		costTimeGraph.legend.render();
 	});
 	
 	function consumptionPointDrop(index, x, y) {
