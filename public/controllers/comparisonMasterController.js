@@ -145,8 +145,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
 			var costData = result.data.costArray;
+
 			//TODO handle total cost
 			var totalCost = result.data.totalCost;
+
 			var seriesID = undefined;
 			var seriesLabel = "";
 			

@@ -489,12 +489,30 @@
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparison()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#loadComparison" ng-click="masterCtrl.loadComparison()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
         <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparison()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="loadComparison" class="modal fade" style="font-size:20px">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Please select the comparison you wish to load</h4>
+      </div>
+      <div class="checkbox">
+        <label><input type="radio" name="comparison" value="">Usage Comparison</label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
