@@ -9,11 +9,11 @@ function pricingModelController($scope) {
 	
 	pmCtrl.rows = [];
 	var rowCount = 0;
-	pmCtrl.rows.push({index: rowCount});
+	addNewSelectionRow();
 	
 	function addNewSelectionRow() {
-		rowCount++;
 		pmCtrl.rows.push({index: rowCount});
+		rowCount++;
 	}
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
@@ -29,5 +29,11 @@ function pricingModelController($scope) {
 				return;
 			}
 		}
+	});
+	
+	$scope.$on('clearPage', function(event) {
+		pmCtrl.rows = [];
+		rowCount = 0;
+		addNewSelectionRow();
 	});
 }

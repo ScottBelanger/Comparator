@@ -20,6 +20,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	var userID = localStorage.getItem('userId');
 	
+	var userComparisonArray = [];
+	
 	//should put this in an initializer
 	
 	if (isRateComp) {
@@ -208,11 +210,15 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	masterCtrl.saveComparison = function() {
+	masterCtrl.newComparisonEvent = function() {
+		$rootScope.$broadcast('clearPage');
+	}
+	
+	masterCtrl.saveComparisonEvent = function() {
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
-		if (userID == 'undefined') {
+		if (userID == 'undefined' || userID == null) {
 			//TODO
 			alert("Need to sign up to save comparisons!");
 			return;
@@ -242,17 +248,72 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	masterCtrl.loadComparison = function() {
+	masterCtrl.loadComparisonEvent = function() {
 		console.log("In loadComparison");
 		
-		if (userID == 'undefined') {
+		if (userID == 'undefined' || userID == null) {
 			//TODO
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
 		
-		if (isRateComp) {
+		/* if (isRateComp) {
 			console.log("userID: " + userID);
+		} */
+		
+		hardcodedComparison = {
+			energyUsage: {
+				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
+				demand: []
+			},
+			rateBundle: [{id: 1,
+				pricingModel: {
+					id: 5,
+					country: "Canada",
+					city: "London",
+					ldc: "London Hydro",
+					rateType: "Spot Market"
+				},
+				cost: [{amount: 10, time: "2016-02-22 03:00"}, {amount: 20, time: "2016-02-22 04:00"}, {amount: 30, time: "2016-02-22 05:00"}],
+				totalCost: 60,
+			description: "something"}]
+		};
+		
+		loadComparison(hardcodedComparison);
+		
+		/* $http.get('/comparison').then(function(result) {
+			//TODO
+			console.log(result.data);
+			userComparisonArray = result.data;
+			loadComparison(result.data[0]);
+		}, function(result){
+			// error
+		}); */
+	}
+	
+	function loadComparison(comparison) {
+		console.log("Loading following comparison...");
+		//console.log(comparison);
+		
+		if (comparison.rateBundle != undefined) {
+			isRateComp = true;
+			console.log("isRateComp: " + isRateComp);
+			
+			//Need to match up pricingModel ids to the rateBundle ids on the client
+			//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
+			var length = comparison.rateBundle.length;
+			for (var i=0; i<length; i++) {
+				comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
+			}
+			rateComp = comparison;
+			console.log(rateComp);
+			
+			$rootScope.$broadcast('clearPage');
+		}
+		
+		else if (comparison.usageBundle != undefined) {
+			isRateComp = false;
+			console.log("isRateComp: " + isRateComp);
 		}
 	}
 }

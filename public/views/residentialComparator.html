@@ -484,17 +484,17 @@
   <div class="row" style="padding-bottom:3%">
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection"><span class="glyphicon glyphicon-plus-sign""></span>New Comparison</a>
+        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection" ng-click="masterCtrl.newComparisonEvent()"><span class="glyphicon glyphicon-plus-sign""></span>New Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparison()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparison()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparisonEvent()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
       </div>
     </div>
   </div>
