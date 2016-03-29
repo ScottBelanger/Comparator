@@ -7,7 +7,16 @@ var mysql = require('mysql');
  * Description: Connection configuration object for connection 
  *              to comparator mysql database hosted on AWS.
  */
-var connection = mysql.createConnection({
+/* var connection = mysql.createConnection({
+  host     : 'capstonedb.ce5v1pz5vg4e.us-east-1.rds.amazonaws.com',
+  user     : 'capstone',
+  password : 'capstone',
+  database : 'compardb', 
+  ssl      : 'Amazon RDS'
+});*/
+
+var connection = mysql.createPool({
+  connectionLimit : 15,
   host     : 'capstonedb.ce5v1pz5vg4e.us-east-1.rds.amazonaws.com',
   user     : 'capstone',
   password : 'capstone',

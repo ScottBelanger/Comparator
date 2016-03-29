@@ -141,10 +141,13 @@ router.post('/comparison', function(req, res, next) {
  * Response:    Send comparison id to client if success.
  */
 router.post('/comparison/new', function(req, res, next) {
-  console.log("In comparison/new");
-  console.log(req.body);
   saveComparison(req.body.userID, req.body.comparison, true, function() {
-	 res.send("Save Successful"); 
+    req.app._sessionController._sessions.forEach( function( session ) {
+      if(session._sessionID == req.cookies.SID ) {
+        session._user.comparison.push(req.body.comparison);
+      }
+    });
+    res.send("Success"); 
   });
 });
 
