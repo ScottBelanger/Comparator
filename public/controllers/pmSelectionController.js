@@ -87,11 +87,12 @@ function pmSelectionController($scope, $http) {
 	
 	function submitPricingModel() {
 		//TODO: Either make submit unclickable or have an error message
-		
-		if (selectCtrl.rateSelect == "") {
-			console.log("Cannot submit without all fields selected.");
+		console.log("submitPricingModel");
+		console.log("index: " + $scope.row.index);
+		/* if (selectCtrl.rateSelect == "") {
+			alert("Cannot submit without all fields selected.");
 			return;
-		}
+		} */
 		
 		selectCtrl.btnName = "Delete";
 		
@@ -108,4 +109,17 @@ function pmSelectionController($scope, $http) {
 	function deletePricingModel() {
 		$scope.$emit('deletePricingModel', $scope.row.index);
 	}
+	
+	$scope.$on('newRow', function(event, pricingModel) {
+		console.log("In newRow");
+		console.log("index: " + $scope.row.index);
+		console.log("id: " + pricingModel.id);
+		if ($scope.row.index == pricingModel.id) {
+			selectCtrl.countrySelect = pricingModel.country;
+			selectCtrl.citySelect = pricingModel.city;
+			selectCtrl.ldcSelect = pricingModel.ldc;
+			selectCtrl.rateSelect = pricingModel.rateType;
+			selectCtrl.btnName = "Delete";
+		}
+	});
 }

@@ -11,6 +11,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	var isRateComp = true;
+	var rateComp = null;
+	var usageComp = null;
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
@@ -22,22 +24,27 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	var userComparisonArray = [];
 	
-	//should put this in an initializer
+	initializeComparison();
 	
-	if (isRateComp) {
-		var rateComp = {
-			energyUsage: {
-				consumption: [],
-				demand: []
-			},
-			rateBundle: []
+	//should put this in an initializer
+	function initializeComparison() {
+		console.log("initializeComparison");
+		if (isRateComp) {
+			rateComp = {
+				energyUsage: {
+					consumption: [],
+					demand: []
+				},
+				rateBundle: []
+			}
 		}
-	}
-	else { //is usage comparison
-		var usageComp = {
-			pricingModel: undefined,
-			usageBundle: []
+		else { //is usage comparison
+			usageComp = {
+				pricingModel: undefined,
+				usageBundle: []
+			}
 		}
+		console.log(rateComp);
 	}
 	
 	//console.log("isRateComp: " + isRateComp);
@@ -47,7 +54,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		// add the energy usage to a rate bundle or usage bundle
 		if (isRateComp) {
 			rateComp.energyUsage.consumption = consArray;
-			$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", consArray);
+			$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", rateComp.energyUsage.consumption);
 			//console.log(rateComp);
 		}
 		//if it is a usage comparison, then there are multiple usages
@@ -58,7 +65,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		} */
 	});
 	
-	$scope.$on('newPricingModel', function(event, pricingModel) {
+	/* $scope.$on('newPricingModel', function(event, pricingModel) {
 		//console.log("In master newPricingModel")
 		
 		if (isRateComp) {
@@ -82,7 +89,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//add the single pricing model to the usageComparison
 			//send the getCost function
 		}
-	});
+	}); */
 	
 	$scope.$on('deletePricingModel', function(event, id) {
 		$rootScope.$broadcast('removeCostSeries', id);
@@ -211,6 +218,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.newComparisonEvent = function() {
+		initializeComparison();
 		$rootScope.$broadcast('clearPage');
 	}
 	
@@ -266,7 +274,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
 				demand: []
 			},
-			rateBundle: [{id: 1,
+			rateBundle: [
+				{id: 1,
 				pricingModel: {
 					id: 5,
 					country: "Canada",
@@ -276,7 +285,19 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				},
 				cost: [{amount: 10, time: "2016-02-22 03:00"}, {amount: 20, time: "2016-02-22 04:00"}, {amount: 30, time: "2016-02-22 05:00"}],
 				totalCost: 60,
-			description: "something"}]
+				description: "something"},
+				{id: 6,
+				pricingModel: {
+					id: 3,
+					country: "Canada",
+					city: "London",
+					ldc: "London Hydro",
+					rateType: "Time Of Use"
+				},
+				cost: [{amount: 50, time: "2016-02-22 03:00"}, {amount: 50, time: "2016-02-22 04:00"}, {amount: 50, time: "2016-02-22 05:00"}],
+				totalCost: 150,
+				description: "something"}
+			]
 		};
 		
 		loadComparison(hardcodedComparison);
@@ -298,22 +319,49 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		if (comparison.rateBundle != undefined) {
 			isRateComp = true;
 			console.log("isRateComp: " + isRateComp);
-			
-			//Need to match up pricingModel ids to the rateBundle ids on the client
-			//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
-			var length = comparison.rateBundle.length;
-			for (var i=0; i<length; i++) {
-				comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
-			}
-			rateComp = comparison;
-			console.log(rateComp);
-			
-			$rootScope.$broadcast('clearPage');
+			initializeComparison();
+			loadRateComparison(comparison);
 		}
 		
 		else if (comparison.usageBundle != undefined) {
 			isRateComp = false;
 			console.log("isRateComp: " + isRateComp);
+			initializeComparison();
+			//loadUsageComparison(comparison);
+		}
+	}
+	
+	function loadRateComparison(comparison) {
+		//Need to match up pricingModel ids to the rateBundle ids on the client
+		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
+		var length = comparison.rateBundle.length;
+		for (var i=0; i<length; i++) {
+			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
+		}
+		rateComp = comparison;
+		console.log(rateComp);
+		
+		//first clear the page
+		$rootScope.$broadcast('clearPage');
+		$rootScope.$broadcast('clearRows');
+		
+		//next update the consumption graph
+		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", rateComp.energyUsage.consumption);
+		
+		//then update the cost time graph and update the pricingModel selection rows
+		var length = rateComp.rateBundle.length;
+		for (var i=0; i<length; i++) {
+			var bundle = rateComp.rateBundle[i];
+			
+			var seriesID = bundle.id;
+			var seriesLabel = bundle.pricingModel.ldc + ": " + bundle.pricingModel.rateType;
+			var costData = bundle.cost;
+			var totalCost = bundle.totalCost;
+			
+			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData, totalCost);
+			$rootScope.$broadcast('newPMSelectionRow', bundle.pricingModel, function() {
+				$rootScope.$broadcast('newRow', bundle.pricingModel);
+			});
 		}
 	}
 }
