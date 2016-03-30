@@ -4,7 +4,6 @@ angular
 
 function pmSelectionController($scope, $http) {
 	var selectCtrl = this;
-	
 	//for local
 	var rateEngineURL = 'http://localhost:3001';
 	//for remote
@@ -18,14 +17,33 @@ function pmSelectionController($scope, $http) {
 	selectCtrl.ldcSelect = "";
 	selectCtrl.rateList = [];
 	selectCtrl.rateSelect = "";
-	
 	selectCtrl.btnName = "Calculate";
 	
-	$http.get(rateEngineURL + '/getLDCCountries').then(function(result){
-		selectCtrl.countryList = result.data;
-	}, function(result){
-		// error
-	});
+	if ($scope.masterCtrl.rateComp.rateBundle[$scope.$index] != undefined) {
+		selectCtrl.isLoaded = true;
+	}
+	else {
+		selectCtrl.isLoaded = false;
+	}
+	
+	if (selectCtrl.isLoaded) {
+		//console.log("rateBundle");
+		//console.log($scope.masterCtrl.rateComp.rateBundle[$scope.$index]);
+		var pm = $scope.masterCtrl.rateComp.rateBundle[$scope.$index].pricingModel;
+		
+		selectCtrl.btnName = "Delete";
+		selectCtrl.loadedCountry = pm.country;
+		selectCtrl.loadedCity = pm.city;
+		selectCtrl.loadedLDC = pm.ldc;
+		selectCtrl.loadedRateType = pm.rateType;
+	}
+	else {
+		$http.get(rateEngineURL + '/getLDCCountries').then(function(result){
+			selectCtrl.countryList = result.data;
+		}, function(result){
+			// error
+		});
+	}
 	
 	selectCtrl.countrySelectChange = function() {
 		//clear all fields below this one
@@ -79,6 +97,7 @@ function pmSelectionController($scope, $http) {
 	selectCtrl.pmRowClick = function() {
 		if (selectCtrl.btnName == "Calculate") {
 			submitPricingModel();
+			setValues();
 		}
 		else {
 			deletePricingModel();
@@ -89,12 +108,10 @@ function pmSelectionController($scope, $http) {
 		//TODO: Either make submit unclickable or have an error message
 		console.log("submitPricingModel");
 		console.log("index: " + $scope.row.index);
-		/* if (selectCtrl.rateSelect == "") {
-			alert("Cannot submit without all fields selected.");
+		if (selectCtrl.rateSelect == "") {
+			alert("Cannot submit without all fields selected!");
 			return;
-		} */
-		
-		selectCtrl.btnName = "Delete";
+		}
 		
 		var pricingModel = {id: $scope.row.index,
 							country: selectCtrl.countrySelect,
@@ -110,16 +127,13 @@ function pmSelectionController($scope, $http) {
 		$scope.$emit('deletePricingModel', $scope.row.index);
 	}
 	
-	$scope.$on('newRow', function(event, pricingModel) {
-		console.log("In newRow");
-		console.log("index: " + $scope.row.index);
-		console.log("id: " + pricingModel.id);
-		if ($scope.row.index == pricingModel.id) {
-			selectCtrl.countrySelect = pricingModel.country;
-			selectCtrl.citySelect = pricingModel.city;
-			selectCtrl.ldcSelect = pricingModel.ldc;
-			selectCtrl.rateSelect = pricingModel.rateType;
-			selectCtrl.btnName = "Delete";
-		}
-	});
+	//This function will set the values permanently in the row
+	function setValues() {
+		selectCtrl.btnName = "Delete";
+		selectCtrl.loadedCountry = selectCtrl.countrySelect;
+		selectCtrl.loadedCity = selectCtrl.citySelect;
+		selectCtrl.loadedLDC = selectCtrl.ldcSelect;
+		selectCtrl.loadedRateType = selectCtrl.rateSelect;
+		selectCtrl.isLoaded = true;
+	}
 }

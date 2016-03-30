@@ -13,8 +13,8 @@ function pricingModelController($scope) {
 	
 	function addNewSelectionRow() {
 		//INDEX MUST MATCH PRICINGMODEL ID!!!
-		console.log("addNewSelectionRow");
-		console.log("rowCount: " + rowCount);
+		//console.log("addNewSelectionRow");
+		//console.log("rowCount: " + rowCount);
 		pmCtrl.rows.push({index: rowCount});
 		console.log(pmCtrl.rows);
 		rowCount++;
@@ -46,12 +46,13 @@ function pricingModelController($scope) {
 		rowCount = 0;
 	});
 	
-	$scope.$on('newPMSelectionRow', function(event, pricingModel, callback) {
+	$scope.$on('newRow', function(event) {
+		addNewSelectionRow();
+	});
+	
+	$scope.$on('newPMSelectionRow', function(event, pricingModel) {
 		console.log("In newPMSelectionRow");
-		//TODO try putting the id in the broadcast message to make it cleaner
 		rowCount = pricingModel.id;
 		addNewSelectionRow();
-		callback();
-		//$scope.$broadcast('newRow', pricingModel);
 	});
 }
