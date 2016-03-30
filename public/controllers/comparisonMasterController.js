@@ -13,7 +13,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var isRateComp = true;
 	masterCtrl.rateComp = null;
 	masterCtrl.usageComp = null;
-	var userComparisonArray = [];
+	masterCtrl.userComparisonArray = [];
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
@@ -263,7 +263,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			console.log("userID: " + userID);
 		} */
 		
-		hardcodedComparison = {
+		/* hardcodedComparison = {
 			energyUsage: {
 				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
 				demand: []
@@ -294,21 +294,27 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			]
 		};
 		
-		loadComparison(hardcodedComparison);
+		loadComparison(hardcodedComparison); */
 		
-		/* $http.get('/comparison').then(function(result) {
+		$http.get('/comparison').then(function(result) {
 			//TODO
 			console.log(result.data);
-			userComparisonArray = result.data;
-			loadComparison(userComparisonArray[0]);
+			masterCtrl.userComparisonArray = result.data;
+			//masterCtrl.compIndex = 4;
+			//loadComparison(userComparisonArray[0]);
 		}, function(result){
 			// error
-		}); */
+		});
 	}
+	
+	$scope.$on('loadIndex', function(event, index) {
+		console.log("Index to load: " + index);
+		loadComparison(masterCtrl.userComparisonArray[index]);
+	});
 	
 	function loadComparison(comparison) {
 		console.log("Loading following comparison...");
-		//console.log(comparison);
+		console.log(comparison);
 		
 		if (comparison.rateBundle != undefined) {
 			isRateComp = true;
