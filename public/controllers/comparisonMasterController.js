@@ -39,6 +39,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				energyUsage: {
 					consumption: [],
 					demand: [],
+					maxDemand: 0,
+					maxDemandDate: "",
 					hasDemand: false
 				},
 				rateBundle: []
@@ -78,8 +80,16 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		if (isRateComp) {
 			masterCtrl.rateComp.energyUsage.demand = demandArray;
 			masterCtrl.rateComp.energyUsage.hasDemand = true;
-			console.log("made a new demand in the energy usage");
-			console.log(masterCtrl.rateComp.energyUsage.demand);
+			for (var i = 0; i < demandArray.length; i++)
+			{
+				if (demandArray[i].amount > masterCtrl.rateComp.energyUsage.maxDemand)
+				{
+					masterCtrl.rateComp.energyUsage.maxDemand = demandArray[i].amount;
+					masterCtrl.rateComp.energyUsage.maxDemandDate = demandArray[i].time;
+				}
+			}
+			console.log("the max demand is "+masterCtrl.rateComp.energyUsage.maxDemand);
+			//console.log(masterCtrl.rateComp.energyUsage.demand);
 			$rootScope.$broadcast('setDemandForGraph', 0, "Demand", demandArray);
 			//console.log(rateComp);
 		}
@@ -108,7 +118,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//console.log(masterCtrl.rateComp);
 			
 			//send the getCost function
-			getCost(masterCtrl.rateComp.energyUsage.consumption, masterCtrl.rateComp.energyUsage.demand, pricingModel);
+			getCost(masterCtrl.rateComp.energyUsage.consumption, masterCtrl.rateComp.energyUsage.maxDemand, pricingModel);
 
 		}
 		//then it is a usageCOmparison
@@ -144,6 +154,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//console.log(newAmount);
 		
 		//index is the point in the array that the consumption and cost points are located
+		var newConsumption = [];
 		
 		if (isRateComp) {
 			//update the consumption array to reflect new value
@@ -151,36 +162,78 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			{
 				masterCtrl.rateComp.energyUsage.consumption[index].amount = newAmount;
 				//send the single point to the rate engine for EACH pricing model series in cost graph
-				var newConsumption = {time: date,
+				newConsumption = {time: date,
 								  amount: newAmount};
-				if (masterCtrl.rateComp.energyUsage.hasDemand)
-					var newDemand = {time: masterCtrl.rateComp.energyUsage.demand[index].time,
-									amount: masterCtrl.rateComp.energyUsage.demand[index].amount};
-				else
-					var newDemand = {time:date,
-									amount: 0};
+				//For each pricingModel series, update the cost point
+				getCostPointRateComp([newConsumption], 0, masterCtrl.rateComp.rateBundle.length, index, type);
 			}
 			else
 			{ 
-				console.log("the index is "+index);
+			/*	console.log("the index is "+index);
 				console.log("the length of demand is : "+masterCtrl.rateComp.energyUsage.demand.length);
 				console.log("the length of consumption is : "+masterCtrl.rateComp.energyUsage.consumption.length);
 				masterCtrl.rateComp.energyUsage.demand[index].amount = newAmount;
 				var newDemand = {time: date,
 								amount: newAmount};
-				var newConsumption = {time: masterCtrl.rateComp.energyUsage.consumption[index].time,
-									amount: masterCtrl.rateComp.energyUsage.consumption[index].amount};
+			*/
+
+				console.log("the new demand amount is "+newAmount);
+				console.log("the old max was : "+masterCtrl.rateComp.energyUsage.maxDemand);
+				console.log("the new demand date is "+date);
+				console.log("the old max date was : "+masterCtrl.rateComp.energyUsage.maxDemandDate);
+
+				if (newAmount > masterCtrl.rateComp.energyUsage.maxDemand )
+				{
+					masterCtrl.rateComp.energyUsage.maxDemand = newAmount;
+					masterCtrl.rateComp.energyUsage.maxDemandDate = date;
+
+					//clear the cost graph
+					$rootScope.$broadcast('clearCostTime');
+
+					//for each pricingModel series, update the entire cost
+					for (var i = 0; i < masterCtrl.rateComp.rateBundle.length; i++)
+					{
+						getCost(masterCtrl.rateComp.energyUsage.consumption, masterCtrl.rateComp.energyUsage.maxDemand, masterCtrl.rateComp.rateBundle[i].pricingModel );
+					}
+				}
+				else if (date == masterCtrl.rateComp.energyUsage.maxDemandDate)
+				{
+					console.log("need to find the new max");
+					//reset max demand to 0
+					masterCtrl.rateComp.energyUsage.maxDemand = 0;
+
+					for (var i = 0; i < masterCtrl.rateComp.energyUsage.demand.length; i++)
+					{
+						if (masterCtrl.rateComp.energyUsage.demand[i].amount > masterCtrl.rateComp.energyUsage.maxDemand)
+						{
+							masterCtrl.rateComp.energyUsage.maxDemand = demandArray[i].amount;
+							masterCtrl.rateComp.energyUsage.maxDemandDate = demandArray[i].time;
+						}
+						if (masterCtrl.rateComp.energyUsage.demand[i].time == date)
+						{
+							//add the new demand into the proper location in the demand array
+							masterCtrl.rateComp.energyUsage.demand[i].amount = newAmount;
+						}
+						//clear the cost graph
+						$rootScope.$broadcast('clearCostTime');
+
+						//for each pricingModel series, update the entire cost
+						for (var i = 0; i < masterCtrl.rateComp.rateBundle.length; i++)
+						{
+							getCost(masterCtrl.rateComp.energyUsage.consumption, masterCtrl.rateComp.energyUsage.maxDemand, masterCtrl.rateComp.rateBundle[i].pricingModel );
+						}
+					}
+				}
+
+				//otherwise we don't do anything cause the cost won't change
+				console.log("don't expect any changes in costs. The demand peak hasn't changed");
 			}
 
 			//console.log("Consumption changed");
 			//console.log(masterCtrl.rateComp);
 			
-			console.log("this is the demand " + newDemand);
-			console.log("this is the consumption " + newConsumption);
 			
 			
-			//For each pricingModel series, update the cost point
-			getCostPointRateComp([newConsumption], [newDemand], 0, masterCtrl.rateComp.rateBundle.length, index, type);
 
 		}
 		else { //usage comparison
@@ -197,8 +250,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			return;
 		}
 		
+		console.log("sending this as the max demand " + demand);
+
 		var data = {consumption: consumption,
-					demand: demand,
+					maxDemand: demand,
 					isCommercial: hasDemand,
 					pricingModel: pricingModel};
 		
@@ -235,9 +290,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	function getCostPointRateComp(consumption, demand, rbIndex, total, pointIndex, type) {
+	function getCostPointRateComp(consumption, rbIndex, total, pointIndex, type) {
 		console.log("in the get cost point rate comp");
-		console.log("the rateComp.rateBundle is "+rateComp.rateBundle[rbIndex]);
+		console.log("the rateComp.rateBundle is "+masterCtrl.rateComp.rateBundle[rbIndex]);
 		console.log("the consumption is "+consumption);
 		if (masterCtrl.rateComp.rateBundle[rbIndex] == undefined || consumption == []) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
@@ -245,7 +300,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 		//total parameter is total number of rateBundle objects
 		//console.log("In getCostPointRateComp");
-		if (type == "consumption")
+	/*	if (type == "consumption")
 		{
 			if (hasDemand)
 				var data = {consumption: consumption,
@@ -263,7 +318,11 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
 					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};	
 		}
-	
+	*/
+		var data = {consumption: consumption,
+					maxDemand: masterCtrl.rateComp.energyUsage.maxDemand,
+					isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
+					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
@@ -279,7 +338,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//Now continue cycling through all the pricing models to update each point
 			rbIndex++;
 			if (rbIndex < total) {
-				getCostPointRateComp(consumption, demand, rbIndex, total, pointIndex, type);
+				getCostPointRateComp(consumption, rbIndex, total, pointIndex, type);
 			}
 			else {
 				return;

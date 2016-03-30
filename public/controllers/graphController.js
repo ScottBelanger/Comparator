@@ -180,9 +180,90 @@ function graphController($scope) {
 	$scope.$on('clearPage', function(event) {
 		consumptionGraph.destroy();
 		costTimeGraph.destroy();
+		demandGraph.destroy();
 		initializeGraphs();
 	});
-	
+
+	$scope.$on('clearCostTime', function(event) {
+		//consumptionGraph.destroy();
+		costTimeGraph.destroy();
+		initializeCostGraph();
+	});
+	function initializeCostGraph(){
+		costTimeGraph = new Highcharts.StockChart({
+          chart: {
+            renderTo: 'CostTime',
+            animation: false
+          },
+          legend: {
+            enabled: true,
+            borderColor: 'black',
+            borderWidth: 2,
+            shadow: true,
+            labelFormatter: function() {
+      		var total = 0;
+      		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
+      			return "$"+Math.round(total*100)/100;
+   			},
+            title: {text:"Total Costs"}
+          },
+          title: {
+            text: 'Cost Time Graph'
+          },
+		   yAxis: {
+			title: {
+				//TODO: is this dollars or cents?
+				text: 'Cost ($)'
+			}  
+		  },
+          plotOptions: {
+            
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            }
+          },
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: true,
+			selected: 0
+		  },
+        });
+	}
+
 	function initializeGraphs() {
 		consumptionGraph = new Highcharts.StockChart({
           chart: {
