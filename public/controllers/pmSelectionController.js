@@ -96,6 +96,17 @@ function pmSelectionController($scope, $http) {
 	
 	selectCtrl.pmRowClick = function() {
 		if (selectCtrl.btnName == "Calculate") {
+			if (selectCtrl.rateSelect == "") {
+				alert("Cannot submit without all fields selected!");
+				return;
+			}
+			if ($scope.masterCtrl.rateComp.energyUsage.consumption.length == 0) {
+				alert("Need consumption to calculate!");
+				return;
+			}
+			
+			console.log($scope.masterCtrl.rateComp.energyUsage.consumption);
+			
 			submitPricingModel();
 			setValues();
 		}
@@ -108,10 +119,6 @@ function pmSelectionController($scope, $http) {
 		//TODO: Either make submit unclickable or have an error message
 		console.log("submitPricingModel");
 		console.log("index: " + $scope.row.index);
-		if (selectCtrl.rateSelect == "") {
-			alert("Cannot submit without all fields selected!");
-			return;
-		}
 		
 		var pricingModel = {id: $scope.row.index,
 							country: selectCtrl.countrySelect,

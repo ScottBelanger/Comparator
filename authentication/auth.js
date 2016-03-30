@@ -26,50 +26,53 @@ var validateLogin = function( username, password, callback ) {
   var sqlString  = 'SELECT * FROM User WHERE Username=\"' + username + '\"';
 
   // Get the password for the supplied user
-  connection.query( sqlString, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( sqlString, function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      // Log database errors
-      console.log( err );
-      throw err;
+        // Log database errors
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
+        connection.release();
 
-      // If there is a password returned, i.e. user exists
-      if( rows[0] ) {
+        // If there is a password returned, i.e. user exists
+        if( rows[0] ) {
 
-        // If the supplied password is the same as what is currently
-        // in the database
-        if( rows[0].Password == password ) {
-			
-          // Set up the user information
-	  user.setId( rows[0].ID );
-    	  user.setUserName( rows[0].Username );
-          user.setPassword( rows[0].Password );
-          user.setEmail( rows[0].Email );
-          user.setAdmin( rows[0].IsAdmin );
+          // If the supplied password is the same as what is currently
+          // in the database
+          if( rows[0].Password == password ) {
+                          
+            // Set up the user information
+            user.setId( rows[0].ID );
+            user.setUserName( rows[0].Username );
+            user.setPassword( rows[0].Password );
+            user.setEmail( rows[0].Email );
+            user.setAdmin( rows[0].IsAdmin );
 
-          // Populate the models
-          callback( err, auth_defines.SUCCESS, user );
+            // Populate the models
+            callback( err, auth_defines.SUCCESS, user );
+
+          } else {
+
+            // Incorrect password for user
+            rc = auth_defines.WRONG_PASS;
+            callback( err, auth_defines.WRONG_PASS, user );
+
+          }
 
         } else {
-
-          // Incorrect password for user
-          rc = auth_defines.WRONG_PASS;
-          callback( err, auth_defines.WRONG_PASS, user );
+          
+          // The user does not exist in the database
+          callback( err, auth_defines.USER_DNE, user );
 
         }
 
-      } else {
-        
-        // The user does not exist in the database
-        callback( err, auth_defines.USER_DNE, user );
-
       }
 
-    }
-
+    });
   });
 
 };
@@ -78,38 +81,42 @@ var verifySignupDetails = function( username, email, password, repasswd, callbac
 
   var SQLquery = "SELECT Username FROM User WHERE Username=\"" + username + "\"";
 
-  connection.query( SQLquery, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( SQLquery, function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      console.log( err );
-      throw err;
-
-    } else {
-
-      if( rows[0] ) {
-
-        if( typeof callback == "function" ) {
-
-          callback( err, auth_defines.USERNAME_TAKEN );
-
-        }
+        console.log( err );
+        throw err;
 
       } else {
+        connection.release();
 
-        if( password != repasswd ) {
+        if( rows[0] ) {
 
           if( typeof callback == "function" ) {
 
-            callback( err, auth_defines.PASSWORDS_DONOT_MATCH );
+            callback( err, auth_defines.USERNAME_TAKEN );
 
           }
 
         } else {
 
-          if( typeof callback == "function" ) {
+          if( password != repasswd ) {
 
-            callback( err, auth_defines.SUCCESS, username, email, password );
+            if( typeof callback == "function" ) {
+
+              callback( err, auth_defines.PASSWORDS_DONOT_MATCH );
+
+            }
+
+          } else {
+
+            if( typeof callback == "function" ) {
+
+              callback( err, auth_defines.SUCCESS, username, email, password );
+
+            }
 
           }
 
@@ -117,8 +124,7 @@ var verifySignupDetails = function( username, email, password, repasswd, callbac
 
       }
 
-    }
-
+    });
   });
 
 };

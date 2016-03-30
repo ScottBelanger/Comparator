@@ -72,107 +72,111 @@ var getComparisons = function ( callback ) {
                           'FROM Comparison WHERE UserID=' + _user.getId();
 
   // Get all comparisons for user
-  connection.query( selectComparisons, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectComparisons, function( err, rows, fields ) {
 
-    // Log database errors
-    if( err ) {
+      // Log database errors
+      if( err ) {
 
-      console.log( err );
-      throw err;
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
 
-      // For counting when to callback
-      var callbackCount = 0;
-	
-      // If user does not have any comparisons
-      if(rows.length == 0 ) {
-        callback( err, _user );
-      }
-      
-      // Iterate through each user comparison	
-      rows.forEach( function( item, index, array ) {
+        connection.release();
 
-        // This happens in the case when there are multiple bundles per
-        // comparison as there are multiple comparison rows with the same
-        // ID. In this case add bundle to existing comparison.
-        var comparison = _user.getComparison( item.ID );
-		
-        // If usage comparison
-        if( item.ComparisonType ) {
-
-          getUsageComparison( item, comparison, function( err, uc ) {
-
-            if( err ) {
-
-              console.log( err );
-              throw err;
-
-            } else {
-
-              if( !comparison ) {
-
-                _user.addComparison( uc );
-
-              }
-
-              callbackCount++;
-
-              // If no more comparisons
-              if( callbackCount == array.length ) {
-
-                if( typeof callback === "function" ) {
-
-                  callback( err, _user );
-
-                }
-
-              }
-
-            }
-
-          });
-    	  
-        } else { // If rate comparison
-		
-          getRateComparison( item, comparison, function( err, rc ) {
-
-            if( err ) {
-
-              console.log( err );
-              throw err;
-            
-            } else {
-
-              if( !comparison ) {
-
-                _user.addComparison( rc );
-
-              }
-              
-              callbackCount++;
-
-              // If no more comparisons
-              if( callbackCount == array.length ) {
-
-                if( typeof callback === "function" ) {
-
-                  callback( err, _user );
-
-                }
-
-              }
-
-            }
-
-          });
-
+        // For counting when to callback
+        var callbackCount = 0;
+          
+        // If user does not have any comparisons
+        if(rows.length == 0 ) {
+          callback( err, _user );
         }
+        
+        // Iterate through each user comparison	
+        rows.forEach( function( item, index, array ) {
 
-      });
+          // This happens in the case when there are multiple bundles per
+          // comparison as there are multiple comparison rows with the same
+          // ID. In this case add bundle to existing comparison.
+          var comparison = _user.getComparison( item.ID );
+                  
+          // If usage comparison
+          if( item.ComparisonType ) {
 
-    }
+            getUsageComparison( item, comparison, function( err, uc ) {
 
+              if( err ) {
+
+                console.log( err );
+                throw err;
+
+              } else {
+
+                if( !comparison ) {
+
+                  _user.addComparison( uc );
+
+                }
+
+                callbackCount++;
+
+                // If no more comparisons
+                if( callbackCount == array.length ) {
+
+                  if( typeof callback === "function" ) {
+
+                    callback( err, _user );
+
+                  }
+
+                }
+
+              }
+
+            });
+            
+          } else { // If rate comparison
+                  
+            getRateComparison( item, comparison, function( err, rc ) {
+
+              if( err ) {
+
+                console.log( err );
+                throw err;
+              
+              } else {
+
+                if( !comparison ) {
+
+                  _user.addComparison( rc );
+
+                }
+                
+                callbackCount++;
+
+                // If no more comparisons
+                if( callbackCount == array.length ) {
+
+                  if( typeof callback === "function" ) {
+
+                    callback( err, _user );
+
+                  }
+
+                }
+
+              }
+
+            });
+
+          }
+
+        });
+
+      }
+
+    });
   });
 
 };
@@ -379,31 +383,34 @@ var getPricingModel = function( pricingModelId, callback ) {
                             'WHERE PricingModel.ID=' + pricingModelId;
 
   // Get pricing model for usage comparison
-  connection.query( selectPricingModels, function( err, rows, fields ) {
-                
-    if( err ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectPricingModels, function( err, rows, fields ) {
                   
-      // Log database errors
-      console.log( err );
-      throw err;
-                  
-    } else {
-                  
-      // Populate pricing model fields
-      var pm = new PricingModel();	
-      pm.setLDC( rows[0].LDCName );
-      pm.setRateType( rows[0].RateName );
-      pm.setCountry( rows[0].CountryName );
-      pm.setCity( rows[0].CityName );
+      if( err ) {
+                    
+        // Log database errors
+        console.log( err );
+        throw err;
+                    
+      } else {
+        connection.release();
+                    
+        // Populate pricing model fields
+        var pm = new PricingModel();	
+        pm.setLDC( rows[0].LDCName );
+        pm.setRateType( rows[0].RateName );
+        pm.setCountry( rows[0].CountryName );
+        pm.setCity( rows[0].CityName );
 
-      if( typeof callback === "function" ) {
+        if( typeof callback === "function" ) {
 
-         callback( err, pm );
+           callback( err, pm );
+
+        }
 
       }
-
-    }
-          
+            
+    });
   });
 
 };
@@ -429,77 +436,81 @@ var getRateBundle = function( rateBundleID, callback ) {
                          'WHERE RateBundle.ID=' + rateBundleID;
 
   // Get each rate bundle for the rate comparison
-  connection.query( selectRateBundle, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectRateBundle, function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      // Log database errors
-      console.log( err );
-      throw err;
+        // Log database errors
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
 
-      var pmDone = 0;
-      var costDone = 0;
+        connection.release();
 
-        // Add rate bundle to rate comparison
-      var rb = new RateBundle();
-      rb.setId( rows[0].ID );
-       
-      getPricingModel( rows[0].PricingModelID, function( err, pm ) {
+        var pmDone = 0;
+        var costDone = 0;
 
-        if( err ) {
+          // Add rate bundle to rate comparison
+        var rb = new RateBundle();
+        rb.setId( rows[0].ID );
+         
+        getPricingModel( rows[0].PricingModelID, function( err, pm ) {
 
-          console.log( err );
-          throw err;
+          if( err ) {
 
-        } else {
+            console.log( err );
+            throw err;
 
-          pmDone++;
-          rb.setPricingModel( pm );
+          } else {
 
-          if( costDone == 1 && pmDone == 1 ) {
+            pmDone++;
+            rb.setPricingModel( pm );
 
-            if( typeof callback == "function" ) {
+            if( costDone == 1 && pmDone == 1 ) {
 
-              callback( err, rb );
+              if( typeof callback == "function" ) {
+
+                callback( err, rb );
+
+              }
+
+            }
+            
+          }
+
+        });
+
+        getCost( rows[0].CostID, function( err, costArr, count ) {
+
+          if( err ) {
+
+            console.log( err );
+            throw err;
+
+          } else {
+
+            costDone++;
+            rb.setCostArr( costArr );
+
+            if( costDone == 1 && pmDone == 1 ) {
+
+              if( typeof callback == "function" ) {
+
+                callback( err, rb );
+
+              }
 
             }
 
           }
-          
-        }
 
-      });
+        });
 
-      getCost( rows[0].CostID, function( err, costArr, count ) {
+      }
 
-        if( err ) {
-
-          console.log( err );
-          throw err;
-
-        } else {
-
-          costDone++;
-          rb.setCostArr( costArr );
-
-          if( costDone == 1 && pmDone == 1 ) {
-
-            if( typeof callback == "function" ) {
-
-              callback( err, rb );
-
-            }
-
-          }
-
-        }
-
-      });
-
-    }
-
+    });
   });
 
 };
@@ -525,74 +536,77 @@ var getUsageBundle = function( usageBundleID, callback ) {
                           'WHERE ID=' + usageBundleID;
 
   // Get usage bundle for usage comparison
-  connection.query( selectUsageBundle, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectUsageBundle, function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      console.log( err );
-      throw err;
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
+        connection.release();
 
-      var euDone = 0;
-      var costDone = 0;
+        var euDone = 0;
+        var costDone = 0;
 
-      // Add usage bundle to usage comparison
-      var ub = new UsageBundle();
-      ub.setId( rows[0].ID );
+        // Add usage bundle to usage comparison
+        var ub = new UsageBundle();
+        ub.setId( rows[0].ID );
 
-      getEnergyUsage( rows[0].EnergyUsageID, function( err, eu, count ) {
+        getEnergyUsage( rows[0].EnergyUsageID, function( err, eu, count ) {
 
-        if( err ) {
+          if( err ) {
 
-          console.log( err );
-          throw err;
+            console.log( err );
+            throw err;
 
-        } else {
+          } else {
 
-          ub.setEnergyUsage( eu );
-          euDone++;
+            ub.setEnergyUsage( eu );
+            euDone++;
 
-          if( euDone == 1 && costDone == 1 ) {
+            if( euDone == 1 && costDone == 1 ) {
 
-            if( typeof callback == "function" ) {
+              if( typeof callback == "function" ) {
 
-              callback( err, ub );
+                callback( err, ub );
 
+              }
             }
           }
-        }
 
-      });
+        });
 
-      getCost( rows[0].CostID, function( err, costArr, count ) {
+        getCost( rows[0].CostID, function( err, costArr, count ) {
 
-        if( err ) {
-          
-          console.log( err );
-          throw err;
+          if( err ) {
+            
+            console.log( err );
+            throw err;
 
-        } else {
+          } else {
 
-          ub.setCostArr( costArr );
-          costDone++;
+            ub.setCostArr( costArr );
+            costDone++;
 
-          if( euDone == 1 && costDone == 1 ) {
+            if( euDone == 1 && costDone == 1 ) {
 
-            if( typeof callback == "function" ) {
+              if( typeof callback == "function" ) {
 
-              callback( err, ub );
+                callback( err, ub );
+
+              }
 
             }
 
           }
+            
+        });
 
-        }
-          
-      });
+      }
 
-    }
-
+    });
   });
 
 };
@@ -619,57 +633,60 @@ var getEnergyUsage = function( energyUsageID, callback ) {
                           'WHERE ID=' + energyUsageID;
 
   // Get energy usage for this usage bundle
-  connection.query( selectEnergyUsage , function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectEnergyUsage , function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      // Log database errors
-      console.log( err );
-      throw err;
+        // Log database errors
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
+        connection.release();
 
-      // Add energy usage to usage bundle
+        // Add energy usage to usage bundle
 
-      var eu = new EnergyUsage();
-      var energyUsageCount = 0;
+        var eu = new EnergyUsage();
+        var energyUsageCount = 0;
 
-      rows.forEach( function( item, index, array ) {
+        rows.forEach( function( item, index, array ) {
 
-        // Populate energy usage fields
-        var con  = null;
-        var dem  = null;
+          // Populate energy usage fields
+          var con  = null;
+          var dem  = null;
 
-        // If this is a consupmtion
-        if( item.Consumption != null ) {
+          // If this is a consupmtion
+          if( item.Consumption != null ) {
 
-          con = new Consumption();
-          con.setPoint( item.Time, item.Consumption );
-          eu.addConsumption( con );
+            con = new Consumption();
+            con.setPoint( item.Time, item.Consumption );
+            eu.addConsumption( con );
 
-        }
+          }
 
-        // If this is a demand
-        if( item.Demand != null ) {
+          // If this is a demand
+          if( item.Demand != null ) {
 
-          dem = new Demand();
-          dem.setPoint( item.Time, item.Demand );
-          eu.addDemand( dem );
+            dem = new Demand();
+            dem.setPoint( item.Time, item.Demand );
+            eu.addDemand( dem );
 
-        }
+          }
 
-        energyUsageCount++;
+          energyUsageCount++;
 
-        if( energyUsageCount == array.length ) {
+          if( energyUsageCount == array.length ) {
 
-           callback( err, eu, energyUsageCount );
+             callback( err, eu, energyUsageCount );
 
-        }
+          }
 
-      });
+        });
 
-    }
+      }
 
+    });
   });
 
 };
@@ -696,42 +713,45 @@ var getCost = function( costID, callback ) {
 
 
   // Get all costs for this usage bundle
-  connection.query( selectCost, function( err, rows, fields ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( selectCost, function( err, rows, fields ) {
 
-    if( err ) {
+      if( err ) {
 
-      console.log( err );
-      throw err;
+        console.log( err );
+        throw err;
 
-    } else {
-      
-      var costArr = [];
-      var costCount = 0;
+      } else {
+        connection.release();
+        
+        var costArr = [];
+        var costCount = 0;
 
-      // Add each cost
-      rows.forEach( function( item, index, array ) {
+        // Add each cost
+        rows.forEach( function( item, index, array ) {
 
-        var cost = new Cost();
-        costArr.push( cost );
-        cost.setPoint( item.Time, item.Cost );
-		cost.setId( costID );
+          var cost = new Cost();
+          costArr.push( cost );
+          cost.setPoint( item.Time, item.Cost );
+                  cost.setId( costID );
 
-        costCount++;
+          costCount++;
 
-        if( costCount == array.length ) {
+          if( costCount == array.length ) {
 
-          if( typeof callback === "function" ) {
+            if( typeof callback === "function" ) {
 
-            callback( err, costArr );
+              callback( err, costArr );
+
+            }
 
           }
+          
+        });
 
-        }
-        
-      });
+      }
 
-    }
-
+    });
   });
 
 };

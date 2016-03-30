@@ -6,26 +6,29 @@ var createUser = function( username, email, password, callback ) {
   var SQLquery = "INSERT INTO User SET ?";
   var insert = { Username: username, Password: password, Email: email };
     
-  connection.query( SQLquery, insert, function( err, result ) {
+  connection.getConnection(function(err, connection) {
+    connection.query( SQLquery, insert, function( err, result ) {
 
-    if( err ) {
+      if( err ) {
 
-      console.log( err );
-      throw err;
+        console.log( err );
+        throw err;
 
-    } else {
+      } else {
+        connection.release();
 
-	  // User created in DB
-	  
-	  var user = new User();
-	  user.setId(result.insertId);
-	  user.setUserName(username);
-	  user.setPassword(password);
-	  user.setEmail(email);
-      callback( err, user );
+            // User created in DB
+            
+            var user = new User();
+            user.setId(result.insertId);
+            user.setUserName(username);
+            user.setPassword(password);
+            user.setEmail(email);
+        callback( err, user );
 
-    }
+      }
 
+    });
   });
 
 };

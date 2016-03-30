@@ -28,25 +28,20 @@
       var checkURL = function() {
         var currentURL = (document.URL)
         var part = currentURL.split("?")[1];
+        
         console.log(part);
         if(part == "scope=FB=4_5_15;IntervalDuration=3600;BlockDuration=daily;HistoryLength=13&DataCustodianID=greenbuttontestlab.ca"){
-          var auth_code = "FB=4_5_15;IntervalDuration=3600;BlockDuration=daily;HistoryLength=13"
+          window.location = "https://greenbutton-testlab-prod.appspot.com/oauth/authorize?client_id=westernuniversity.greenbuttontestlab.ca&redirect_uri=http://compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com&response_type=code"
+        }
         
-          var client_id = "westernuniversity.greenbuttontestlab.ca"
-          var secret = "secret"
-          var token = "Bearer 77faecc5-56f9-4429-81f1-b10d899bbd45"
-          var Authorization = "Token"
-          $.ajax({
-            type: 'GET',
-            url: 'https://greenbutton-testlab-prod.appspot.com/oauth/token',
-            data: { token, Authorization}
-            }).done(function(data){
-              console.log(data)
-          }); 
+        if(part.indexOf("code") > -1) {
+          var code = currentURL.split("=")[1];
+          window.location = "https://greenbutton-testlab-prod.appspot.com/oauth/token?client_id=westernuniversity.greenbuttontestlab.ca&client_secret=secret&grant_type=authorization_code&code="+code+"&redirect_uri=http://compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com&response_type=code"
+          
         }
       }
     </script>
-    <body onload="checkCookie()">
+    <body onload="checkCookie(), checkURL()">
   </head>
 <body>
 
@@ -149,8 +144,8 @@
                           data: { username: username, password: password }
                           }).done(function(data){
                             data = JSON.parse(data)
-							
-                            if(data != -3) {
+							console.log(data)
+                            if((data != -2) && (data != -3)) {
                               localStorage.setItem('username', data.userName)
                               localStorage.setItem('isAdmin', data.isAdmin)
 							  localStorage.setItem('userId', data.userId)
@@ -163,7 +158,9 @@
                               }
                               else { $("#rateEngine").hide() }
                             }
-                            else { document.getElementById("errorMessage").style.display = "block"}
+                            else { 
+                              document.getElementById("errorMessage").style.display = "block"
+                            }
                           });
                           
                           
