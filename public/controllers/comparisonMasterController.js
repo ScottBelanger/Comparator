@@ -305,7 +305,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
                             var existingComparison = false;
                             for(var j = 0; j < userComparisonArray.length; j++ ) {
                               if( userComparisonArray[j].id == result.data[i].id ) {
-                                userComparisonArray[j].rateBundle.push(result.data[i].rateBundle);
+                                userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
                                 existingComparison = true;
                               }
                             }
@@ -314,7 +314,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
                             }
                           }
                         }
-			//loadComparison(userComparisonArray[0]);
+			loadComparison(userComparisonArray[0]);
 		}, function(result){
 			// error
 		});
@@ -344,6 +344,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
 		var length = comparison.rateBundle.length;
 		for (var i=0; i<length; i++) {
+                        console.log(comparison);
 			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
 		}
 		masterCtrl.rateComp = comparison;
