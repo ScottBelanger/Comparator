@@ -135,6 +135,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	});
 	
 	function getCost(consumption, pricingModel) {
+        document.getElementById("loader-wrapper").style.display = "block";
 		//console.log(pricingModel);
 		//console.log(consumption);
 		
@@ -155,7 +156,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 
 			//TODO handle total cost
 			var totalCost = result.data.totalCost;
-
+        
 			var seriesID = undefined;
 			var seriesLabel = "";
 			
@@ -174,6 +175,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			}
 			
 			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData, totalCost);
+            document.getElementById("loader-wrapper").style.display = "none";
 		}, function(result){
 			// error
 		});

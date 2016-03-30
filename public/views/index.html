@@ -36,27 +36,17 @@
         
         if(part.indexOf("code") > -1) {
           var code = currentURL.split("=")[1];
-          var form = new FormData();
-            form.append("client_id", "westernuniversity.greenbuttontestlab.ca");
-            form.append("secret", "secret");
-            console.log(code)
-            var settings = {
-              "async": true,
-              "crossDomain": true,
-              "url": "https://greenbutton-testlab-prod.appspot.com/oauth/token?client_id=westernuniversity.greenbuttontestlab.ca&client_secret=secret&grant_type=authorization_code&code="+code+"&redirect_uri=http%3A%2F%2Fcompar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com",
-              "method": "GET",
-              "processData": false,
-              "contentType": false,
-              "mimeType": "multipart/form-data",
-              "data": form
-              
+          $.ajax({
+            url: "https://greenbutton-testlab-prod.appspot.com/oauth/token?grant_type=authorization_code&code="+code+"&redirect_uri=http://compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com&callback=?",
+            dataType: 'jsonp',
+            success: function(data){
+                console.log(data)
             }
-            console.log("good")
-            $.ajax(settings).done(function (response) {
-              console.log(response);
-            });
+          });
         }
       }
+        
+        
     </script>
     <body onload="checkCookie(), checkURL()">
   </head>
