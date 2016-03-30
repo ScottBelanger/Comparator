@@ -24,6 +24,7 @@
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
 	<script src="controllers/graphController.js"></script>
+	<script src="controllers/loadController.js"></script>
     <script type="text/javascript">
       function showCharts() {
       console.log(localStorage.getItem('comparisonPage'))
@@ -517,7 +518,7 @@
   </div>
 </div>
 
-<div id="loadComparison" class="modal fade" style="font-size:20px">
+<div id="loadComparison" class="modal fade" style="font-size:20px" ng-controller="loadController as loadCtrl" ng-if="canLoad">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -525,10 +526,13 @@
         <h4 class="modal-title">Please select the comparison you wish to load</h4>
       </div>
       <div class="checkbox">
-        <label><input type="radio" name="comparison" value="">Usage Comparison</label>
+        <label ng-repeat="comparison in masterCtrl.userComparisonArray">
+			<input type="radio" name="comparison" ng-model="comp.index" value="{{$index}}">
+			{{comparison.id}}
+		</label>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="loadCtrl.setIndex()">Submit</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>

@@ -13,7 +13,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var isRateComp = true;
 	masterCtrl.rateComp = null;
 	masterCtrl.usageComp = null;
-	var userComparisonArray = [];
+	masterCtrl.userComparisonArray = [];
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
@@ -234,7 +234,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			console.log(masterCtrl.rateComp);
 			
 			if (masterCtrl.rateComp.rateBundle.length == 0) {
-				alert("No comparisons to save!");
+				alert("No comparison to save!");
 				return;
 			}
 			
@@ -249,6 +249,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//TODO
             document.getElementById("loader-wrapper").style.display = "none";
 			console.log(result);
+			if (result.data == "Success") {
+				alert("Save successful!");
+			}
 		}, function(result){
 			// error
 		});
@@ -259,13 +262,11 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		if (userID == 'undefined' || userID == null) {
 			//TODO
+			$scope.canLoad=false;
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
-		
-		/* if (isRateComp) {
-			console.log("userID: " + userID);
-		} */
+		$scope.canLoad = true;
 		
 		/*hardcodedComparison = {
 			energyUsage: {
@@ -296,37 +297,51 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				totalCost: 150,
 				description: "something"}
 			]
-		};*/
+		};
 		
-		//loadComparison(hardcodedComparison);
+		loadComparison(hardcodedComparison); */
 		
 		$http.get('/comparison').then(function(result) {
 			//TODO
+						if (result.data.length == 0) {
+							$scope.canLoad = false;
+							alert("You have no comparisons saved!");
+							return;
+						}
+						
                         for(var i = 0; i < result.data.length; i++) {
                           if( i == 0 ) {
-                            userComparisonArray.push(result.data[i]);
+                            masterCtrl.userComparisonArray.push(result.data[i]);
                           } else {
                             var existingComparison = false;
-                            for(var j = 0; j < userComparisonArray.length; j++ ) {
-                              if( userComparisonArray[j].id == result.data[i].id ) {
-                                userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
+                            for(var j = 0; j < masterCtrl.userComparisonArray.length; j++ ) {
+                              if( masterCtrl.userComparisonArray[j].id == result.data[i].id ) {
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
+                                console.log(result.data[i].rateBundle);
+                                masterCtrl.userComparisonArray[j].rateBundle.push(result.data[i].rateBundle[0]);
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
                                 existingComparison = true;
                               }
                             }
                             if(!existingComparison) {
-                              userComparisonArray.push(result.data[i]);
+                              masterCtrl.userComparisonArray.push(result.data[i]);
                             }
                           }
                         }
-			loadComparison(userComparisonArray[0]);
+						
 		}, function(result){
 			// error
 		});
 	}
 	
+	$scope.$on('loadIndex', function(event, index) {
+		console.log("Index to load: " + index);
+		loadComparison(masterCtrl.userComparisonArray[index]);
+	});
+	
 	function loadComparison(comparison) {
 		console.log("Loading following comparison...");
-		//console.log(comparison);
+		console.log(comparison);
 		
 		if (comparison.rateBundle != undefined) {
 			isRateComp = true;

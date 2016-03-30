@@ -49,6 +49,7 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
   var energyUsageDone = false;
   var energyUsageId = null;
   var comparisonId = 0;
+  var codehit = false;
   var rateBundleIdArr = [];
   var firstComparison = true;
 
@@ -67,6 +68,8 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
         }
 
         if(rateBundleDone && energyUsageDone) {
+          if(!codehit) {
+            codehit = true;
           connection.getConnection(function(err, connection1) {
             connection1.query(sql, {ID: 0, UserID: userID, EnergyUsageID: energyUsageId, ComparisonType: 0, RateBundleID: rateBundleIdArr[0], Name: "0"}, function(err, result) {
               if(err) {
@@ -77,7 +80,9 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
                 connection1.release();
                 if( rateBundleIdArr.length == 1 ) {
                   callback( null, result.insertId );
+                  console.log("Callback 1");
                 }
+                console.log(rateBundleIdArr);
                 rateBundleIdArr.forEach(function(rateBundleId, index, array) {
                   if( index != 0 ) {
                     connection.getConnection(function(err, connection2) {
@@ -88,6 +93,7 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
                         } else {
                           connection2.release();
                           if( index == array.length - 1) {
+                            console.log("Callback 2");
                             callback( null, comparisonId);
                           }
                         }
@@ -98,6 +104,7 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
               }
             });
           });
+          }
         }
       }
     })
@@ -120,6 +127,7 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
                 comparisonId = result.insertId;
                 connection1.release();
                 if( rateBundleIdArr.length == 1 ) {
+                  console.log("Callback 3");
                   callback( null, result.insertId );
                 }
                 rateBundleIdArr.forEach(function(rateBundleId, index, array) {
@@ -132,6 +140,7 @@ var insertRateComparison = function( userID, rateComparison, callback ) {
                         } else {
                           connection2.release();
                           if( index == array.length - 1) {
+                  console.log("Callback 4");
                             callback( null, comparisonId);
                           }
                         }

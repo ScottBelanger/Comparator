@@ -97,7 +97,7 @@ function pmSelectionController($scope, $http) {
 	selectCtrl.pmRowClick = function() {
 		if (selectCtrl.btnName == "Calculate") {
 			if (selectCtrl.rateSelect == "") {
-				alert("Cannot submit without all fields selected!");
+				alert("Cannot calculate without all fields selected!");
 				return;
 			}
 			if ($scope.masterCtrl.rateComp.energyUsage.consumption.length == 0) {
