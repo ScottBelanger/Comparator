@@ -12,9 +12,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	
 	var isRateComp = true;
 	var hasDemand = false;
+	masterCtrl.rateComp = null;
+	masterCtrl.usageComp = null;
+	var userComparisonArray = [];
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
+	var userID = localStorage.getItem('userId');
 	
 	var pageType = localStorage.getItem('comparisonPage');
 	console.log("page type: " + pageType);
@@ -25,36 +29,39 @@ function comparisonMasterController($scope, $rootScope, $http) {
 
 	console.log("hasDemand is equal to "+hasDemand);
 	
-	var userID = localStorage.getItem('userId');
+	initializeComparison();
 	
 	//should put this in an initializer
-	
-	if (isRateComp) {
-		var rateComp = {
-			energyUsage: {
-				consumption: [],
-				demand: [],
-				hasDemand: false
-			},
-			rateBundle: []
+	function initializeComparison() {
+		console.log("initializeComparison");
+		if (isRateComp) {
+			masterCtrl.rateComp = {
+				energyUsage: {
+					consumption: [],
+					demand: [],
+					hasDemand: false
+				},
+				rateBundle: []
+			}
 		}
-	}
-	else { //is usage comparison
-		var usageComp = {
-			pricingModel: undefined,
-			usageBundle: []
+		else { //is usage comparison
+			masterCtrl.usageComp = {
+				pricingModel: undefined,
+				usageBundle: []
+			}
 		}
+		//console.log(masterCtrl.rateComp);
 	}
 	
 	//console.log("isRateComp: " + isRateComp);
-	//console.log(rateComp);
+	//console.log(masterCtrl.rateComp);
 	
 	$scope.$on('newConsumptionArray', function(event, consArray) {
 		// add the energy usage to a rate bundle or usage bundle
 		if (isRateComp) {
-			rateComp.energyUsage.consumption = consArray;
-			$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", consArray);
-			//console.log(rateComp);
+			masterCtrl.rateComp.energyUsage.consumption = consArray;
+			$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", masterCtrl.rateComp.energyUsage.consumption);
+			//console.log(masterCtrl.rateComp);
 		}
 		//if it is a usage comparison, then there are multiple usages
 		/* else {
@@ -69,10 +76,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("a new demand array needs to be added to the demandArray");
 		console.log("the demand array is " +demandArray);
 		if (isRateComp) {
-			rateComp.energyUsage.demand = demandArray;
-			rateComp.energyUsage.hasDemand = true;
+			masterCtrl.rateComp.energyUsage.demand = demandArray;
+			masterCtrl.rateComp.energyUsage.hasDemand = true;
 			console.log("made a new demand in the energy usage");
-			console.log(rateComp.energyUsage.demand);
+			console.log(masterCtrl.rateComp.energyUsage.demand);
 			$rootScope.$broadcast('setDemandForGraph', 0, "Demand", demandArray);
 			//console.log(rateComp);
 		}
@@ -97,11 +104,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				description: ""
 			}
 			//add the rateBundle to the rateComparison
-			rateComp.rateBundle.push(rateBundle);
-			//console.log(rateComp);
+			masterCtrl.rateComp.rateBundle.push(rateBundle);
+			//console.log(masterCtrl.rateComp);
 			
 			//send the getCost function
-			getCost(rateComp.energyUsage.consumption, rateComp.energyUsage.demand, pricingModel);
+			getCost(masterCtrl.rateComp.energyUsage.consumption, masterCtrl.rateComp.energyUsage.demand, pricingModel);
+
 		}
 		//then it is a usageCOmparison
 		else {
@@ -114,12 +122,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		$rootScope.$broadcast('removeCostSeries', id);
 		//search through pricing model array for the id to match the argument id and remove the pricing model with that id
 		if (isRateComp) {
-			var length = rateComp.rateBundle.length;
+			var length = masterCtrl.rateComp.rateBundle.length;
 			for (var i=0; i<length; i++) {
-				if (rateComp.rateBundle[i].id == id) {
-					rateComp.rateBundle.splice(i,1);
+				if (masterCtrl.rateComp.rateBundle[i].id == id) {
+					masterCtrl.rateComp.rateBundle.splice(i,1);
 					//console.log("deleted pricing model / rate bundle");
-					//console.log(rateComp);
+					//console.log(masterCtrl.rateComp);
 					return;
 				}
 			}
@@ -141,13 +149,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//update the consumption array to reflect new value
 			if (type == "consumption")
 			{
-				rateComp.energyUsage.consumption[index].amount = newAmount;
+				masterCtrl.rateComp.energyUsage.consumption[index].amount = newAmount;
 				//send the single point to the rate engine for EACH pricing model series in cost graph
 				var newConsumption = {time: date,
 								  amount: newAmount};
-				if (rateComp.energyUsage.hasDemand)
-					var newDemand = {time: rateComp.energyUsage.demand[index].time,
-									amount: rateComp.energyUsage.demand[index].amount};
+				if (masterCtrl.rateComp.energyUsage.hasDemand)
+					var newDemand = {time: masterCtrl.rateComp.energyUsage.demand[index].time,
+									amount: masterCtrl.rateComp.energyUsage.demand[index].amount};
 				else
 					var newDemand = {time:date,
 									amount: 0};
@@ -155,23 +163,25 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			else
 			{ 
 				console.log("the index is "+index);
-				console.log("the length of demand is : "+rateComp.energyUsage.demand.length);
-				console.log("the length of consumption is : "+rateComp.energyUsage.consumption.length);
-				rateComp.energyUsage.demand[index].amount = newAmount;
+				console.log("the length of demand is : "+masterCtrl.rateComp.energyUsage.demand.length);
+				console.log("the length of consumption is : "+masterCtrl.rateComp.energyUsage.consumption.length);
+				masterCtrl.rateComp.energyUsage.demand[index].amount = newAmount;
 				var newDemand = {time: date,
 								amount: newAmount};
-				var newConsumption = {time: rateComp.energyUsage.consumption[index].time,
-									amount: rateComp.energyUsage.consumption[index].amount};
+				var newConsumption = {time: masterCtrl.rateComp.energyUsage.consumption[index].time,
+									amount: masterCtrl.rateComp.energyUsage.consumption[index].amount};
 			}
+
 			//console.log("Consumption changed");
-			//console.log(rateComp);
+			//console.log(masterCtrl.rateComp);
 			
 			console.log("this is the demand " + newDemand);
 			console.log("this is the consumption " + newConsumption);
 			
 			
 			//For each pricingModel series, update the cost point
-			getCostPointRateComp([newConsumption], [newDemand], 0, rateComp.rateBundle.length, index, type);
+			getCostPointRateComp([newConsumption], [newDemand], 0, masterCtrl.rateComp.rateBundle.length, index, type);
+
 		}
 		else { //usage comparison
 			//TODO
@@ -206,12 +216,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			var seriesLabel = "";
 			
 			if (isRateComp) {
-				var index = rateComp.rateBundle.length - 1;
-				rateComp.rateBundle[index].cost = costData;
+				var index = masterCtrl.rateComp.rateBundle.length - 1;
+				masterCtrl.rateComp.rateBundle[index].cost = costData;
 				//SAVE TOTAL COST to rateBundle
-				rateComp.rateBundle[index].totalCost = totalCost;
+				masterCtrl.rateComp.rateBundle[index].totalCost = totalCost;
 				//console.log("NEW COST");
-				//console.log(rateComp);
+				//console.log(masterCtrl.rateComp);
 				seriesID = pricingModel.id;
 				seriesLabel = pricingModel.ldc + ": " + pricingModel.rateType;
 			}
@@ -229,33 +239,31 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("in the get cost point rate comp");
 		console.log("the rateComp.rateBundle is "+rateComp.rateBundle[rbIndex]);
 		console.log("the consumption is "+consumption);
-		if (rateComp.rateBundle[rbIndex] == undefined || consumption == []) {
+		if (masterCtrl.rateComp.rateBundle[rbIndex] == undefined || consumption == []) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
 		}
-		//TODO handle new total cost
-		//total is total number of rateBundle objects
-		
+		//total parameter is total number of rateBundle objects
 		//console.log("In getCostPointRateComp");
 		if (type == "consumption")
 		{
 			if (hasDemand)
 				var data = {consumption: consumption,
 						demand: demand,
-						isCommercial: rateComp.energyUsage.hasDemand,
-						pricingModel: rateComp.rateBundle[rbIndex].pricingModel};
+						isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
+						pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};
 			else
 				var data = {consumption: consumption,
-						pricingModel: rateComp.rateBundle[rbIndex].pricingModel};	
+						pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};	
 		}
 		else
 		{
 			var data = {consumption: consumption,
 					demand: demand,
-					isCommercial: rateComp.energyUsage.hasDemand,
-					pricingModel: rateComp.rateBundle[rbIndex].pricingModel};	
+					isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
+					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};	
 		}
-		
+	
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
@@ -266,9 +274,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			
 			//update the cost array
 			//update total cost as well
-			rateComp.rateBundle[rbIndex].cost[pointIndex].amount = costData[0].amount;
-			//console.log("Updated cost");
-			//console.log(rateComp);
+			masterCtrl.rateComp.rateBundle[rbIndex].cost[pointIndex].amount = costData[0].amount;
 			
 			//Now continue cycling through all the pricing models to update each point
 			rbIndex++;
@@ -283,26 +289,29 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	masterCtrl.saveComparison = function() {
+	masterCtrl.newComparisonEvent = function() {
+		initializeComparison();
+		$rootScope.$broadcast('clearPage');
+	}
+	
+	masterCtrl.saveComparisonEvent = function() {
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
-		if (userID == 'undefined') {
-			//TODO
+		if (userID == 'undefined' || userID == null) {
 			alert("Need to sign up to save comparisons!");
 			return;
 		}
 		
 		if (isRateComp) {
-			console.log(rateComp);
+			console.log(masterCtrl.rateComp);
 			
-			if (rateComp.rateBundle.length == 0) {
-				//TODO
+			if (masterCtrl.rateComp.rateBundle.length == 0) {
 				alert("No comparisons to save!");
 				return;
 			}
 			
-			saveComparison(rateComp);
+			saveComparison(masterCtrl.rateComp);
 		}
 	}
 	
@@ -317,17 +326,128 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	masterCtrl.loadComparison = function() {
+	masterCtrl.loadComparisonEvent = function() {
 		console.log("In loadComparison");
 		
-		if (userID == 'undefined') {
+		if (userID == 'undefined' || userID == null) {
 			//TODO
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
 		
-		if (isRateComp) {
+		/* if (isRateComp) {
 			console.log("userID: " + userID);
+		} */
+		
+		/*hardcodedComparison = {
+			energyUsage: {
+				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
+				demand: []
+			},
+			rateBundle: [
+				{id: 1,
+				pricingModel: {
+					id: 5,
+					country: "Canada",
+					city: "London",
+					ldc: "London Hydro",
+					rateType: "Spot Market"
+				},
+				cost: [{amount: 10, time: "2016-02-22 03:00"}, {amount: 20, time: "2016-02-22 04:00"}, {amount: 30, time: "2016-02-22 05:00"}],
+				totalCost: 60,
+				description: "something"},
+				{id: 6,
+				pricingModel: {
+					id: 3,
+					country: "Canada",
+					city: "London",
+					ldc: "London Hydro",
+					rateType: "Time Of Use"
+				},
+				cost: [{amount: 50, time: "2016-02-22 03:00"}, {amount: 50, time: "2016-02-22 04:00"}, {amount: 50, time: "2016-02-22 05:00"}],
+				totalCost: 150,
+				description: "something"}
+			]
+		};*/
+		
+		//loadComparison(hardcodedComparison);
+		
+		$http.get('/comparison').then(function(result) {
+			//TODO
+                        for(var i = 0; i < result.data.length; i++) {
+                          if( i == 0 ) {
+                            userComparisonArray.push(result.data[i]);
+                          } else {
+                            var existingComparison = false;
+                            for(var j = 0; j < userComparisonArray.length; j++ ) {
+                              if( userComparisonArray[j].id == result.data[i].id ) {
+                                userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
+                                existingComparison = true;
+                              }
+                            }
+                            if(!existingComparison) {
+                              userComparisonArray.push(result.data[i]);
+                            }
+                          }
+                        }
+			loadComparison(userComparisonArray[0]);
+		}, function(result){
+			// error
+		});
+	}
+	
+	function loadComparison(comparison) {
+		console.log("Loading following comparison...");
+		//console.log(comparison);
+		
+		if (comparison.rateBundle != undefined) {
+			isRateComp = true;
+			console.log("isRateComp: " + isRateComp);
+			initializeComparison();
+			loadRateComparison(comparison);
 		}
+		
+		else if (comparison.usageBundle != undefined) {
+			isRateComp = false;
+			console.log("isRateComp: " + isRateComp);
+			initializeComparison();
+			//loadUsageComparison(comparison);
+		}
+	}
+	
+	function loadRateComparison(comparison) {
+		//Need to match up pricingModel ids to the rateBundle ids on the client
+		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
+		var length = comparison.rateBundle.length;
+		for (var i=0; i<length; i++) {
+                        console.log(comparison);
+			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
+		}
+		masterCtrl.rateComp = comparison;
+		console.log(masterCtrl.rateComp);
+		
+		//first clear the page
+		$rootScope.$broadcast('clearPage');
+		$rootScope.$broadcast('clearRows');
+		
+		//next update the consumption graph
+		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", masterCtrl.rateComp.energyUsage.consumption);
+		
+		//then update the cost time graph and update the pricingModel selection rows
+		var length = masterCtrl.rateComp.rateBundle.length;
+		for (var i=0; i<length; i++) {
+			var bundle = masterCtrl.rateComp.rateBundle[i];
+			
+			var seriesID = bundle.id;
+			var seriesLabel = bundle.pricingModel.ldc + ": " + bundle.pricingModel.rateType;
+			var costData = bundle.cost;
+			var totalCost = bundle.totalCost;
+			
+			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData, totalCost);
+			$rootScope.$broadcast('newPMSelectionRow', bundle.pricingModel);
+		}
+		
+		//add a new selection row
+		$rootScope.$broadcast('newRow');
 	}
 }

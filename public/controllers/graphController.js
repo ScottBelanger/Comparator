@@ -2,252 +2,14 @@ angular
 	.module('comparisonPage')
 	.controller('graphController', graphController); //this is where injection could occur
 	
-	var totalCost = [];
 function graphController($scope) {
 	var graphCtrl = this;
-	//masterCtrl RateComparison which has many rateBundles
+	var consumptionGraph;
+	var costTimeGraph;
+	var demandGraph;
+	var pageType = localStorage.getItem('comparisonPage');
 	
-	var consumptionGraph = new Highcharts.StockChart({
-          chart: {
-            renderTo: 'EnergyRateConsumption',
-            animation: false
-          },
-          title: {
-            text: 'Consumption Time Graph'
-          },
-		  yAxis: {
-			title: {
-				text: 'Consumption (KWh)'
-			}  
-		  },
-          plotOptions: {
-            column: {
-              stacking: 'normal'
-            },
-            line: {
-              cursor: 'ns-resize'
-            },
-			series: {
-				point: {
-					events: {
-						drag: function (e) {
-							//console.log("drag");
-							//console.log(e);
-						},
-						drop: function () {
-							console.log("drop");
-							//console.log(this.series.name);
-							//console.log(this.x);
-							//console.log(this.y);
-							//console.log(this);
-							pointDrop(this.index, this.x, this.y, "consumption");
-						}
-					}
-				}
-			}
-          },
-		  navigator: {
-			enabled: true,
-			series: {
-					id: 'navigator'
-			}
-		  },
-		  rangeSelector: {
-            buttons: [{
-                count: 1,
-                type: 'day',
-                text: '1D'
-            }, {
-                count: 1,
-                type: 'week',
-                text: '1W'
-            }, {
-                count: 1,
-                type: 'month',
-                text: '1M'
-            }, {
-                count: 3,
-                type: 'month',
-                text: '3M'
-            }, {
-				count: 6,
-                type: 'month',
-                text: '6M'
-            }, {
-				count: 1,
-                type: 'year',
-                text: '1YR'
-            }, {
-				count: 3,
-                type: 'year',
-                text: '3YR'
-            }, {
-                type: 'all',
-                text: 'All'
-            }],
-			inputEnabled: true,
-			selected: 0
-		  },
-        });
-
-		var costTimeGraph = new Highcharts.StockChart({
-          chart: {
-            renderTo: 'CostTime',
-            animation: false
-          },
-          legend: {
-            enabled: true,
-            borderColor: 'black',
-            borderWidth: 2,
-            shadow: true,
-            labelFormatter: function() {
-      		var total = 0;
-      		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
-      			return "$"+Math.round(total*100)/100;
-   			},
-            title: {text:"Total Costs"}
-          },
-          title: {
-            text: 'Cost Time Graph'
-          },
-		   yAxis: {
-			title: {
-				//TODO: is this dollars or cents?
-				text: 'Cost ($)'
-			}  
-		  },
-          plotOptions: {
-            
-            column: {
-              stacking: 'normal'
-            },
-            line: {
-              cursor: 'ns-resize'
-            }
-          },
-		  rangeSelector: {
-            buttons: [{
-                count: 1,
-                type: 'day',
-                text: '1D'
-            }, {
-                count: 1,
-                type: 'week',
-                text: '1W'
-            }, {
-                count: 1,
-                type: 'month',
-                text: '1M'
-            }, {
-                count: 3,
-                type: 'month',
-                text: '3M'
-            }, {
-				count: 6,
-                type: 'month',
-                text: '6M'
-            }, {
-				count: 1,
-                type: 'year',
-                text: '1YR'
-            }, {
-				count: 3,
-                type: 'year',
-                text: '3YR'
-            }, {
-                type: 'all',
-                text: 'All'
-            }],
-			inputEnabled: true,
-			selected: 0
-		  },
-        });
-
-		var pageType = localStorage.getItem('comparisonPage');
-		if (pageType === "commercial"){
-			var demandGraph = new Highcharts.StockChart({
-          chart: {
-            renderTo: 'demandGraph',
-            animation: false
-          },
-          title: {
-            text: 'Demand Time Graph'
-          },
-		  yAxis: {
-			title: {
-				text: 'Demand (KW)'
-			}  
-		  },
-          plotOptions: {
-            column: {
-              stacking: 'normal'
-            },
-            line: {
-              cursor: 'ns-resize'
-            },
-			series: {
-				point: {
-					events: {
-						drag: function (e) {
-							//console.log("drag");
-							//console.log(e);
-						},
-						drop: function () {
-							console.log("demand drop");
-							//console.log(this.series.name);
-							//console.log(this.x);
-							//console.log(this.y);
-							//console.log(this);
-							pointDrop(this.index, this.x, this.y, "demand");
-						}
-					}
-				}
-			}
-          },
-		  navigator: {
-			enabled: true,
-			series: {
-					id: 'navigator'
-			}
-		  },
-		  rangeSelector: {
-            buttons: [{
-                count: 1,
-                type: 'day',
-                text: '1D'
-            }, {
-                count: 1,
-                type: 'week',
-                text: '1W'
-            }, {
-                count: 1,
-                type: 'month',
-                text: '1M'
-            }, {
-                count: 3,
-                type: 'month',
-                text: '3M'
-            }, {
-				count: 6,
-                type: 'month',
-                text: '6M'
-            }, {
-				count: 1,
-                type: 'year',
-                text: '1YR'
-            }, {
-				count: 3,
-                type: 'year',
-                text: '3YR'
-            }, {
-                type: 'all',
-                text: 'All'
-            }],
-			inputEnabled: true,
-			selected: 0
-		  },
-        });
-		}
+	initializeGraphs();
 	
 	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
 		//console.log("In graphController");
@@ -413,5 +175,253 @@ function graphController($scope) {
 		//console.log("date: " + date);
 		
 		$scope.$emit('modifiedPoint', index, date, y, type);
+	}
+	
+	$scope.$on('clearPage', function(event) {
+		consumptionGraph.destroy();
+		costTimeGraph.destroy();
+		initializeGraphs();
+	});
+	
+	function initializeGraphs() {
+		consumptionGraph = new Highcharts.StockChart({
+          chart: {
+            renderTo: 'EnergyRateConsumption',
+            animation: false
+          },
+          title: {
+            text: 'Consumption Time Graph'
+          },
+		  yAxis: {
+			title: {
+				text: 'Consumption (KWh)'
+			}  
+		  },
+          plotOptions: {
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            },
+			series: {
+				point: {
+					events: {
+						drag: function (e) {
+							//console.log("drag");
+							//console.log(e);
+						},
+						drop: function () {
+							console.log("drop");
+							//console.log(this.series.name);
+							//console.log(this.x);
+							//console.log(this.y);
+							//console.log(this);
+							pointDrop(this.index, this.x, this.y, "consumption");
+						}
+					}
+				}
+			}
+          },
+		  navigator: {
+			enabled: true,
+			series: {
+					id: 'navigator'
+			}
+		  },
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: true,
+			selected: 0
+		  },
+        });
+		costTimeGraph = new Highcharts.StockChart({
+          chart: {
+            renderTo: 'CostTime',
+            animation: false
+          },
+          legend: {
+            enabled: true,
+            borderColor: 'black',
+            borderWidth: 2,
+            shadow: true,
+            labelFormatter: function() {
+      		var total = 0;
+      		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
+      			return "$"+Math.round(total*100)/100;
+   			},
+            title: {text:"Total Costs"}
+          },
+          title: {
+            text: 'Cost Time Graph'
+          },
+		   yAxis: {
+			title: {
+				//TODO: is this dollars or cents?
+				text: 'Cost ($)'
+			}  
+		  },
+          plotOptions: {
+            
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            }
+          },
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: true,
+			selected: 0
+		  },
+        });
+		if (pageType === "commercial")
+		{
+			demandGraph = new Highcharts.StockChart({
+	          chart: {
+	            renderTo: 'demandGraph',
+	            animation: false
+	          },
+	          title: {
+	            text: 'Demand Time Graph'
+	          },
+			  yAxis: {
+				title: {
+					text: 'Demand (KW)'
+				}  
+			  },
+	          plotOptions: {
+	            column: {
+	              stacking: 'normal'
+	            },
+	            line: {
+	              cursor: 'ns-resize'
+	            },
+				series: {
+					point: {
+						events: {
+							drag: function (e) {
+								//console.log("drag");
+								//console.log(e);
+							},
+							drop: function () {
+								console.log("demand drop");
+								//console.log(this.series.name);
+								//console.log(this.x);
+								//console.log(this.y);
+								//console.log(this);
+								pointDrop(this.index, this.x, this.y, "demand");
+							}
+						}
+					}
+				}
+	          },
+			  navigator: {
+				enabled: true,
+				series: {
+						id: 'navigator'
+				}
+			  },
+			  rangeSelector: {
+	            buttons: [{
+	                count: 1,
+	                type: 'day',
+	                text: '1D'
+	            }, {
+	                count: 1,
+	                type: 'week',
+	                text: '1W'
+	            }, {
+	                count: 1,
+	                type: 'month',
+	                text: '1M'
+	            }, {
+	                count: 3,
+	                type: 'month',
+	                text: '3M'
+	            }, {
+					count: 6,
+	                type: 'month',
+	                text: '6M'
+	            }, {
+					count: 1,
+	                type: 'year',
+	                text: '1YR'
+	            }, {
+					count: 3,
+	                type: 'year',
+	                text: '3YR'
+	            }, {
+	                type: 'all',
+	                text: 'All'
+	            }],
+				inputEnabled: true,
+				selected: 0
+			  },
+	        });
+		}
 	}
 }

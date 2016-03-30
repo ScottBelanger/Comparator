@@ -2,7 +2,7 @@
 var PricingModel = function() {
   this.id = 0;
   this.rateType = "";
-  this.LDC      = "";
+  this.ldc      = "";
   this.country  = "";
   this.city     = "";
   this.isNew    = true;
@@ -20,11 +20,11 @@ PricingModel.prototype.setRateType = function( rateType ) {
 };
 
 PricingModel.prototype.getLDC = function() {
-  return this.LDC;
+  return this.ldc;
 };
 
-PricingModel.prototype.setLDC = function( LDC ) {
-  this.LDC = LDC;
+PricingModel.prototype.setLDC = function( ldc ) {
+  this.ldc = ldc;
 };
 
 PricingModel.prototype.getCountry = function() {

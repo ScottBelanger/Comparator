@@ -465,33 +465,41 @@
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
-			    ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()">
-                <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}" >{{option.country}}</option>
+			    ng-model="selectCtrl.countrySelect" ng-change="selectCtrl.countrySelectChange()" ng-if="!selectCtrl.isLoaded">
+                <option ng-repeat="option in selectCtrl.countryList" value="{{option.country}}">{{option.country}}</option>
               </select>
+			  <!-- $index here will line up with index array of pricingModels in masterCtrl -->
+			  <label class="control-label" style="font-size:20px; color: #ffffff;" ng-if="selectCtrl.isLoaded">{{selectCtrl.loadedCountry}}</label>
             </div>
           </div>
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
-                ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()">
-                <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}" >{{option.city}}</option>
+                ng-model="selectCtrl.citySelect" ng-change="selectCtrl.citySelectChange()" ng-if="!selectCtrl.isLoaded">
+                <option ng-repeat="option in selectCtrl.cityList" value="{{option.city}}">{{option.city}}</option>
               </select>
+			  <!-- $index here will line up with index array of pricingModels in masterCtrl -->
+			  <label class="control-label" style="font-size:20px; color: #ffffff;" ng-if="selectCtrl.isLoaded">{{selectCtrl.loadedCity}}</label>
             </div>
           </div>
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
-                ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()">
-                <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}" >{{option.companyName}}</option>
+                ng-model="selectCtrl.ldcSelect" ng-change="selectCtrl.ldcSelectChange()" ng-if="!selectCtrl.isLoaded">
+                <option ng-repeat="option in selectCtrl.ldcList" value="{{option.companyName}}">{{option.companyName}}</option>
               </select>
+			  <!-- $index here will line up with index array of pricingModels in masterCtrl -->
+			  <label class="control-label" style="font-size:20px; color: #ffffff;" ng-if="selectCtrl.isLoaded">{{selectCtrl.loadedLDC}}</label>
             </div>
           </div>
           <div class="col-md-3" style="text-align:center">
             <div class="selectContainer">
               <select class="form-control" name="size" style="font-size: 20px;" 
-                ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()">
-                <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}" >{{option.rateType}}</option>
+                ng-model="selectCtrl.rateSelect" ng-change="selectCtrl.rateSelectChange()" ng-if="!selectCtrl.isLoaded">
+                <option ng-repeat="option in selectCtrl.rateList" value="{{option.rateType}}">{{option.rateType}}</option>
               </select>
+			  <!-- $index here will line up with index array of pricingModels in masterCtrl -->
+			  <label class="control-label" style="font-size:20px; color: #ffffff;" ng-if="selectCtrl.isLoaded">{{selectCtrl.loadedRateType}}</label>
             </div>
           </div>
 	      <div class="container-fluid" style="text-align:center">
@@ -508,17 +516,17 @@
   <div class="row" style="padding-bottom:3%">
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection"><span class="glyphicon glyphicon-plus-sign"></span>New Comparison</a>
+        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection" ng-click="masterCtrl.newComparisonEvent()"><span class="glyphicon glyphicon-plus-sign"></span>New Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#loadComparison" ng-click="masterCtrl.loadComparison()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#loadComparison" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparison()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparisonEvent()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
       </div>
     </div>
   </div>
