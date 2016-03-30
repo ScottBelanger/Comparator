@@ -221,6 +221,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.saveComparisonEvent = function() {
+        document.getElementById("loader-wrapper").style.display = "block";
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
