@@ -259,11 +259,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			return;
 		}
 		
-		/* if (isRateComp) {
-			console.log("userID: " + userID);
-		} */
-		
-		/* hardcodedComparison = {
+		/*hardcodedComparison = {
 			energyUsage: {
 				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
 				demand: []
@@ -298,10 +294,23 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		$http.get('/comparison').then(function(result) {
 			//TODO
-			console.log(result.data);
-			masterCtrl.userComparisonArray = result.data;
-			//masterCtrl.compIndex = 4;
-			//loadComparison(userComparisonArray[0]);
+                        for(var i = 0; i < result.data.length; i++) {
+                          if( i == 0 ) {
+                            masterCtrl.userComparisonArray.push(result.data[i]);
+                          } else {
+                            var existingComparison = false;
+                            for(var j = 0; j < masterCtrl.userComparisonArray.length; j++ ) {
+                              if( masterCtrl.userComparisonArray[j].id == result.data[i].id ) {
+                                masterCtrl.userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
+                                existingComparison = true;
+                              }
+                            }
+                            if(!existingComparison) {
+                              masterCtrl.userComparisonArray.push(result.data[i]);
+                            }
+                          }
+                        }
+						
 		}, function(result){
 			// error
 		});
@@ -336,6 +345,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
 		var length = comparison.rateBundle.length;
 		for (var i=0; i<length; i++) {
+                        console.log(comparison);
 			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
 		}
 		masterCtrl.rateComp = comparison;
