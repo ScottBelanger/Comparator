@@ -11,12 +11,19 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	var isRateComp = true;
+	var hasDemand = false;
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
 	
 	var pageType = localStorage.getItem('comparisonPage');
 	console.log("page type: " + pageType);
+	if (pageType == "commercial")
+	{
+		hasDemand = true;
+	}
+
+	console.log("hasDemand is equal to "+hasDemand);
 	
 	var userID = localStorage.getItem('userId');
 	
@@ -26,7 +33,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		var rateComp = {
 			energyUsage: {
 				consumption: [],
-				demand: []
+				demand: [],
+				hasDemand: false
 			},
 			rateBundle: []
 		}
@@ -58,8 +66,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 
 	$scope.$on('newDemandArray', function(event, demandArray) {
 		// add the energy usage to a rate bundle or usage bundle
+		console.log("a new demand array needs to be added to the demandArray");
+		console.log("the demand array is " +demandArray);
 		if (isRateComp) {
 			rateComp.energyUsage.demand = demandArray;
+			rateComp.energyUsage.hasDemand = true;
+			console.log("made a new demand in the energy usage");
+			console.log(rateComp.energyUsage.demand);
 			$rootScope.$broadcast('setDemandForGraph', 0, "Demand", demandArray);
 			//console.log(rateComp);
 		}
@@ -88,7 +101,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//console.log(rateComp);
 			
 			//send the getCost function
-			getCost(rateComp.energyUsage.consumption, pricingModel);
+			getCost(rateComp.energyUsage.consumption, rateComp.energyUsage.demand, pricingModel);
 		}
 		//then it is a usageCOmparison
 		else {
@@ -116,7 +129,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 	});
 	
-	$scope.$on('modifiedConsumptionPoint', function(event, index, date, newAmount) {
+	$scope.$on('modifiedPoint', function(event, index, date, newAmount, type) {
 		//console.log("In master at modifiedConsumptionPoint");
 		//console.log(index);
 		//console.log(date);
@@ -126,23 +139,46 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		if (isRateComp) {
 			//update the consumption array to reflect new value
-			rateComp.energyUsage.consumption[index].amount = newAmount;
+			if (type == "consumption")
+			{
+				rateComp.energyUsage.consumption[index].amount = newAmount;
+				//send the single point to the rate engine for EACH pricing model series in cost graph
+				var newConsumption = {time: date,
+								  amount: newAmount};
+				if (rateComp.energyUsage.hasDemand)
+					var newDemand = {time: rateComp.energyUsage.demand[index].time,
+									amount: rateComp.energyUsage.demand[index].amount};
+				else
+					var newDemand = {time:date,
+									amount: 0};
+			}
+			else
+			{ 
+				console.log("the index is "+index);
+				console.log("the length of demand is : "+rateComp.energyUsage.demand.length);
+				console.log("the length of consumption is : "+rateComp.energyUsage.consumption.length);
+				rateComp.energyUsage.demand[index].amount = newAmount;
+				var newDemand = {time: date,
+								amount: newAmount};
+				var newConsumption = {time: rateComp.energyUsage.consumption[index].time,
+									amount: rateComp.energyUsage.consumption[index].amount};
+			}
 			//console.log("Consumption changed");
 			//console.log(rateComp);
 			
-			//send the single point to the rate engine for EACH pricing model series in cost graph
-			var newConsumption = {time: date,
-								  amount: newAmount};
+			console.log("this is the demand " + newDemand);
+			console.log("this is the consumption " + newConsumption);
+			
 			
 			//For each pricingModel series, update the cost point
-			getCostPointRateComp([newConsumption], 0, rateComp.rateBundle.length, index);
+			getCostPointRateComp([newConsumption], [newDemand], 0, rateComp.rateBundle.length, index, type);
 		}
 		else { //usage comparison
 			//TODO
 		}
 	});
 	
-	function getCost(consumption, pricingModel) {
+	function getCost(consumption, demand, pricingModel) {
 		//console.log(pricingModel);
 		//console.log(consumption);
 		
@@ -152,6 +188,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		}
 		
 		var data = {consumption: consumption,
+					demand: demand,
+					isCommercial: hasDemand,
 					pricingModel: pricingModel};
 		
 		//console.log("data to pass:");
@@ -187,7 +225,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	
-	function getCostPointRateComp(consumption, rbIndex, total, pointIndex) {
+	function getCostPointRateComp(consumption, demand, rbIndex, total, pointIndex, type) {
+		console.log("in the get cost point rate comp");
+		console.log("the rateComp.rateBundle is "+rateComp.rateBundle[rbIndex]);
+		console.log("the consumption is "+consumption);
 		if (rateComp.rateBundle[rbIndex] == undefined || consumption == []) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
@@ -196,8 +237,25 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//total is total number of rateBundle objects
 		
 		//console.log("In getCostPointRateComp");
-		var data = {consumption: consumption,
-					pricingModel: rateComp.rateBundle[rbIndex].pricingModel};
+		if (type == "consumption")
+		{
+			if (hasDemand)
+				var data = {consumption: consumption,
+						demand: demand,
+						isCommercial: rateComp.energyUsage.hasDemand,
+						pricingModel: rateComp.rateBundle[rbIndex].pricingModel};
+			else
+				var data = {consumption: consumption,
+						pricingModel: rateComp.rateBundle[rbIndex].pricingModel};	
+		}
+		else
+		{
+			var data = {consumption: consumption,
+					demand: demand,
+					isCommercial: rateComp.energyUsage.hasDemand,
+					pricingModel: rateComp.rateBundle[rbIndex].pricingModel};	
+		}
+		
 					
 		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
@@ -215,7 +273,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//Now continue cycling through all the pricing models to update each point
 			rbIndex++;
 			if (rbIndex < total) {
-				getCostPointRateComp(consumption, rbIndex, total, pointIndex);
+				getCostPointRateComp(consumption, demand, rbIndex, total, pointIndex, type);
 			}
 			else {
 				return;

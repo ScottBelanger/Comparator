@@ -40,7 +40,7 @@ function graphController($scope) {
 							//console.log(this.x);
 							//console.log(this.y);
 							//console.log(this);
-							consumptionPointDrop(this.index, this.x, this.y);
+							pointDrop(this.index, this.x, this.y, "consumption");
 						}
 					}
 				}
@@ -103,7 +103,7 @@ function graphController($scope) {
             labelFormatter: function() {
       		var total = 0;
       		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
-      			return Math.round(total*100)/100;
+      			return "$"+Math.round(total*100)/100;
    			},
             title: {text:"Total Costs"}
           },
@@ -193,12 +193,12 @@ function graphController($scope) {
 							//console.log(e);
 						},
 						drop: function () {
-							console.log("drop");
+							console.log("demand drop");
 							//console.log(this.series.name);
 							//console.log(this.x);
 							//console.log(this.y);
 							//console.log(this);
-							consumptionPointDrop(this.index, this.x, this.y);
+							pointDrop(this.index, this.x, this.y, "demand");
 						}
 					}
 				}
@@ -207,7 +207,7 @@ function graphController($scope) {
 		  navigator: {
 			enabled: true,
 			series: {
-					id: 'navigator2'
+					id: 'navigator'
 			}
 		  },
 		  rangeSelector: {
@@ -332,7 +332,8 @@ function graphController($scope) {
 		
 		//needed for resetting a single consumption line
 		var nav = demandGraph.get('navigator');
-		//console.log(nav);
+		console.log("the nav "+nav);
+		console.log("the new series "+newSeries);
 		nav.setData(newSeries.data);
 		demandGraph.xAxis[0].setExtremes();
 	});
@@ -392,13 +393,14 @@ function graphController($scope) {
 		
 		var point = [x, y];
 		
+		console.log("costTimeGraph data: " + costTimeGraph.get(seriesID).data.length);
 		costTimeGraph.get(seriesID).data[pointIndex].update(point);
 
 		//update legend to update graph
 		costTimeGraph.legend.render();
 	});
 	
-	function consumptionPointDrop(index, x, y) {
+	function pointDrop(index, x, y,type) {
 		//console.log("In drop funtion");
 		//console.log(x);
 		//console.log(y);
@@ -410,6 +412,6 @@ function graphController($scope) {
 		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
 		//console.log("date: " + date);
 		
-		$scope.$emit('modifiedConsumptionPoint', index, date, y);
+		$scope.$emit('modifiedPoint', index, date, y, type);
 	}
 }
