@@ -16,7 +16,7 @@ var mysql = require('mysql');
 });*/
 
 var connection = mysql.createPool({
-  connectionLimit : 15,
+  connectionLimit : 49,
   host     : 'capstonedb.ce5v1pz5vg4e.us-east-1.rds.amazonaws.com',
   user     : 'capstone',
   password : 'capstone',
