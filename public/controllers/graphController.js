@@ -89,7 +89,7 @@ function graphController($scope) {
 			selected: 0
 		  },
         });
-		
+
 		var costTimeGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'CostTime',
@@ -97,14 +97,9 @@ function graphController($scope) {
           },
           legend: {
             enabled: true,
-            //align: 'right',
             borderColor: 'black',
             borderWidth: 2,
-            //layout: 'vertical',
-            //verticalAlign: 'top',
-            //y: 100,
             shadow: true,
-            //labelFormat: this.totalCost,
             labelFormatter: function() {
       		var total = 0;
       		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
@@ -167,6 +162,92 @@ function graphController($scope) {
 			selected: 0
 		  },
         });
+
+		var pageType = localStorage.getItem('comparisonPage');
+		if (pageType === "commercial"){
+			var demandGraph = new Highcharts.StockChart({
+          chart: {
+            renderTo: 'demandGraph',
+            animation: false
+          },
+          title: {
+            text: 'Demand Time Graph'
+          },
+		  yAxis: {
+			title: {
+				text: 'Demand (KW)'
+			}  
+		  },
+          plotOptions: {
+            column: {
+              stacking: 'normal'
+            },
+            line: {
+              cursor: 'ns-resize'
+            },
+			series: {
+				point: {
+					events: {
+						drag: function (e) {
+							//console.log("drag");
+							//console.log(e);
+						},
+						drop: function () {
+							console.log("drop");
+							//console.log(this.series.name);
+							//console.log(this.x);
+							//console.log(this.y);
+							//console.log(this);
+							consumptionPointDrop(this.index, this.x, this.y);
+						}
+					}
+				}
+			}
+          },
+		  navigator: {
+			enabled: true,
+			series: {
+					id: 'navigator2'
+			}
+		  },
+		  rangeSelector: {
+            buttons: [{
+                count: 1,
+                type: 'day',
+                text: '1D'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1W'
+            }, {
+                count: 1,
+                type: 'month',
+                text: '1M'
+            }, {
+                count: 3,
+                type: 'month',
+                text: '3M'
+            }, {
+				count: 6,
+                type: 'month',
+                text: '6M'
+            }, {
+				count: 1,
+                type: 'year',
+                text: '1YR'
+            }, {
+				count: 3,
+                type: 'year',
+                text: '3YR'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
+			inputEnabled: true,
+			selected: 0
+		  },
+        });
+		}
 	
 	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
 		//console.log("In graphController");
@@ -210,6 +291,50 @@ function graphController($scope) {
 		//console.log(nav);
 		nav.setData(newSeries.data);
 		consumptionGraph.xAxis[0].setExtremes();
+	});
+
+	$scope.$on('setDemandForGraph', function(event, seriesID, seriesName, demandData) {
+		//console.log("In graphController");
+		//console.log("initial consumption Data");
+		//console.log(consumptionData);
+		
+		if (demandGraph.get(seriesID) != undefined) {
+			demandGraph.get(seriesID).remove();
+		}
+		
+		var demandPoints = [];
+		
+		var length = demandData.length;
+		//populate the array for data with the consumption information
+		for (var i=0; i<length; i++) {
+			//put the date in the necessary format for Date parsing
+			var date = demandData[i].time;
+			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
+			var x = Date.parse(stringDate);
+			var y = demandData[i].amount;
+			
+			//console.log("x: " + x);
+			//console.log("y: " + y);
+			
+			var point = [x, y];
+			demandPoints.push(point);
+		}
+		
+		var newSeries = {
+			id: seriesID,
+			name: seriesName,
+			data: demandPoints,
+			draggableY: true,
+            rotation: 90
+		};
+		
+		demandGraph.addSeries(newSeries);
+		
+		//needed for resetting a single consumption line
+		var nav = demandGraph.get('navigator');
+		//console.log(nav);
+		nav.setData(newSeries.data);
+		demandGraph.xAxis[0].setExtremes();
 	});
 	
 	$scope.$on('newCostTimePM', function(event, seriesID, seriesName, costData, totalCost) {

@@ -18,6 +18,7 @@
 	<script src="controllers/comparisonMasterController.js"></script>
 	<script src="controllers/energyUsageController.js"></script>
 	<script src="controllers/csvController.js"></script>
+  <script src="controllers/csvDemandController.js"></script>
 	<script src="controllers/xmlController.js"></script>
 	<script src="controllers/pricingModelController.js"></script>
 	<script src="controllers/pmSelectionController.js"></script>
@@ -26,11 +27,11 @@
       function showCharts() {
       console.log(localStorage.getItem('comparisonPage'))
         if(localStorage.getItem('comparisonPage') === "residential") {
-          document.getElementById("demandGraph").style.display = "none"
+          document.getElementById("demand").style.display = "none"
           document.getElementById("demandButton").style.display = "none"
         }
         else {
-          document.getElementById("demandGraph").style.display = "block"
+          document.getElementById("demand").style.display = "block"
           document.getElementById("demandButton").style.display = "block"
         }
       }
@@ -413,8 +414,24 @@
     </div>
   </div>
   <div class="row" style="padding-top:4%">
-    <div id="demandButton" class="col-md-12" style="text-align:center; display:none">
-      <a href="#" id="demandButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-flash"></span>Add Demand Data<span class="glyphicon glyphicon-flash"></span></a>
+    <div id="demandButton" class="col-md-12" style="text-align:center; display:none" ng-controller="csvDemandController as csvDemandCtrl">
+      <a href="#" id="demandButton" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadDemandCSV"><span class="glyphicon glyphicon-flash"></span>Add Demand Data<span class="glyphicon glyphicon-flash"></span>
+      </a>
+      <div id="uploadDemandCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
+            </div>
+            <input type="file" id="csvDemandFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvDemandCtrl.parseCSV()">Submit</button>
+              <button type="buton" class="btn btn-default" data-dismiss="modal">Close</button>t
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -536,10 +553,10 @@
 	  </div>
 	</div>
     <!--Demand hiCharts graph -->
-    <div class="container-fluid" style="display:none" id="demandGraph">
+    <div class="container-fluid" style="padding-top: 4%" id="demand">
 	  <div class="row" >
 		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-		  <div id="demand" style="height: 400px; font-size:15px;">
+		  <div id="demandGraph" style="height: 400px; font-size:15px;">
 		  </div>
 		</div>
 	  </div>

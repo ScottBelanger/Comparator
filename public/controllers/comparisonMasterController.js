@@ -55,6 +55,21 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			comparison.addUsageBundle(newUsageBundle);
 		} */
 	});
+
+	$scope.$on('newDemandArray', function(event, demandArray) {
+		// add the energy usage to a rate bundle or usage bundle
+		if (isRateComp) {
+			rateComp.energyUsage.demand = demandArray;
+			$rootScope.$broadcast('setDemandForGraph', 0, "Demand", demandArray);
+			//console.log(rateComp);
+		}
+		//if it is a usage comparison, then there are multiple usages
+		/* else {
+			var newUsageBundle = new UsageBundle();
+			newUsageBundle.setEnergyUsage(energyUsage);
+			comparison.addUsageBundle(newUsageBundle);
+		} */
+	});
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
 		//console.log("In master newPricingModel")
