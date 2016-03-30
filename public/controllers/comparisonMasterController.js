@@ -247,6 +247,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				comparison: comparison};
 		$http.post('/comparison/new', data).then(function(result) {
 			//TODO
+            document.getElementById("loader-wrapper").style.display = "none";
 			console.log(result);
 		}, function(result){
 			// error
