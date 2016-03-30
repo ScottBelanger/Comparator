@@ -246,7 +246,8 @@
                         data = JSON.parse(data)
                         if(data != -4){
                           localStorage.setItem('username', data.userName)
-                        
+                          localStorage.setItem('isAdmin', data.isAdmin)
+						  localStorage.setItem('userId', data.userId)
                           $("#signup-username").val(""); 
                           $("#signup-email").val("");
                           $("#signup-password").val(""); 
