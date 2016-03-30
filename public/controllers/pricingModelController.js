@@ -9,11 +9,15 @@ function pricingModelController($scope) {
 	
 	pmCtrl.rows = [];
 	var rowCount = 0;
-	pmCtrl.rows.push({index: rowCount});
+	addNewSelectionRow();
 	
 	function addNewSelectionRow() {
-		rowCount++;
+		//INDEX MUST MATCH PRICINGMODEL ID!!!
+		//console.log("addNewSelectionRow");
+		//console.log("rowCount: " + rowCount);
 		pmCtrl.rows.push({index: rowCount});
+		console.log(pmCtrl.rows);
+		rowCount++;
 	}
 	
 	$scope.$on('newPricingModel', function(event, pricingModel) {
@@ -29,5 +33,26 @@ function pricingModelController($scope) {
 				return;
 			}
 		}
+	});
+	
+	$scope.$on('clearPage', function(event) {
+		pmCtrl.rows = [];
+		rowCount = 0;
+		addNewSelectionRow();
+	});
+	
+	$scope.$on('clearRows', function(event) {
+		pmCtrl.rows = [];
+		rowCount = 0;
+	});
+	
+	$scope.$on('newRow', function(event) {
+		addNewSelectionRow();
+	});
+	
+	$scope.$on('newPMSelectionRow', function(event, pricingModel) {
+		console.log("In newPMSelectionRow");
+		rowCount = pricingModel.id;
+		addNewSelectionRow();
 	});
 }
