@@ -263,7 +263,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			console.log("userID: " + userID);
 		} */
 		
-		hardcodedComparison = {
+		/*hardcodedComparison = {
 			energyUsage: {
 				consumption: [{amount: 5, time: "2016-02-22 03:00"}, {amount: 6, time: "2016-02-22 04:00"}, {amount: 7, time: "2016-02-22 05:00"}],
 				demand: []
@@ -292,18 +292,32 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				totalCost: 150,
 				description: "something"}
 			]
-		};
+		};*/
 		
-		loadComparison(hardcodedComparison);
+		//loadComparison(hardcodedComparison);
 		
-		/* $http.get('/comparison').then(function(result) {
+		$http.get('/comparison').then(function(result) {
 			//TODO
-			console.log(result.data);
-			userComparisonArray = result.data;
-			loadComparison(userComparisonArray[0]);
+                        for(var i = 0; i < result.data.length; i++) {
+                          if( i == 0 ) {
+                            userComparisonArray.push(result.data[i]);
+                          } else {
+                            var existingComparison = false;
+                            for(var j = 0; j < userComparisonArray.length; j++ ) {
+                              if( userComparisonArray[j].id == result.data[i].id ) {
+                                userComparisonArray[j].rateBundle.push(result.data[i].rateBundle);
+                                existingComparison = true;
+                              }
+                            }
+                            if(!existingComparison) {
+                              userComparisonArray.push(result.data[i]);
+                            }
+                          }
+                        }
+			//loadComparison(userComparisonArray[0]);
 		}, function(result){
 			// error
-		}); */
+		});
 	}
 	
 	function loadComparison(comparison) {
