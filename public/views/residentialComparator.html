@@ -26,10 +26,12 @@
       function showCharts() {
       console.log(localStorage.getItem('comparisonPage'))
         if(localStorage.getItem('comparisonPage') === "residential") {
-          document.getElementById("otherGraph").style.display = "none"
+          document.getElementById("demandGraph").style.display = "none"
+          document.getElementById("demandButton").style.display = "none"
         }
         else {
-          document.getElementById("otherGraph").style.display = "block"
+          document.getElementById("demandGraph").style.display = "block"
+          document.getElementById("demandButton").style.display = "block"
         }
       }
       
@@ -410,6 +412,11 @@
       </div>
     </div>
   </div>
+  <div class="row" style="padding-top:4%">
+    <div id="demandButton" class="col-md-12" style="text-align:center; display:none">
+      <a href="#" id="demandButton" style="font-size:30px; display:inline-block;"><span class="glyphicon glyphicon-flash"></span>Add Demand Data<span class="glyphicon glyphicon-flash"></span></a>
+    </div>
+  </div>
 </div>
 
 <div class="container-fluid">
@@ -484,7 +491,7 @@
   <div class="row" style="padding-bottom:3%">
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection"><span class="glyphicon glyphicon-plus-sign""></span>New Comparison</a>
+        <a href="#" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#comparisonSelection"><span class="glyphicon glyphicon-plus-sign"></span>New Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
@@ -528,16 +535,17 @@
 		</div>
 	  </div>
 	</div>
-	<!--This is hiCharts Time Cost Graph-->
-	<div class="container-fluid">
+    <!--Demand hiCharts graph -->
+    <div class="container-fluid" style="display:none" id="demandGraph">
 	  <div class="row" >
 		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
-		  <div id="CostTime" style="height: 400px; font-size:15px;">
+		  <div id="demand" style="height: 400px; font-size:15px;">
 		  </div>
 		</div>
 	  </div>
 	</div>
-    <div class="container-fluid" style="display:none" id="otherGraph">
+	<!--This is hiCharts Time Cost Graph-->
+	<div class="container-fluid">
 	  <div class="row" >
 		<div class="col-sm-12 panel" style="box-shadow: 0 0 30px black;">
 		  <div id="CostTime" style="height: 400px; font-size:15px;">
