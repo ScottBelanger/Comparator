@@ -301,7 +301,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
                             var existingComparison = false;
                             for(var j = 0; j < masterCtrl.userComparisonArray.length; j++ ) {
                               if( masterCtrl.userComparisonArray[j].id == result.data[i].id ) {
-                                masterCtrl.userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
+                                console.log(result.data[i].rateBundle);
+                                masterCtrl.userComparisonArray[j].rateBundle.push(result.data[i].rateBundle[0]);
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
                                 existingComparison = true;
                               }
                             }
