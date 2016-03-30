@@ -221,7 +221,6 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.saveComparisonEvent = function() {
-        document.getElementById("loader-wrapper").style.display = "block";
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
@@ -237,7 +236,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				alert("No comparison to save!");
 				return;
 			}
-			
+			document.getElementById("loader-wrapper").style.display = "block";
 			saveComparison(masterCtrl.rateComp);
 		}
 	}
