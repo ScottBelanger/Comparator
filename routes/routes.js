@@ -145,9 +145,9 @@ router.post('/comparison/new', function(req, res, next) {
     req.app._sessionController._sessions.forEach( function( session ) {
       if(session._sessionID == req.cookies.SID ) {
         session._user.comparison.push(req.body.comparison);
-        res.send("Success");
       }
     });
+    res.send("Success");
   });
 });
 
