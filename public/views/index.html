@@ -36,10 +36,17 @@
         
         if(part.indexOf("code") > -1) {
           var code = currentURL.split("=")[1];
-          window.location = "https://greenbutton-testlab-prod.appspot.com/oauth/token?client_id=westernuniversity.greenbuttontestlab.ca&client_secret=secret&grant_type=authorization_code&code="+code+"&redirect_uri="+redirectURI
-          
+          $.ajax({
+            url: "https://greenbutton-testlab-prod.appspot.com/oauth/token?grant_type=authorization_code&code="+code+"&redirect_uri=http://compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com&callback=?",
+            dataType: 'jsonp',
+            success: function(data){
+                console.log(data)
+            }
+          });
         }
       }
+        
+        
     </script>
     <body onload="checkCookie(), checkURL()">
   </head>
@@ -239,7 +246,8 @@
                         data = JSON.parse(data)
                         if(data != -4){
                           localStorage.setItem('username', data.userName)
-                        
+                          localStorage.setItem('isAdmin', data.isAdmin)
+						  localStorage.setItem('userId', data.userId)
                           $("#signup-username").val(""); 
                           $("#signup-email").val("");
                           $("#signup-password").val(""); 
