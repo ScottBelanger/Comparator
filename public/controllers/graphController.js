@@ -217,6 +217,9 @@ function graphController($scope) {
 			inputEnabled: true,
 			selected: 0
 		  },
+		  tooltip: {
+			  valueDecimals: 2
+		  }
         });
 		
 		costTimeGraph = new Highcharts.StockChart({
@@ -237,7 +240,7 @@ function graphController($scope) {
             labelFormatter: function() {
       		var total = 0;
       		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
-      			return Math.round(total*100)/100;
+      			return "$" + Math.round(total*100)/100;
    			},
             title: {text:"Total Costs"}
           },
@@ -295,6 +298,9 @@ function graphController($scope) {
 			inputEnabled: true,
 			selected: 0
 		  },
+		  tooltip: {
+			  valueDecimals: 2
+		  }
         });
 	}
 }

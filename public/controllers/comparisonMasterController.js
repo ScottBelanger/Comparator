@@ -231,7 +231,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			console.log(masterCtrl.rateComp);
 			
 			if (masterCtrl.rateComp.rateBundle.length == 0) {
-				alert("No comparisons to save!");
+				alert("No comparison to save!");
 				return;
 			}
 			
@@ -245,6 +245,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		$http.post('/comparison/new', data).then(function(result) {
 			//TODO
 			console.log(result);
+			if (result.data == "Success") {
+				alert("Save successful!");
+			}
 		}, function(result){
 			// error
 		});
@@ -255,9 +258,11 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		if (userID == 'undefined' || userID == null) {
 			//TODO
+			$scope.canLoad=false;
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
+		$scope.canLoad = true;
 		
 		/*hardcodedComparison = {
 			energyUsage: {
@@ -294,6 +299,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		$http.get('/comparison').then(function(result) {
 			//TODO
+						if (result.data.length == 0) {
+							$scope.canLoad = false;
+							alert("You have no comparisons saved!");
+							return;
+						}
+						
                         for(var i = 0; i < result.data.length; i++) {
                           if( i == 0 ) {
                             masterCtrl.userComparisonArray.push(result.data[i]);
