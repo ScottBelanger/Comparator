@@ -34,7 +34,7 @@
           window.location = "https://greenbutton-testlab-prod.appspot.com/oauth/authorize?response_type=code&client_id=westernuniversity.greenbuttontestlab.ca&redirect_uri="+redirectURI
         }
         
-        if(part.indexOf("code") > -1) {
+        /*if(part.indexOf("code") > -1) {
           var code = currentURL.split("=")[1];
           $.ajax({
             url: "https://greenbutton-testlab-prod.appspot.com/oauth/token?grant_type=authorization_code&code="+code+"&redirect_uri=http://compar-g7swe-env-vpzdw7bxhw.elasticbeanstalk.com&callback=?",
@@ -43,7 +43,7 @@
                 console.log(data)
             }
           });
-        }
+        }*/
       }
         
         
@@ -303,8 +303,9 @@
         </div>
       </ul>
     </div>
-  </div>
 </div>
+
+
 
 <div class="container-fluid" style="padding-top:5%; max-width:60%;">
   <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">

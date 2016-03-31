@@ -91,6 +91,10 @@
           <label><input type="radio" name="comparsionType" ng-model="comp.select" value="2">Load Comparison</label>
           <p>Load a previously saved comparison (only if you have an account)</p>
         </div>
+        <div class="checkbox">
+          <label><input type="radio" id="loadComparison" name="comparsionType" value="">Load Comparison</label>
+          <p>Allows users to create comparisons using Usage Amounts</p>
+        </div>
       </div>
       <div class="modal-footer">
         <button id="comparisonSubmit" type="button" class="btn btn-default" data-dismiss="modal" ng-click="compSelCtrl.submitSelection()">Submit</button>
@@ -513,12 +517,12 @@
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-cloud-download"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparisonEvent()"><span class="glyphicon glyphicon-cloud"></span>Save Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.saveComparisonEvent()"><span class="glyphicon glyphicon-cloud-upload"></span>Save Comparison</a>
       </div>
     </div>
   </div>
@@ -544,7 +548,7 @@
     </div>
   </div>
 </div>
-
+      
 <div ng-controller="graphController as graphCtrl">
 	<!--This is hiCharts Energy Consumption Graph-->
 	<div class="container-fluid" style="padding-top: 4%">
