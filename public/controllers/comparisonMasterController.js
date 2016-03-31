@@ -316,12 +316,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		});
 	}
 	function updateCosts(PMindex, total) {
-		
-		if (masterCtrl.rateComp.rateBundle[PMindex].pricingModel == undefined || masterCtrl.rateComp.energyUsage.consumption == []) {
-			alert("Cannot get cost without at least one consumption input and one pricing model");
-			return;
-		}
-		
+		document.getElementById("loader-wrapper").style.display = "block";
 
 		var data = {consumption: masterCtrl.rateComp.energyUsage.consumption,
 					consumptionLength: masterCtrl.rateComp.energyUsage.consumption.length,
@@ -360,6 +355,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				updateCosts(PMindex, total);
 			}
 			else {
+				document.getElementById("loader-wrapper").style.display = "none";
 				return;
 			}
 
