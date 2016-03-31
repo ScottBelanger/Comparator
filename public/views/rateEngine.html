@@ -13,6 +13,7 @@
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 	<script src="controllers/rateEnginePage.js"></script>
+	<script src="controllers/reMasterController.js"></script>
 	<script src="controllers/reInputController.js"></script>
 	<script src="controllers/reCSVController.js"></script>
     <script>
@@ -57,7 +58,7 @@
     <body onload="checkCookie()">
     <body onload="getUsername()">
   </head>
-<body>
+<body ng-controller="reMasterController as mstrCtrl">
 
 <div class="container-fluid">
   <div class="carousel slide carousel-fade" data-ride="carousel">

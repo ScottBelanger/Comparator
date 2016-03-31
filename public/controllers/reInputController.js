@@ -15,5 +15,19 @@ function reInputController($scope, $http) {
 		console.log(reInptCtrl.city);
 		console.log(reInptCtrl.ldc);
 		console.log(reInptCtrl.rateType);
+                if(reInptCtrl.country == "" || reInptCtrl.country == " " ||
+                  reInptCtrl.city == "" || reInptCtrl.city == " " ||
+                  reInptCtrl.ldc == "" || reInptCtrl.ldc == " " ||
+                  reInptCtrl.rateType == "" || reInptCtrl.rateType == " ") {
+                alert("Missing input, please fill in all boxes");
+                } else {
+                  $http.post('/addLDC', 
+                      { companyName: reInptCtrl.ldc, country: reInptCtrl.country, city: reInptCtrl.city, rateType: reInptCtrl.rateType}).then(function(response) {
+                        $scope.$emit('LDCid', response);
+                      }, function(response) {
+                           console.log(response);
+                         });
+                }
+                   
 	}
 }
