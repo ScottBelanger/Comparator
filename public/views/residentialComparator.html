@@ -91,10 +91,6 @@
           <label><input type="radio" name="comparsionType" ng-model="comp.select" value="2">Load Comparison</label>
           <p>Load a previously saved comparison (only if you have an account)</p>
         </div>
-        <div class="checkbox">
-          <label><input type="radio" id="loadComparison" name="comparsionType" value="">Load Comparison</label>
-          <p>Allows users to create comparisons using Usage Amounts</p>
-        </div>
       </div>
       <div class="modal-footer">
         <button id="comparisonSubmit" type="button" class="btn btn-default" data-dismiss="modal" ng-click="compSelCtrl.submitSelection()">Submit</button>
@@ -179,7 +175,7 @@
     </div>
     <div class="col-md-3" style="text-align:center" ng-controller="xmlController as xmlCtrl">
       <a href="#" id="xmlUpload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#uploadXML"><span class="glyphicon glyphicon-upload"></span>Upload Green Button XML</a>
-      <div id="uploadXML" class="modal fade" role="dialog" style="font-size: 20px;">
+      <div id="uploadXML" class="modal fade" role="dialog" style="font-size: 20px;">>
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -207,7 +203,7 @@
             <input type="file" id="csvFile" style="width:100%">
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="buton" class="btn btn-default" data-dismiss="modal">Close</button>t
             </div>
           </div>
         </div>
@@ -215,15 +211,21 @@
     </div>
     <div class="col-md-3" style="text-align:center">
       <a href="#" id="manualEnter" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#hourlyTable" ng-click="euCtrl.setupManual()"><span class="glyphicon glyphicon-list-alt"></span>Manual Data Entry</a>
-      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">
+      <div id="hourlyTable" class="modal fade" role="dialog" style="font-size: 20px;">>
         <div class="modal-dialog" >
           <div class="modal-content">
             <div class="modal-header">
               Please enter the Hourly Data
             </div>
             <div class="modal-body">
+              <button id="calendar" type="button" class="btn btn-default">Calendar</button>
+              <script>
+              /*$(document).ready(function () {
+                $("#calendar").jqxCalendar({theme: "arctic", width:250, height:250});
+              });*/
+              </script>
               <div>
-                Select an interval you wish to use:
+                Or select an interval you wish to use:
               </div>
               <div>
                   <a href="#weeklyTable" style=" display:inline-block;" data-dismiss="modal" data-toggle="modal">Weekly</a>
@@ -537,7 +539,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="loadCtrl.setIndex()">Submit</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="loadCtrl.clearLoad()">Close</button>
       </div>
     </div>
   </div>

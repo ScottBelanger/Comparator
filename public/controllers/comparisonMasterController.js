@@ -6,9 +6,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var masterCtrl = this;
 	
 	//for local
-	var rateEngineURL = 'http://localhost:3001';
+	masterCtrl.rateEngineURL = 'http://localhost:3001';
 	//for remote
-	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
+	//masterCtrl.rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
 	var isRateComp;
 	masterCtrl.rateComp = null;
@@ -174,7 +174,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//console.log("data to pass:");
 		//console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
+		$http.put(masterCtrl.rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
 			var costData = result.data.costArray;
 
@@ -215,7 +215,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		var data = {consumption: consumption,
 					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};
 					
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
+		$http.put(masterCtrl.rateEngineURL + '/calculateCost', data).then(function(result) {
 			//console.log(result.data);
 			var costData = result.data.costArray;
 			
@@ -362,6 +362,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	$scope.$on('loadIndex', function(event, index) {
 		console.log("Index to load: " + index);
 		loadComparison(masterCtrl.userComparisonArray[index]);
+		masterCtrl.userComparisonArray = [];
 	});
 	
 	function loadComparison(comparison) {
