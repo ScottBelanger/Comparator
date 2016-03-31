@@ -6,20 +6,28 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	var masterCtrl = this;
 	
 	//for local
-	var rateEngineURL = 'http://localhost:3001';
+	masterCtrl.rateEngineURL = 'http://localhost:3001';
 	//for remote
-	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
-	
-	var isRateComp = true;
+	//masterCtrl.rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
+
 	var hasDemand = false;
 	var maxDemand = 0;
+	var isRateComp;
+
 	masterCtrl.rateComp = null;
 	masterCtrl.usageComp = null;
-	var userComparisonArray = [];
+	masterCtrl.userComparisonArray = [];
 	
 	console.log(localStorage.getItem('username'));
 	console.log(localStorage.getItem('userId'));
 	var userID = localStorage.getItem('userId');
+	
+	if (userID == 'undefined' || userID == null) {
+		$scope.userLoggedIn = false;
+	}
+	else {
+		$scope.userLoggedIn = true;
+	}
 	
 	var pageType = localStorage.getItem('comparisonPage');
 	console.log("page type: " + pageType);
@@ -30,11 +38,26 @@ function comparisonMasterController($scope, $rootScope, $http) {
 
 	console.log("hasDemand is equal to "+hasDemand);
 	
-	initializeComparison();
+	$scope.$on('setCompType', function(event, selected) {
+		console.log("In setCompType");
+		console.log("selected: " + selected);
+		if (selected == 0) {
+			isRateComp = true;
+			initializeComparison();
+		}
+		else if (selected == 1) {
+			isRateComp = false;
+			initializeComparison();
+		}
+		else if (selected == 2) {
+			masterCtrl.loadComparisonEvent();
+		}
+	});
 	
 	//should put this in an initializer
 	function initializeComparison() {
 		console.log("initializeComparison");
+		console.log("isRateComp: " + isRateComp);
 		if (isRateComp) {
 			masterCtrl.rateComp = {
 				energyUsage: {
@@ -53,6 +76,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			}
 		}
 		//console.log(masterCtrl.rateComp);
+		$rootScope.$broadcast('loadGraphs');
+		$rootScope.$broadcast('loadRows');
 	}
 	
 	//console.log("isRateComp: " + isRateComp);
@@ -62,6 +87,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		// add the energy usage to a rate bundle or usage bundle
 		if (isRateComp) {
 			masterCtrl.rateComp.energyUsage.consumption = consArray;
+			console.log("Setting consumption");
+			console.log(masterCtrl.rateComp.energyUsage.consumption);
 			$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", masterCtrl.rateComp.energyUsage.consumption);
 			//console.log(masterCtrl.rateComp);
 		}
@@ -243,10 +270,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			//TODO
 		}
 	});
-	
+
 	function getCost(consumption, demand, pricingModel) {
-		//console.log(pricingModel);
-		//console.log(consumption);
+        document.getElementById("loader-wrapper").style.display = "block";
 		
 		if (pricingModel == undefined || consumption == []) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
@@ -261,16 +287,13 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					maxDemand: maxDemand,
 					pricingModel: pricingModel};
 		
-		//console.log("data to pass:");
-		//console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
-			//console.log(result.data);
+		$http.put(masterCtrl.rateEngineURL + '/calculateCost', data).then(function(result) {
 			var costData = result.data.costArray;
 
 			//TODO handle total cost
 			var totalCost = result.data.totalCost;
-
+        
 			var seriesID = undefined;
 			var seriesLabel = "";
 			
@@ -279,8 +302,6 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				masterCtrl.rateComp.rateBundle[index].cost = costData;
 				//SAVE TOTAL COST to rateBundle
 				masterCtrl.rateComp.rateBundle[index].totalCost = totalCost;
-				//console.log("NEW COST");
-				//console.log(masterCtrl.rateComp);
 				seriesID = pricingModel.id;
 				seriesLabel = pricingModel.ldc + ": " + pricingModel.rateType;
 			}
@@ -289,13 +310,12 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			}
 			
 			$rootScope.$broadcast('newCostTimePM', seriesID,  seriesLabel, costData, totalCost);
+            document.getElementById("loader-wrapper").style.display = "none";
 		}, function(result){
 			// error
 		});
 	}
 	function updateCosts(PMindex, total) {
-		//console.log(pricingModel);
-		//console.log(consumption);
 		
 		if (masterCtrl.rateComp.rateBundle[PMindex].pricingModel == undefined || masterCtrl.rateComp.energyUsage.consumption == []) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
@@ -309,11 +329,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					maxDemand: maxDemand,
 					pricingModel: masterCtrl.rateComp.rateBundle[PMindex].pricingModel};
 		
-		//console.log("data to pass:");
-		//console.log(data);
 		
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
-			//console.log(result.data);
+		$http.put(masterCtrl.rateEngineURL + '/calculateCost', data).then(function(result) {
 			var costData = result.data.costArray;
 
 			//TODO handle total cost
@@ -327,8 +344,6 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				masterCtrl.rateComp.rateBundle[index].cost = costData;
 				//SAVE TOTAL COST to rateBundle
 				masterCtrl.rateComp.rateBundle[index].totalCost = totalCost;
-				//console.log("NEW COST");
-				//console.log(masterCtrl.rateComp);
 				seriesID = masterCtrl.rateComp.rateBundle[PMindex].pricingModel.id;
 				seriesLabel = masterCtrl.rateComp.rateBundle[PMindex].pricingModel.ldc + ": " + masterCtrl.rateComp.rateBundle[PMindex].pricingModel.rateType;
 			}
@@ -361,28 +376,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			alert("Cannot get cost without at least one consumption input and one pricing model");
 			return;
 		}
-		//total parameter is total number of rateBundle objects
-		//console.log("In getCostPointRateComp");
-	/*	if (type == "consumption")
-		{
-			if (hasDemand)
-				var data = {consumption: consumption,
-						demand: demand,
-						isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
-						pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};
-			else
-				var data = {consumption: consumption,
-						pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};	
-		}
-		else
-		{
-			var data = {consumption: consumption,
-					demand: demand,
-					isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
-					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};	
-		}
-	*/
-
+	
 		console.log("check the isCommercial variable : "+masterCtrl.rateComp.energyUsage.hasDemand);
 		console.log("the maxDemand is : " + maxDemand);
 
@@ -392,8 +386,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 					isCommercial: masterCtrl.rateComp.energyUsage.hasDemand,
 					pricingModel: masterCtrl.rateComp.rateBundle[rbIndex].pricingModel};
 					
-		$http.put(rateEngineURL + '/calculateCost', data).then(function(result) {
-			//console.log(result.data);
+		$http.put(masterCtrl.rateEngineURL + '/calculateCost', data).then(function(result) {
 			var costData = result.data.costArray;
 			console.log("the returning cost is " + costData );
 
@@ -418,7 +411,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.newComparisonEvent = function() {
-		initializeComparison();
+		//initializeComparison();
 		$rootScope.$broadcast('clearPage');
 	}
 	
@@ -426,7 +419,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
-		if (userID == 'undefined' || userID == null) {
+		if (!$scope.userLoggedIn) {
 			alert("Need to sign up to save comparisons!");
 			return;
 		}
@@ -435,10 +428,10 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			console.log(masterCtrl.rateComp);
 			
 			if (masterCtrl.rateComp.rateBundle.length == 0) {
-				alert("No comparisons to save!");
+				alert("No comparison to save!");
 				return;
 			}
-			
+			document.getElementById("loader-wrapper").style.display = "block";
 			saveComparison(masterCtrl.rateComp);
 		}
 	}
@@ -448,24 +441,23 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				comparison: comparison};
 		$http.post('/comparison/new', data).then(function(result) {
 			//TODO
+            document.getElementById("loader-wrapper").style.display = "none";
 			console.log(result);
+			if (result.data == "Success") {
+				alert("Save successful!");
+			}
 		}, function(result){
 			// error
 		});
 	}
 	
 	masterCtrl.loadComparisonEvent = function() {
-		console.log("In loadComparison");
+		console.log("In loadComparisonEvent");
 		
-		if (userID == 'undefined' || userID == null) {
-			//TODO
+		if (!$scope.userLoggedIn) {
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
-		
-		/* if (isRateComp) {
-			console.log("userID: " + userID);
-		} */
 		
 		/*hardcodedComparison = {
 			energyUsage: {
@@ -496,37 +488,57 @@ function comparisonMasterController($scope, $rootScope, $http) {
 				totalCost: 150,
 				description: "something"}
 			]
-		};*/
+		};
 		
-		//loadComparison(hardcodedComparison);
+		loadComparison(hardcodedComparison); */
 		
 		$http.get('/comparison').then(function(result) {
 			//TODO
+						if (result.data.length == 0) {
+							$scope.canLoad = false;
+							alert("You have no comparisons saved!");
+							return;
+						}
+						
                         for(var i = 0; i < result.data.length; i++) {
                           if( i == 0 ) {
-                            userComparisonArray.push(result.data[i]);
+                            masterCtrl.userComparisonArray.push(result.data[i]);
                           } else {
                             var existingComparison = false;
-                            for(var j = 0; j < userComparisonArray.length; j++ ) {
-                              if( userComparisonArray[j].id == result.data[i].id ) {
-                                userComparisonArray[j].rateBundle.concat(result.data[i].rateBundle);
+                            for(var j = 0; j < masterCtrl.userComparisonArray.length; j++ ) {
+                              if( masterCtrl.userComparisonArray[j].id == result.data[i].id ) {
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
+                                console.log(result.data[i].rateBundle);
+                                masterCtrl.userComparisonArray[j].rateBundle.push(result.data[i].rateBundle[0]);
+                                console.log(masterCtrl.userComparisonArray[j].rateBundle);
                                 existingComparison = true;
                               }
                             }
                             if(!existingComparison) {
-                              userComparisonArray.push(result.data[i]);
+                              masterCtrl.userComparisonArray.push(result.data[i]);
                             }
                           }
                         }
-			loadComparison(userComparisonArray[0]);
+						
+						console.log("Pop up modal window!");
+						console.log(document.getElementById("loadComparison"));
+						//document.getElementById("loadComparison").showModal();
+						$("#loadComparison").modal("show");
+						
 		}, function(result){
 			// error
 		});
 	}
 	
+	$scope.$on('loadIndex', function(event, index) {
+		console.log("Index to load: " + index);
+		loadComparison(masterCtrl.userComparisonArray[index]);
+		masterCtrl.userComparisonArray = [];
+	});
+	
 	function loadComparison(comparison) {
 		console.log("Loading following comparison...");
-		//console.log(comparison);
+		console.log(comparison);
 		
 		if (comparison.rateBundle != undefined) {
 			isRateComp = true;
@@ -548,7 +560,6 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
 		var length = comparison.rateBundle.length;
 		for (var i=0; i<length; i++) {
-                        console.log(comparison);
 			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
 		}
 		masterCtrl.rateComp = comparison;
@@ -556,7 +567,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		//first clear the page
 		$rootScope.$broadcast('clearPage');
-		$rootScope.$broadcast('clearRows');
+		
+		//load the graphs
+		$rootScope.$broadcast('loadGraphs');
 		
 		//next update the consumption graph
 		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", masterCtrl.rateComp.energyUsage.consumption);

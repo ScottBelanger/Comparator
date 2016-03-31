@@ -9,12 +9,13 @@ function graphController($scope) {
 	var demandGraph;
 	var pageType = localStorage.getItem('comparisonPage');
 	
-	initializeGraphs();
+	$scope.$on('loadGraphs', function(event) {
+		initializeGraphs();
+	});
 	
 	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
-		//console.log("In graphController");
-		//console.log("initial consumption Data");
-		//console.log(consumptionData);
+		console.log("In setConsumptionForGraph");
+		console.log(consumptionData);
 		
 		if (consumptionGraph.get(seriesID) != undefined) {
 			consumptionGraph.get(seriesID).remove();
@@ -30,9 +31,6 @@ function graphController($scope) {
 			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
 			var x = Date.parse(stringDate);
 			var y = consumptionData[i].amount;
-			
-			//console.log("x: " + x);
-			//console.log("y: " + y);
 			
 			var point = [x, y];
 			consumptionPoints.push(point);
@@ -50,15 +48,12 @@ function graphController($scope) {
 		
 		//needed for resetting a single consumption line
 		var nav = consumptionGraph.get('navigator');
-		//console.log(nav);
 		nav.setData(newSeries.data);
 		consumptionGraph.xAxis[0].setExtremes();
 	});
 
 	$scope.$on('setDemandForGraph', function(event, seriesID, seriesName, demandData) {
-		//console.log("In graphController");
-		//console.log("initial consumption Data");
-		//console.log(consumptionData);
+		
 		
 		if (demandGraph.get(seriesID) != undefined) {
 			demandGraph.get(seriesID).remove();
@@ -74,9 +69,6 @@ function graphController($scope) {
 			var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
 			var x = Date.parse(stringDate);
 			var y = demandData[i].amount;
-			
-			//console.log("x: " + x);
-			//console.log("y: " + y);
 			
 			var point = [x, y];
 			demandPoints.push(point);
@@ -99,10 +91,7 @@ function graphController($scope) {
 	});
 	
 	$scope.$on('newCostTimePM', function(event, seriesID, seriesName, costData, totalCost) {
-		//console.log("In graphController updateCostTimePM");
-		//console.log(seriesID);
-		//console.log(seriesName);
-		//console.log(costData);
+		
 		
 		//TODO handle totalCost
 		
@@ -116,8 +105,6 @@ function graphController($scope) {
 			var x = Date.parse(stringDate);
 			var y = costData[i].amount;
 			
-			//console.log("x: " + x);
-			//console.log("y: " + y);
 			
 			var point = [x, y];
 			costPoints.push(point);
@@ -132,23 +119,18 @@ function graphController($scope) {
 	});
 	
 	$scope.$on('removeCostSeries', function(event, id) {
-		//console.log("Made it to the graph controller with id: " + id);
+		
 		costTimeGraph.get(id).remove();
 	});
 	
 	$scope.$on('updateCostPoint', function(event, seriesID, costData, pointIndex) {
-		//console.log("graphController");
-		//console.log(seriesID);
-		//console.log(costData);
-		//console.log(pointIndex);
+		
 		
 		var date = costData[0].time;
 		var stringDate = date.replace(" ", "T").replace(":00", ":00:00");
 		var x = Date.parse(stringDate);
 		var y = costData[0].amount;
-		
-		//console.log("x: " + x);
-		//console.log("y: " + y);
+	
 		
 		var point = [x, y];
 		
@@ -160,39 +142,37 @@ function graphController($scope) {
 	});
 	
 	function pointConsumptionDrop(index, x, y) {
-		//console.log("In drop funtion");
-		//console.log(x);
-		//console.log(y);
-		//console.log(index);
+		
 		
 		//convert date back to string format
 		var date = new Date(x);
 		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
 		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
-		//console.log("date: " + date);
 		
 		$scope.$emit('modifiedConsumptionPoint', index, date, y);
 	}
 	function pointDemandDrop(index, x, y) {
-		//console.log("In drop funtion");
-		//console.log(x);
-		//console.log(y);
-		//console.log(index);
+		
 		
 		//convert date back to string format
 		var date = new Date(x);
 		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
 		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
-		//console.log("date: " + date);
 		
 		$scope.$emit('modifiedDemandPoint', index, date, y);
 	}
 	
 	$scope.$on('clearPage', function(event) {
-		consumptionGraph.destroy();
-		costTimeGraph.destroy();
-		demandGraph.destroy();
-		initializeGraphs();
+
+		if (consumptionGraph) {
+			consumptionGraph.destroy();
+		}
+		if (costTimeGraph) {
+			costTimeGraph.destroy();
+		}
+		if (demandGraph){
+			demandGraph.destroy();
+		}
 	});
 
 	$scope.$on('clearCostTime', function(event) {
@@ -276,6 +256,7 @@ function graphController($scope) {
 	}
 
 	function initializeGraphs() {
+		console.log("initializeGraphs");
 		consumptionGraph = new Highcharts.StockChart({
           chart: {
             renderTo: 'EnergyRateConsumption',
@@ -300,15 +281,10 @@ function graphController($scope) {
 				point: {
 					events: {
 						drag: function (e) {
-							//console.log("drag");
-							//console.log(e);
+							
 						},
 						drop: function () {
 							console.log("drop");
-							//console.log(this.series.name);
-							//console.log(this.x);
-							//console.log(this.y);
-							//console.log(this);
 							pointConsumptionDrop(this.index, this.x, this.y);
 						}
 					}
@@ -357,6 +333,9 @@ function graphController($scope) {
 			inputEnabled: true,
 			selected: 0
 		  },
+		  tooltip: {
+			  valueDecimals: 2
+		  }
         });
 		costTimeGraph = new Highcharts.StockChart({
           chart: {
@@ -371,7 +350,7 @@ function graphController($scope) {
             labelFormatter: function() {
       		var total = 0;
       		for(var i=this.yData.length; i--;) { total += this.yData[i]; };
-      			return "$"+Math.round(total*100)/100;
+      			return "$" + Math.round(total*100)/100;
    			},
             title: {text:"Total Costs"}
           },
@@ -429,6 +408,9 @@ function graphController($scope) {
 			inputEnabled: true,
 			selected: 0
 		  },
+		  tooltip: {
+			  valueDecimals: 2
+		  }
         });
 		if (pageType === "commercial")
 		{
@@ -456,15 +438,9 @@ function graphController($scope) {
 					point: {
 						events: {
 							drag: function (e) {
-								//console.log("drag");
-								//console.log(e);
 							},
 							drop: function () {
 								console.log("demand drop");
-								//console.log(this.series.name);
-								//console.log(this.x);
-								//console.log(this.y);
-								//console.log(this);
 								pointDemandDrop(this.index, this.x, this.y);
 							}
 						}

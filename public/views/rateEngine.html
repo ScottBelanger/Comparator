@@ -73,7 +73,7 @@
 <div class="container-fluid" style="max-width:100%">
 <nav class="navbar" style="position:relative">
     <div class="navbar-header" style="padding-bottom:5%; ">
-      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px;"><span class="glyphicon glyphicon-home"></span>Energy Rate Comparator</a>
+      <a class="navbar-brand" id="homePage" href="#" style="font-size:60px; color: #ffffff; display:inline:block"><img src="../images/ERC_White.png" width="100" height="100" style="display:inline-block">Energy Rate Comparator</a>
       <script type="text/javascript">
       document.getElementById("homePage").onclick = function () {
         location.href = "http://" + window.location.host;
@@ -115,41 +115,98 @@
     <div class="panel panel-info" style="box-shadow: 0 0 30px black; background: rgba(0,0,0,0.5);">
       <div class="panel-heading" style="background: rgba(0,0,0,0.5);">
         <div class="panel-title" style="text-align:center">
-          <h1 style="color: #ffffff">Modify Rate Type Information</h1>
+          <h1 style="color: #ffffff">Add a New Rate Type</h1>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container-fluid">
+<div class="row" style="padding-top:2%; padding-bottom:1%">
+  <div class="col-sm-4">
+  </div>
+  <div class="col-sm-4"> 
+    <div class="container" padding-top:2%">
+      <a href="#" id="csvRateUpload" style="font-size:30px;" data-toggle="modal" data-target="#uploadRateCSV"><span class="glyphicon glyphicon-upload"></span>Upload Rate CSV</a>
+      <div id="uploadRateCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
+            </div>
+            <input type="file" id="csvFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+  </div>
+</div>
+
+<div class="container-fluid" style="padding-top:2% ">
   <form>
     <div class="form-group row">
-      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">Country</label>
+      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">Country:</label>
       <div class="col-sm-8">
-        <input class="form-control" placeholder="Canada" style="font-size:15px;">
+        <input id="country" class="form-control" placeholder="Canada" style="font-size:20px;">
       </div>
     </div>
     <div class="form-group row">
       <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">City: </label>
       <div class="col-sm-8">
-        <input class="form-control" placeholder="London" style="font-size:15px;">
+        <input id="City" class="form-control" placeholder="London" style="font-size:20px;">
       </div>
     </div>
     <div class="form-group row">
       <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">LDC: </label>
       <div class="col-sm-8">
-        <input class="form-control" placeholder="London Hydro" style="font-size:15px;">
+        <input id="LDC" class="form-control" placeholder="London Hydro" style="font-size:20px;">
       </div>
     </div>
     <div class="form-group row">
       <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">Rate Type: </label>
       <div class="col-sm-8">
-        <input class="form-control" placeholder="Tiered" style="font-size:15px;">
+        <select class="form-control" placeholder="Time Of Use" style="font-size: 20px;">
+          <option id="timeOfUse" value="Time Of Use">Time Of Use</option>
+          <option id="sportMarket" value="Spot Market">Spot Market</option>
+        </select>
       </div>
     </div>
   </form>
 </div>
+
+
+<div class="container-fluid" align="center" style="font-size:40px; max-width:60%">
+  <div class="row" style="padding-top:5%; padding-bottom:1%">
+    <div class="col-sm-4">
+      
+    </div>
+    <div class="col-sm-4"> 
+    <a href="#" id="addRateType" style="color: #ffffff; margin-right:30px; font-size:30px"><span class="glyphicon glyphicon-plus-sign"></span>Add</a>
+      <script type="text/javascript">
+        document.getElementById("addRateType").onclick = function() {
+          if($("#csvFile").val() == ""){
+            
+          }
+          else {
+            
+          }
+        }
+      </script>
+    </div>
+    <div class="col-sm-4">
+    
+    </div>
+  </div>
+</div>
+
+
 
 </div>
 
