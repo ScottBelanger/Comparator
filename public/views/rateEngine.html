@@ -12,9 +12,9 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://rawgithub.com/highslide-software/draggable-points/master/draggable-points.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-	<script src="controllers/comparisonPage.js"></script>
-	<script src="controllers/pricingModelController.js"></script>
-	<script src="controllers/pmSelectionController.js"></script>
+	<script src="controllers/rateEnginePage.js"></script>
+	<script src="controllers/reInputController.js"></script>
+	<script src="controllers/reCSVController.js"></script>
     <script>
       function showCharts() {
         document.getElementById("EnergyRateConsumption").style.visibility = "visible";
@@ -122,7 +122,7 @@
   </div>
 </div>
 
-<div class="row" style="padding-top:2%; padding-bottom:1%">
+<div class="row" style="padding-top:2%; padding-bottom:1%" ng-controller="reCSVController as csvCtrl">
   <div class="col-sm-4">
   </div>
   <div class="col-sm-4"> 
@@ -137,7 +137,7 @@
             </div>
             <input type="file" id="csvFile" style="width:100%">
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -149,61 +149,63 @@
   </div>
 </div>
 
-<div class="container-fluid" style="padding-top:2% ">
-  <form>
-    <div class="form-group row">
-      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">Country:</label>
-      <div class="col-sm-8">
-        <input id="country" class="form-control" placeholder="Canada" style="font-size:20px;">
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">City: </label>
-      <div class="col-sm-8">
-        <input id="City" class="form-control" placeholder="London" style="font-size:20px;">
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">LDC: </label>
-      <div class="col-sm-8">
-        <input id="LDC" class="form-control" placeholder="London Hydro" style="font-size:20px;">
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff; ">Rate Type: </label>
-      <div class="col-sm-8">
-        <select class="form-control" placeholder="Time Of Use" style="font-size: 20px;">
-          <option id="timeOfUse" value="Time Of Use">Time Of Use</option>
-          <option id="sportMarket" value="Spot Market">Spot Market</option>
-        </select>
-      </div>
-    </div>
-  </form>
-</div>
+<div ng-controller="reInputController as reInptCtrl">
+	<div class="container-fluid" style="padding-top:2%">
+	  <form>
+		<div class="form-group row">
+		  <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff;">Country:</label>
+		  <div class="col-sm-8">
+			<input id="country" class="form-control" style="font-size:20px;" ng-model="reInptCtrl.country">
+		  </div>
+		</div>
+		<div class="form-group row">
+		  <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff;">City: </label>
+		  <div class="col-sm-8">
+			<input id="City" class="form-control" style="font-size:20px;" ng-model="reInptCtrl.city">
+		  </div>
+		</div>
+		<div class="form-group row">
+		  <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff;">LDC: </label>
+		  <div class="col-sm-8">
+			<input id="LDC" class="form-control" style="font-size:20px;" ng-model="reInptCtrl.ldc">
+		  </div>
+		</div>
+		<div class="form-group row">
+		  <label class="col-sm-4 form-control-label" style="font-size:30px; color:#ffffff;">Rate Type: </label>
+		  <div class="col-sm-8">
+			<select class="form-control" style="font-size: 20px;" ng-model="reInptCtrl.rateType">
+			  <option id="timeOfUse" value="Time Of Use">Time Of Use</option>
+			  <option id="sportMarket" value="Spot Market">Spot Market</option>
+			</select>
+		  </div>
+		</div>
+	  </form>
+	</div>
 
 
-<div class="container-fluid" align="center" style="font-size:40px; max-width:60%">
-  <div class="row" style="padding-top:5%; padding-bottom:1%">
-    <div class="col-sm-4">
-      
-    </div>
-    <div class="col-sm-4"> 
-    <a href="#" id="addRateType" style="color: #ffffff; margin-right:30px; font-size:30px"><span class="glyphicon glyphicon-plus-sign"></span>Add</a>
-      <script type="text/javascript">
-        document.getElementById("addRateType").onclick = function() {
-          if($("#csvFile").val() == ""){
-            
-          }
-          else {
-            
-          }
-        }
-      </script>
-    </div>
-    <div class="col-sm-4">
-    
-    </div>
-  </div>
+	<div class="container-fluid" align="center" style="font-size:40px; max-width:60%">
+	  <div class="row" style="padding-top:5%; padding-bottom:1%">
+		<div class="col-sm-4">
+		  
+		</div>
+		<div class="col-sm-4"> 
+		<a href="#" id="addRateType" style="color: #ffffff; margin-right:30px; font-size:30px" ng-click="reInptCtrl.addPM()"><span class="glyphicon glyphicon-plus-sign"></span>Add</a>
+		  <script type="text/javascript">
+			document.getElementById("addRateType").onclick = function() {
+			  if($("#csvFile").val() == ""){
+				
+			  }
+			  else {
+				
+			  }
+			}
+		  </script>
+		</div>
+		<div class="col-sm-4">
+		
+		</div>
+	  </div>
+	</div>
 </div>
 
 
