@@ -25,6 +25,7 @@
 	<script src="controllers/pmSelectionController.js"></script>
 	<script src="controllers/graphController.js"></script>
 	<script src="controllers/loadController.js"></script>
+	<script src="controllers/compSelectController.js"></script>
     <script type="text/javascript">
       function showCharts() {
       console.log(localStorage.getItem('comparisonPage'))
@@ -68,7 +69,7 @@
   }
 </script>
 
-<div id="comparisonSelection" class="modal fade" style="font-size:20px">
+<div id="comparisonSelection" class="modal fade" style="font-size:20px" ng-controller="compSelectController as compSelCtrl">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -77,13 +78,18 @@
       </div>
       <div class="modal-body">
         <div class="checkbox">
-          <label><input type="radio" name="comparsionType" value="" checked="checked">Rate Comparison</label>
-          <p>Allows users to create comparisons using Rate Types</p>
+          <label><input type="radio" name="comparsionType" ng-model="comp.select" value="0" checked="checked">Rate Comparison</label>
+          <p>Allows users to create comparisons between various pricing models with a single usage input</p>
         </div>
         <p> </p>
         <div class="checkbox">
-          <label><input type="radio" name="comparsionType" value="">Usage Comparison</label>
-          <p>Allows users to create comparisons using Usage Amounts</p>
+          <label><input type="radio" name="comparsionType" ng-model="comp.select" value="1">Usage Comparison</label>
+          <p>Allows users to create comparisons between various usage inputs under a single pricing model</p>
+        </div>
+		<p> </p>
+        <div class="checkbox" ng-if="userLoggedIn">
+          <label><input type="radio" name="comparsionType" ng-model="comp.select" value="2">Load Comparison</label>
+          <p>Load a previously saved comparison (only if you have an account)</p>
         </div>
         <div class="checkbox">
           <label><input type="radio" id="loadComparison" name="comparsionType" value="">Load Comparison</label>
@@ -91,7 +97,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button id="comparisonSubmit" type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+        <button id="comparisonSubmit" type="button" class="btn btn-default" data-dismiss="modal" ng-click="compSelCtrl.submitSelection()">Submit</button>
       </div>
     </div>
   </div>
@@ -511,7 +517,7 @@
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#loadComparison" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-cloud-download"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-cloud-download"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
@@ -522,7 +528,7 @@
   </div>
 </div>
 
-<div id="loadComparison" class="modal fade" style="font-size:20px" ng-controller="loadController as loadCtrl" ng-if="canLoad">
+<div id="loadComparison" class="modal fade" style="font-size:20px" ng-controller="loadController as loadCtrl">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
