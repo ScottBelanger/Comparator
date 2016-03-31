@@ -8,7 +8,7 @@ function energyUsageController($scope) {
 	euCtrl.setupManual = function() {
 		//TODO: This logic will mess up the user if they had created a consumption before and then go to change it and then cancel
 		//The graph will NOT change, but the values here do - maybe that won't be a problem
-		euCtrl.date = "2016-02-21";
+		euCtrl.date = "2015-02-21";
 		euCtrl.consumptionArray = [{time: "00:00", amount: 0}, {time: "01:00", amount: 0}, {time: "02:00", amount: 0},
 								   {time: "03:00", amount: 0}, {time: "04:00", amount: 0}, {time: "05:00", amount: 0}, 
 								   {time: "06:00", amount: 0}, {time: "07:00", amount: 0}, {time: "08:00", amount: 0},
