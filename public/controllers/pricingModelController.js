@@ -4,12 +4,18 @@ angular
 
 function pricingModelController($scope) {
 	var pmCtrl = this;
+	var rowCount;
 	
-	pmCtrl.columnLabels = [{title: "Country"}, {title: "City"}, {title: "LDC"}, {title: "Rate Type"}];
+	$scope.$on('loadRows', function(event) {
+		initializeRows();
+	});
 	
-	pmCtrl.rows = [];
-	var rowCount = 0;
-	addNewSelectionRow();
+	function initializeRows() {
+		pmCtrl.columnLabels = [{title: "Country"}, {title: "City"}, {title: "LDC"}, {title: "Rate Type"}];
+		pmCtrl.rows = [];
+		rowCount = 0;
+		addNewSelectionRow();
+	}
 	
 	function addNewSelectionRow() {
 		//INDEX MUST MATCH PRICINGMODEL ID!!!
@@ -37,13 +43,6 @@ function pricingModelController($scope) {
 	
 	$scope.$on('clearPage', function(event) {
 		pmCtrl.rows = [];
-		rowCount = 0;
-		addNewSelectionRow();
-	});
-	
-	$scope.$on('clearRows', function(event) {
-		pmCtrl.rows = [];
-		rowCount = 0;
 	});
 	
 	$scope.$on('newRow', function(event) {

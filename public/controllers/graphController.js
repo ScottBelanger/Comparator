@@ -2,13 +2,14 @@ angular
 	.module('comparisonPage')
 	.controller('graphController', graphController); //this is where injection could occur
 	
-	var totalCost = [];
 function graphController($scope) {
 	var graphCtrl = this;
 	var consumptionGraph;
 	var costTimeGraph;
 	
-	initializeGraphs();
+	$scope.$on('loadGraphs', function(event) {
+		initializeGraphs();
+	});
 	
 	$scope.$on('setConsumptionForGraph', function(event, seriesID, seriesName, consumptionData) {
 		//console.log("In graphController");
@@ -130,9 +131,12 @@ function graphController($scope) {
 	}
 	
 	$scope.$on('clearPage', function(event) {
-		consumptionGraph.destroy();
-		costTimeGraph.destroy();
-		initializeGraphs();
+		if (consumptionGraph) {
+			consumptionGraph.destroy();
+		}
+		if (costTimeGraph) {
+			costTimeGraph.destroy();
+		}
 	});
 	
 	function initializeGraphs() {
