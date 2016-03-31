@@ -94,8 +94,6 @@ function graphController($scope) {
 		
 		//needed for resetting a single consumption line
 		var nav = demandGraph.get('navigator');
-		console.log("the nav "+nav);
-		console.log("the new series "+newSeries);
 		nav.setData(newSeries.data);
 		demandGraph.xAxis[0].setExtremes();
 	});
@@ -131,7 +129,6 @@ function graphController($scope) {
 			data: costPoints,
             rotation: 90
 		});
-		console.log(costTimeGraph);
 	});
 	
 	$scope.$on('removeCostSeries', function(event, id) {
@@ -155,14 +152,14 @@ function graphController($scope) {
 		
 		var point = [x, y];
 		
-		console.log("costTimeGraph data: " + costTimeGraph.get(seriesID).data.length);
+		
 		costTimeGraph.get(seriesID).data[pointIndex].update(point);
 
 		//update legend to update graph
 		costTimeGraph.legend.render();
 	});
 	
-	function pointDrop(index, x, y,type) {
+	function pointConsumptionDrop(index, x, y) {
 		//console.log("In drop funtion");
 		//console.log(x);
 		//console.log(y);
@@ -174,7 +171,21 @@ function graphController($scope) {
 		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
 		//console.log("date: " + date);
 		
-		$scope.$emit('modifiedPoint', index, date, y, type);
+		$scope.$emit('modifiedConsumptionPoint', index, date, y);
+	}
+	function pointDemandDrop(index, x, y) {
+		//console.log("In drop funtion");
+		//console.log(x);
+		//console.log(y);
+		//console.log(index);
+		
+		//convert date back to string format
+		var date = new Date(x);
+		date = date.toISOString();  // example: 2016-02-21T14:00:00.000Z
+		date = date.replace("T", " ").replace(":00.000Z", "");  //2016-02-21 14:00
+		//console.log("date: " + date);
+		
+		$scope.$emit('modifiedDemandPoint', index, date, y);
 	}
 	
 	$scope.$on('clearPage', function(event) {
@@ -298,7 +309,7 @@ function graphController($scope) {
 							//console.log(this.x);
 							//console.log(this.y);
 							//console.log(this);
-							pointDrop(this.index, this.x, this.y, "consumption");
+							pointConsumptionDrop(this.index, this.x, this.y);
 						}
 					}
 				}
@@ -454,7 +465,7 @@ function graphController($scope) {
 								//console.log(this.x);
 								//console.log(this.y);
 								//console.log(this);
-								pointDrop(this.index, this.x, this.y, "demand");
+								pointDemandDrop(this.index, this.x, this.y);
 							}
 						}
 					}

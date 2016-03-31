@@ -36,7 +36,6 @@ function csvDemandController($scope) {
 				 csvCtrl.demandArray.push(demand);
 		   	}
                   }
-			console.log("in Demand csv, the demand array: "+csvCtrl.demandArray);
 			$scope.$emit('newDemandArray', csvCtrl.demandArray);
 		  }
 		  reader.readAsText(file);

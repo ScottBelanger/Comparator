@@ -105,7 +105,7 @@ function pmSelectionController($scope, $http) {
 				return;
 			}
 			
-			console.log($scope.masterCtrl.rateComp.energyUsage.consumption);
+			//console.log($scope.masterCtrl.rateComp.energyUsage.consumption);
 			
 			submitPricingModel();
 			setValues();
