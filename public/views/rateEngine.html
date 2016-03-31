@@ -124,12 +124,10 @@
 </div>
 
 <div class="row" style="padding-top:2%; padding-bottom:1%" ng-controller="reCSVController as csvCtrl">
-  <div class="col-sm-4">
-  </div>
-  <div class="col-sm-4"> 
-    <div class="container" padding-top:2%">
+  <div class="col-sm-6"> 
+    <div class="container-fluid" >
       <a href="#" id="csvRateUpload" style="font-size:30px;" data-toggle="modal" data-target="#uploadRateCSV"><span class="glyphicon glyphicon-upload"></span>Upload Rate CSV</a>
-      <div id="uploadRateCSV" class="modal fade" role="dialog" style="font-size: 20px;">>
+      <div id="uploadRateCSV" class="modal fade" role="dialog" style="font-size: 20px;">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -146,7 +144,25 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-6">
+    <div class="container-fluid" >
+      <a href="#" id="csvRateUpload" style="font-size:30px;" data-toggle="modal" data-target="#uploadRateCSV"><span class="glyphicon glyphicon-upload"></span>Upload Time Of Use CSV</a>
+      <div id="uploadRateCSV" class="modal fade" role="dialog" style="font-size: 20px;">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size: 20px;">Please select a CSV file to upload</h4>
+            </div>
+            <input type="file" id="csvFile" style="width:100%">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="csvCtrl.parseCSV()">Submit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
