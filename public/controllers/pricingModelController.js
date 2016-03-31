@@ -6,7 +6,7 @@ function pricingModelController($scope) {
 	var pmCtrl = this;
 	var rowCount;
 	
-	$scope.$on('loadPage', function(event) {
+	$scope.$on('loadRows', function(event) {
 		initializeRows();
 	});
 	
@@ -43,11 +43,6 @@ function pricingModelController($scope) {
 	
 	$scope.$on('clearPage', function(event) {
 		pmCtrl.rows = [];
-	});
-	
-	$scope.$on('clearRows', function(event) {
-		pmCtrl.rows = [];
-		rowCount = 0;
 	});
 	
 	$scope.$on('newRow', function(event) {

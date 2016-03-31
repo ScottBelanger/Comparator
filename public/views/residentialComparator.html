@@ -513,7 +513,7 @@
     </div>
     <div class="col-md-4" style="text-align:center">
       <div class="container-fluid" style="text-align:center">
-        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" data-toggle="modal" data-target="#loadComparison" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
+        <a href="#" id="csvDownload" style="font-size:30px; display:inline-block;" ng-click="masterCtrl.loadComparisonEvent()"><span class="glyphicon glyphicon-download-alt"></span>Load Comparison</a>
       </div>
     </div>
     <div class="col-md-4" style="text-align:center">
@@ -524,7 +524,7 @@
   </div>
 </div>
 
-<div id="loadComparison" class="modal fade" style="font-size:20px" ng-controller="loadController as loadCtrl" ng-if="canLoad">
+<div id="loadComparison" class="modal fade" style="font-size:20px" ng-controller="loadController as loadCtrl">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

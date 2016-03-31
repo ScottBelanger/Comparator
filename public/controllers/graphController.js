@@ -7,7 +7,7 @@ function graphController($scope) {
 	var consumptionGraph;
 	var costTimeGraph;
 	
-	$scope.$on('loadPage', function(event) {
+	$scope.$on('loadGraphs', function(event) {
 		initializeGraphs();
 	});
 	

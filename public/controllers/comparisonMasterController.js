@@ -65,7 +65,8 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			}
 		}
 		//console.log(masterCtrl.rateComp);
-		$rootScope.$broadcast('loadPage');
+		$rootScope.$broadcast('loadGraphs');
+		$rootScope.$broadcast('loadRows');
 	}
 	
 	//console.log("isRateComp: " + isRateComp);
@@ -283,12 +284,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("In loadComparisonEvent");
 		
 		if (!$scope.userLoggedIn) {
-			//TODO
-			$scope.canLoad=false;
 			alert("Need to sign up to load comparisons that you have saved!");
 			return;
 		}
-		$scope.canLoad = true;
 		
 		/*hardcodedComparison = {
 			energyUsage: {
@@ -351,6 +349,11 @@ function comparisonMasterController($scope, $rootScope, $http) {
                           }
                         }
 						
+						console.log("Pop up modal window!");
+						console.log(document.getElementById("loadComparison"));
+						//document.getElementById("loadComparison").showModal();
+						$("#loadComparison").modal("show");
+						
 		}, function(result){
 			// error
 		});
@@ -385,7 +388,6 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		//TODO: This may not be necessary, but it is an unnecessary risk to attempt to not do it
 		var length = comparison.rateBundle.length;
 		for (var i=0; i<length; i++) {
-                        console.log(comparison);
 			comparison.rateBundle[i].pricingModel.id = comparison.rateBundle[i].id;
 		}
 		masterCtrl.rateComp = comparison;
@@ -393,7 +395,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		
 		//first clear the page
 		$rootScope.$broadcast('clearPage');
-		$rootScope.$broadcast('clearRows');
+		
+		//load the graphs
+		$rootScope.$broadcast('loadGraphs');
 		
 		//next update the consumption graph
 		$rootScope.$broadcast('setConsumptionForGraph', 0, "Consumption", masterCtrl.rateComp.energyUsage.consumption);
