@@ -87,7 +87,7 @@
           <p>Allows users to create comparisons between various usage inputs under a single pricing model</p>
         </div>
 		<p> </p>
-        <div class="checkbox">
+        <div class="checkbox" ng-if="userLoggedIn">
           <label><input type="radio" name="comparsionType" ng-model="comp.select" value="2">Load Comparison</label>
           <p>Load a previously saved comparison (only if you have an account)</p>
         </div>

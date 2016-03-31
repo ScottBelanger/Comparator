@@ -11,7 +11,6 @@ function compSelectController($scope, $http) {
 	compSelCtrl.submitSelection = function() {
 		console.log("compSelCtrl");
 		console.log($scope.comp.select);
-		//console.log($scope.color.name);
-		//$scope.$emit('loadIndex', $scope.comp.index);
+		$scope.$emit('setCompType', $scope.comp.select);
 	}
 }

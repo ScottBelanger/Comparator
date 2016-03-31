@@ -10,7 +10,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	//for remote
 	//var rateEngineURL = 'http://rateeng-env.us-west-2.elasticbeanstalk.com';
 	
-	var isRateComp = true;
+	var isRateComp;
 	masterCtrl.rateComp = null;
 	masterCtrl.usageComp = null;
 	masterCtrl.userComparisonArray = [];
@@ -19,14 +19,36 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	console.log(localStorage.getItem('userId'));
 	var userID = localStorage.getItem('userId');
 	
+	if (userID == 'undefined' || userID == null) {
+		$scope.userLoggedIn = false;
+	}
+	else {
+		$scope.userLoggedIn = true;
+	}
+	
 	var pageType = localStorage.getItem('comparisonPage');
 	console.log("page type: " + pageType);
 	
-	initializeComparison();
+	$scope.$on('setCompType', function(event, selected) {
+		console.log("In setCompType");
+		console.log("selected: " + selected);
+		if (selected == 0) {
+			isRateComp = true;
+			initializeComparison();
+		}
+		else if (selected == 1) {
+			isRateComp = false;
+			initializeComparison();
+		}
+		else if (selected == 2) {
+			masterCtrl.loadComparisonEvent();
+		}
+	});
 	
 	//should put this in an initializer
 	function initializeComparison() {
 		console.log("initializeComparison");
+		console.log("isRateComp: " + isRateComp);
 		if (isRateComp) {
 			masterCtrl.rateComp = {
 				energyUsage: {
@@ -43,6 +65,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 			}
 		}
 		//console.log(masterCtrl.rateComp);
+		$rootScope.$broadcast('loadPage');
 	}
 	
 	//console.log("isRateComp: " + isRateComp);
@@ -216,7 +239,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.newComparisonEvent = function() {
-		initializeComparison();
+		//initializeComparison();
 		$rootScope.$broadcast('clearPage');
 	}
 	
@@ -224,7 +247,7 @@ function comparisonMasterController($scope, $rootScope, $http) {
 		console.log("In saveComparison");
 		console.log("userID: " + userID);
 		
-		if (userID == 'undefined' || userID == null) {
+		if (!$scope.userLoggedIn) {
 			alert("Need to sign up to save comparisons!");
 			return;
 		}
@@ -257,9 +280,9 @@ function comparisonMasterController($scope, $rootScope, $http) {
 	}
 	
 	masterCtrl.loadComparisonEvent = function() {
-		console.log("In loadComparison");
+		console.log("In loadComparisonEvent");
 		
-		if (userID == 'undefined' || userID == null) {
+		if (!$scope.userLoggedIn) {
 			//TODO
 			$scope.canLoad=false;
 			alert("Need to sign up to load comparisons that you have saved!");
