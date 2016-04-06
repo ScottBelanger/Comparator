@@ -12,4 +12,10 @@ function loadController($scope, $http) {
 		console.log($scope.comp.index);
 		$scope.$emit('loadIndex', $scope.comp.index);
 	}
+	
+	loadCtrl.clearLoad = function() {
+		$scope.masterCtrl.userComparisonArray = [];
+		console.log("cleared");
+		console.log($scope.masterCtrl.userComparisonArray);
+	}
 }
